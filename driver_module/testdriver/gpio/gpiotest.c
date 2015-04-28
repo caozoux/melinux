@@ -73,6 +73,18 @@ struct gpio_bank {
 	struct omap_gpio_reg_offs *regs;
 };
 
+struct gpiotest_platform_data {
+	int bank_type;
+	int bank_width;		/* GPIO bank width */
+	int bank_stride;	/* Only needed for omap1 MPUIO */
+	bool dbck_flag;		/* dbck required or not - True for OMAP3&4 */
+	bool is_mpuio;		/* whether the bank is of type MPUIO */
+	u32 non_wakeup_gpios;
+	//struct omap_gpio_reg_offs *regs;
+	/* Return context loss count due to PM states changing */
+	int (*get_context_loss_count)(struct device *dev);
+};
+
 void omap2_gpio_prepare_for_idle(int pwr_mode)
 {
 }
@@ -113,6 +125,7 @@ static void gpio_irq_shutdown(struct irq_data *data)
 
 static void gpio_irq_ack(struct irq_data *data)
 {
+
 }
 
 static void gpio_irq_mask(struct irq_data *data)
@@ -193,7 +206,7 @@ static int  omap_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
  */
 static void omap_gpio_chip_init(struct gpio_bank *bank, struct irq_chip *irqc)
 {
-	static int gpio;
+	static int gpio = 32;
 
 	/*
 	 * REVISIT eventually switch from OMAP-specific gpio structs
@@ -220,8 +233,29 @@ static void omap_gpio_chip_init(struct gpio_bank *bank, struct irq_chip *irqc)
 	}
 	bank->chip.ngpio = bank->width;
 
-	gpiochip_add(&bank->chip);
+	if (gpiochip_add(&bank->chip)) {
+		dev_info(bank->dev, "add gpio chip: base:%08x label:%s ngpio:%d\n",
+				bank->chip.base, bank->chip.label, bank->chip.ngpio);
+	}
+	else {
+		dev_err(bank->dev, "add gpio chip failed\n");
+	}
 }
+
+static const struct gpiotest_platform_data gpiotest_pdata = {
+	//.regs = &omap2_gpio_regs,
+	.bank_width = 32,
+	.dbck_flag = true,
+};
+
+static const struct of_device_id omap_gpio_match[] = {
+	{
+		.compatible = "zzgpiotest",
+		.data = &gpiotest_pdata,
+	},
+	{ },
+};
+MODULE_DEVICE_TABLE(of, omap_gpio_match);
 
 static int gpio_blanck_init(struct platform_device *pdev)
 {
@@ -231,6 +265,15 @@ static int gpio_blanck_init(struct platform_device *pdev)
 	struct resource *res;
 	const struct omap_gpio_platform_data *pdata;
 	struct device_node *node = dev->of_node;
+	const struct of_device_id *match;
+
+	match = of_match_device(of_match_ptr(omap_gpio_match), dev);
+	pdata = match ? match->data : dev_get_platdata(dev);
+	if (!pdata) {
+		dev_err(dev, "no pdata\n");
+		return -EINVAL;
+	}
+
 	bank = kzalloc(sizeof(struct gpio_bank), GFP_KERNEL);
 	if (!bank) {
 		dev_err(dev, "Memory alloc failed\n");
@@ -241,13 +284,25 @@ static int gpio_blanck_init(struct platform_device *pdev)
 	if (!irqc)
 		return -ENOMEM;
 
-	irqc->irq_shutdown = gpio_irq_shutdown,
-	irqc->irq_ack = gpio_irq_ack,
-	irqc->irq_mask = gpio_irq_mask,
-	irqc->irq_unmask = gpio_irq_unmask,
-	irqc->irq_set_type = gpio_irq_set_type,
-	irqc->irq_set_wake = gpio_irq_set_wake,
+	irqc->irq_shutdown = gpio_irq_shutdown;
+	irqc->irq_ack = gpio_irq_ack;
+	irqc->irq_mask = gpio_irq_mask;
+	irqc->irq_unmask = gpio_irq_unmask;
+	irqc->irq_set_type = gpio_irq_set_type;
+	irqc->irq_set_wake = gpio_irq_set_wake;
 	irqc->name = dev_name(&pdev->dev);
+
+#if 0
+	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+	if (unlikely(!res)) {
+		dev_err(dev, "Invalid IRQ resource\n");
+		return -ENODEV;
+	}
+#else
+	res = kzalloc(sizeof(struct resource), GFP_KERNEL);
+	res->start= 0x2c200000;
+	res->end = res->start+0x10000;
+#endif
 
 	bank->irq = res->start;
 	bank->dev = dev;
@@ -269,10 +324,7 @@ static int gpio_blanck_init(struct platform_device *pdev)
 	bank->domain = irq_domain_add_linear(node, bank->width,
 					     &irq_domain_simple_ops, NULL);
 
-	if (bank->regs->set_dataout && bank->regs->clr_dataout)
-		bank->set_dataout = gpio_set_dataout_reg;
-	else
-		bank->set_dataout = gpio_set_dataout_mask;
+	bank->set_dataout = gpio_set_dataout_mask;
 
 	spin_lock_init(&bank->lock);
 
@@ -291,13 +343,13 @@ static int gpio_blanck_init(struct platform_device *pdev)
 		mpuio_init(bank);
 
 	//omap_gpio_mod_init(bank);
-	//omap_gpio_chip_init(bank, irqc);
+	omap_gpio_chip_init(bank, irqc);
 	//omap_gpio_show_rev(bank);
 
 	pm_runtime_put(bank->dev);
 
 	list_add_tail(&bank->node, &omap_gpio_list);
-
+	dev_info(dev, "probe.\n");
 }
 
 static int
@@ -305,6 +357,7 @@ gpiotest_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	dev_info(dev, "drvier probe\n");
+	gpio_blanck_init(pdev);
 	return 0;
 }
 
