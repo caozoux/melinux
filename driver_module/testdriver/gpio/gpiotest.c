@@ -165,40 +165,49 @@ int gpio_get_context_loss_count(struct device *dev)
 
 static int omap_gpio_request(struct gpio_chip *chip, unsigned offset) 
 {
+	dev_dbg(chip->dev,"%s  %d\n", __func__, offset);
 	return 0;
 }
 
 static void omap_gpio_free(struct gpio_chip *chip, unsigned offset)
 {
+	dev_dbg(chip->dev,"%s  %d\n",__func__, offset);
 }
 
 static int  gpio_input(struct gpio_chip *chip, unsigned offset)
 {
+	dev_dbg(chip->dev,"%s  %d\n",__func__, offset);
 	return 0;
 }
 
 static int  gpio_get(struct gpio_chip *chip, unsigned offset)
 {
+	dev_dbg(chip->dev,"%s  %d\n",__func__, offset);
 	return 0;
 }
 
 static int  gpio_output(struct gpio_chip *chip, unsigned offset, int value)
 {
+	dev_dbg(chip->dev,"%s %d value:%d\n", __func__, offset, value);
 	return 0;
 }
 
 static int  gpio_debounce(struct gpio_chip *chip, unsigned offset, unsigned debounce)
 {
+	dev_dbg(chip->dev,"%s  %d debounce:%d \n", __func__, offset, debounce);
 	return 0;
 }
 
 static int  gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+	dev_dbg(chip->dev," %d \n", offset);
 	return 0;
 }
 
 static int  omap_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
 {
+	dev_dbg(chip->dev,"%s  %d\n",__func__, offset);
+	dump_stack();
 	return 0;
 }
 /*
@@ -231,7 +240,9 @@ static void omap_gpio_chip_init(struct gpio_bank *bank, struct irq_chip *irqc)
 		bank->chip.base = gpio;
 		gpio += bank->width;
 	}
+
 	bank->chip.ngpio = bank->width;
+	bank->chip.dev = bank->dev;
 
 	if (gpiochip_add(&bank->chip)) {
 		dev_info(bank->dev, "add gpio chip: base:%08x label:%s ngpio:%d\n",
@@ -253,7 +264,7 @@ static const struct of_device_id omap_gpio_match[] = {
 		.compatible = "zzgpiotest",
 		.data = &gpiotest_pdata,
 	},
-	{ },
+	{},
 };
 MODULE_DEVICE_TABLE(of, omap_gpio_match);
 
