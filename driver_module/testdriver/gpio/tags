@@ -1,0 +1,151 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+KERNEL_SRC	Makefile	/^KERNEL_SRC = \/export\/disk1T1\/bsp_work\/TI_AM335X\/kernel-3.14.x$/;"	m
+KER_OUT	Makefile	/^KER_OUT = \/export\/disk1T1\/bsp_work\/TI_AM335X\/kernel-3.14.x\/out$/;"	m
+LIST_HEAD	gpiotest.c	/^static LIST_HEAD(omap_gpio_list);$/;"	p	file:
+PWD	Makefile	/^PWD = $(shell pwd)  $/;"	m
+TARGET	Makefile	/^TARGET := megpio_test$/;"	m
+__this_module	megpio_test.mod.c	/^__visible struct module __this_module$/;"	v	typeref:struct:module
+__used	megpio_test.mod.c	/^__used$/;"	v	file:
+bank_stride	gpiotest.c	/^	int bank_stride;	\/* Only needed for omap1 MPUIO *\/$/;"	m	struct:gpiotest_platform_data	file:	access:public
+bank_type	gpiotest.c	/^	int bank_type;$/;"	m	struct:gpiotest_platform_data	file:	access:public
+bank_width	gpiotest.c	/^	int bank_width;		\/* GPIO bank width *\/$/;"	m	struct:gpiotest_platform_data	file:	access:public
+base	gpiotest.c	/^	void __iomem *base;$/;"	m	struct:gpio_bank	file:	access:public
+chip	gpiotest.c	/^	struct gpio_chip chip;$/;"	m	struct:gpio_bank	typeref:struct:gpio_bank::gpio_chip	file:	access:public
+context	gpiotest.c	/^	struct gpio_regs context;$/;"	m	struct:gpio_bank	typeref:struct:gpio_bank::gpio_regs	file:	access:public
+context_loss_count	gpiotest.c	/^	int context_loss_count;$/;"	m	struct:gpio_bank	file:	access:public
+context_valid	gpiotest.c	/^	bool context_valid;$/;"	m	struct:gpio_bank	file:	access:public
+ctrl	gpiotest.c	/^	u32 ctrl;$/;"	m	struct:gpio_regs	file:	access:public
+dataout	gpiotest.c	/^	u32 dataout;$/;"	m	struct:gpio_regs	file:	access:public
+dbck	gpiotest.c	/^	struct clk *dbck;$/;"	m	struct:gpio_bank	typeref:struct:gpio_bank::clk	file:	access:public
+dbck_enable_mask	gpiotest.c	/^	u32 dbck_enable_mask;$/;"	m	struct:gpio_bank	file:	access:public
+dbck_enabled	gpiotest.c	/^	bool dbck_enabled;$/;"	m	struct:gpio_bank	file:	access:public
+dbck_flag	gpiotest.c	/^	bool dbck_flag;		\/* dbck required or not - True for OMAP3&4 *\/$/;"	m	struct:gpiotest_platform_data	file:	access:public
+dbck_flag	gpiotest.c	/^	bool dbck_flag;$/;"	m	struct:gpio_bank	file:	access:public
+debounce	gpiotest.c	/^	u32 debounce;$/;"	m	struct:gpio_regs	file:	access:public
+debounce_en	gpiotest.c	/^	u32 debounce_en;$/;"	m	struct:gpio_regs	file:	access:public
+dev	gpiotest.c	/^	struct device *dev;$/;"	m	struct:gpio_bank	typeref:struct:gpio_bank::device	file:	access:public
+domain	gpiotest.c	/^	struct irq_domain *domain;$/;"	m	struct:gpio_bank	typeref:struct:gpio_bank::irq_domain	file:	access:public
+dump	gpiotest.c	/^static bool dump;$/;"	v	file:
+enabled_non_wakeup_gpios	gpiotest.c	/^	u32 enabled_non_wakeup_gpios;$/;"	m	struct:gpio_bank	file:	access:public
+fallingdetect	gpiotest.c	/^	u32 fallingdetect;$/;"	m	struct:gpio_regs	file:	access:public
+flags	gpiotest.c	/^	int flags;$/;"	m	struct:prv_data	file:	access:public
+get_context_loss_count	gpiotest.c	/^	int (*get_context_loss_count)(struct device *dev);$/;"	m	struct:gpio_bank	file:	access:public
+get_context_loss_count	gpiotest.c	/^	int (*get_context_loss_count)(struct device *dev);$/;"	m	struct:gpiotest_platform_data	file:	access:public
+gpio_bank	gpiotest.c	/^struct gpio_bank {$/;"	s	file:
+gpio_bank::base	gpiotest.c	/^	void __iomem *base;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::chip	gpiotest.c	/^	struct gpio_chip chip;$/;"	m	struct:gpio_bank	typeref:struct:gpio_bank::gpio_chip	file:	access:public
+gpio_bank::context	gpiotest.c	/^	struct gpio_regs context;$/;"	m	struct:gpio_bank	typeref:struct:gpio_bank::gpio_regs	file:	access:public
+gpio_bank::context_loss_count	gpiotest.c	/^	int context_loss_count;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::context_valid	gpiotest.c	/^	bool context_valid;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::dbck	gpiotest.c	/^	struct clk *dbck;$/;"	m	struct:gpio_bank	typeref:struct:gpio_bank::clk	file:	access:public
+gpio_bank::dbck_enable_mask	gpiotest.c	/^	u32 dbck_enable_mask;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::dbck_enabled	gpiotest.c	/^	bool dbck_enabled;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::dbck_flag	gpiotest.c	/^	bool dbck_flag;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::dev	gpiotest.c	/^	struct device *dev;$/;"	m	struct:gpio_bank	typeref:struct:gpio_bank::device	file:	access:public
+gpio_bank::domain	gpiotest.c	/^	struct irq_domain *domain;$/;"	m	struct:gpio_bank	typeref:struct:gpio_bank::irq_domain	file:	access:public
+gpio_bank::enabled_non_wakeup_gpios	gpiotest.c	/^	u32 enabled_non_wakeup_gpios;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::get_context_loss_count	gpiotest.c	/^	int (*get_context_loss_count)(struct device *dev);$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::irq	gpiotest.c	/^	u16 irq;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::irq_usage	gpiotest.c	/^	u32 irq_usage;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::is_mpuio	gpiotest.c	/^	bool is_mpuio;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::level_mask	gpiotest.c	/^	u32 level_mask;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::lock	gpiotest.c	/^	spinlock_t lock;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::mod_usage	gpiotest.c	/^	u32 mod_usage;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::node	gpiotest.c	/^	struct list_head node;$/;"	m	struct:gpio_bank	typeref:struct:gpio_bank::list_head	file:	access:public
+gpio_bank::non_wakeup_gpios	gpiotest.c	/^	u32 non_wakeup_gpios;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::power_mode	gpiotest.c	/^	int power_mode;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::regs	gpiotest.c	/^	struct omap_gpio_reg_offs *regs;$/;"	m	struct:gpio_bank	typeref:struct:gpio_bank::omap_gpio_reg_offs	file:	access:public
+gpio_bank::saved_datain	gpiotest.c	/^	u32 saved_datain;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::set_dataout	gpiotest.c	/^	void (*set_dataout)(struct gpio_bank *bank, int gpio, int enable);$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::stride	gpiotest.c	/^	int stride;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::toggle_mask	gpiotest.c	/^	u32 toggle_mask;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::width	gpiotest.c	/^	u32 width;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_bank::workaround_enabled	gpiotest.c	/^	bool workaround_enabled;$/;"	m	struct:gpio_bank	file:	access:public
+gpio_blanck_init	gpiotest.c	/^static int gpio_blanck_init(struct platform_device *pdev)$/;"	f	file:	signature:(struct platform_device *pdev)
+gpio_debounce	gpiotest.c	/^static int  gpio_debounce(struct gpio_chip *chip, unsigned offset, unsigned debounce)$/;"	f	file:	signature:(struct gpio_chip *chip, unsigned offset, unsigned debounce)
+gpio_get	gpiotest.c	/^static int  gpio_get(struct gpio_chip *chip, unsigned offset)$/;"	f	file:	signature:(struct gpio_chip *chip, unsigned offset)
+gpio_get_context_loss_count	gpiotest.c	/^int gpio_get_context_loss_count(struct device *dev)$/;"	f	signature:(struct device *dev)
+gpio_input	gpiotest.c	/^static int  gpio_input(struct gpio_chip *chip, unsigned offset)$/;"	f	file:	signature:(struct gpio_chip *chip, unsigned offset)
+gpio_irq_ack	gpiotest.c	/^static void gpio_irq_ack(struct irq_data *data)$/;"	f	file:	signature:(struct irq_data *data)
+gpio_irq_mask	gpiotest.c	/^static void gpio_irq_mask(struct irq_data *data)$/;"	f	file:	signature:(struct irq_data *data)
+gpio_irq_set_type	gpiotest.c	/^static int gpio_irq_set_type(struct irq_data *data, unsigned int flow_type)$/;"	f	file:	signature:(struct irq_data *data, unsigned int flow_type)
+gpio_irq_set_wake	gpiotest.c	/^static int gpio_irq_set_wake(struct irq_data *data, unsigned int on)$/;"	f	file:	signature:(struct irq_data *data, unsigned int on)
+gpio_irq_shutdown	gpiotest.c	/^static void gpio_irq_shutdown(struct irq_data *data)$/;"	f	file:	signature:(struct irq_data *data)
+gpio_irq_unmask	gpiotest.c	/^static void gpio_irq_unmask(struct irq_data *data)$/;"	f	file:	signature:(struct irq_data *data)
+gpio_output	gpiotest.c	/^static int  gpio_output(struct gpio_chip *chip, unsigned offset, int value)$/;"	f	file:	signature:(struct gpio_chip *chip, unsigned offset, int value)
+gpio_regs	gpiotest.c	/^struct gpio_regs {$/;"	s	file:
+gpio_regs::ctrl	gpiotest.c	/^	u32 ctrl;$/;"	m	struct:gpio_regs	file:	access:public
+gpio_regs::dataout	gpiotest.c	/^	u32 dataout;$/;"	m	struct:gpio_regs	file:	access:public
+gpio_regs::debounce	gpiotest.c	/^	u32 debounce;$/;"	m	struct:gpio_regs	file:	access:public
+gpio_regs::debounce_en	gpiotest.c	/^	u32 debounce_en;$/;"	m	struct:gpio_regs	file:	access:public
+gpio_regs::fallingdetect	gpiotest.c	/^	u32 fallingdetect;$/;"	m	struct:gpio_regs	file:	access:public
+gpio_regs::irqenable1	gpiotest.c	/^	u32 irqenable1;$/;"	m	struct:gpio_regs	file:	access:public
+gpio_regs::irqenable2	gpiotest.c	/^	u32 irqenable2;$/;"	m	struct:gpio_regs	file:	access:public
+gpio_regs::leveldetect0	gpiotest.c	/^	u32 leveldetect0;$/;"	m	struct:gpio_regs	file:	access:public
+gpio_regs::leveldetect1	gpiotest.c	/^	u32 leveldetect1;$/;"	m	struct:gpio_regs	file:	access:public
+gpio_regs::oe	gpiotest.c	/^	u32 oe;$/;"	m	struct:gpio_regs	file:	access:public
+gpio_regs::risingdetect	gpiotest.c	/^	u32 risingdetect;$/;"	m	struct:gpio_regs	file:	access:public
+gpio_regs::wake_en	gpiotest.c	/^	u32 wake_en;$/;"	m	struct:gpio_regs	file:	access:public
+gpio_set	gpiotest.c	/^static int  gpio_set(struct gpio_chip *chip, unsigned offset, int value)$/;"	f	file:	signature:(struct gpio_chip *chip, unsigned offset, int value)
+gpio_set_dataout_mask	gpiotest.c	/^void gpio_set_dataout_mask(struct gpio_bank *bank, int gpio, int enable)$/;"	f	signature:(struct gpio_bank *bank, int gpio, int enable)
+gpio_set_dataout_reg	gpiotest.c	/^void gpio_set_dataout_reg(struct gpio_bank *bank, int gpio, int enable)$/;"	f	signature:(struct gpio_bank *bank, int gpio, int enable)
+gpiodriver_exit	gpiotest.c	/^module_exit(gpiodriver_exit);$/;"	v
+gpiodriver_exit	gpiotest.c	/^static void __exit gpiodriver_exit(void)$/;"	f	file:	signature:(void)
+gpiodriver_init	gpiotest.c	/^module_init(gpiodriver_init);$/;"	v
+gpiodriver_init	gpiotest.c	/^static int __init gpiodriver_init(void)$/;"	f	file:	signature:(void)
+gpiotest_drv	gpiotest.c	/^static struct platform_driver gpiotest_drv = {$/;"	v	typeref:struct:platform_driver	file:
+gpiotest_pdata	gpiotest.c	/^static const struct gpiotest_platform_data gpiotest_pdata = {$/;"	v	typeref:struct:gpiotest_platform_data	file:
+gpiotest_platform_data	gpiotest.c	/^struct gpiotest_platform_data {$/;"	s	file:
+gpiotest_platform_data::bank_stride	gpiotest.c	/^	int bank_stride;	\/* Only needed for omap1 MPUIO *\/$/;"	m	struct:gpiotest_platform_data	file:	access:public
+gpiotest_platform_data::bank_type	gpiotest.c	/^	int bank_type;$/;"	m	struct:gpiotest_platform_data	file:	access:public
+gpiotest_platform_data::bank_width	gpiotest.c	/^	int bank_width;		\/* GPIO bank width *\/$/;"	m	struct:gpiotest_platform_data	file:	access:public
+gpiotest_platform_data::dbck_flag	gpiotest.c	/^	bool dbck_flag;		\/* dbck required or not - True for OMAP3&4 *\/$/;"	m	struct:gpiotest_platform_data	file:	access:public
+gpiotest_platform_data::get_context_loss_count	gpiotest.c	/^	int (*get_context_loss_count)(struct device *dev);$/;"	m	struct:gpiotest_platform_data	file:	access:public
+gpiotest_platform_data::is_mpuio	gpiotest.c	/^	bool is_mpuio;		\/* whether the bank is of type MPUIO *\/$/;"	m	struct:gpiotest_platform_data	file:	access:public
+gpiotest_platform_data::non_wakeup_gpios	gpiotest.c	/^	u32 non_wakeup_gpios;$/;"	m	struct:gpiotest_platform_data	file:	access:public
+gpiotest_probe	gpiotest.c	/^gpiotest_probe(struct platform_device *pdev)$/;"	f	file:	signature:(struct platform_device *pdev)
+gpiotest_remove	gpiotest.c	/^gpiotest_remove(struct platform_device *pdev)$/;"	f	file:	signature:(struct platform_device *pdev)
+irq	gpiotest.c	/^	u16 irq;$/;"	m	struct:gpio_bank	file:	access:public
+irq_usage	gpiotest.c	/^	u32 irq_usage;$/;"	m	struct:gpio_bank	file:	access:public
+irqenable1	gpiotest.c	/^	u32 irqenable1;$/;"	m	struct:gpio_regs	file:	access:public
+irqenable2	gpiotest.c	/^	u32 irqenable2;$/;"	m	struct:gpio_regs	file:	access:public
+is_mpuio	gpiotest.c	/^	bool is_mpuio;		\/* whether the bank is of type MPUIO *\/$/;"	m	struct:gpiotest_platform_data	file:	access:public
+is_mpuio	gpiotest.c	/^	bool is_mpuio;$/;"	m	struct:gpio_bank	file:	access:public
+level_mask	gpiotest.c	/^	u32 level_mask;$/;"	m	struct:gpio_bank	file:	access:public
+leveldetect0	gpiotest.c	/^	u32 leveldetect0;$/;"	m	struct:gpio_regs	file:	access:public
+leveldetect1	gpiotest.c	/^	u32 leveldetect1;$/;"	m	struct:gpio_regs	file:	access:public
+lock	gpiotest.c	/^	spinlock_t lock;$/;"	m	struct:gpio_bank	file:	access:public
+ltq_mtd_match	gpiotest.c	/^static const struct of_device_id ltq_mtd_match[] = {$/;"	v	typeref:struct:of_device_id	file:
+mod_usage	gpiotest.c	/^	u32 mod_usage;$/;"	m	struct:gpio_bank	file:	access:public
+mpuio_init	gpiotest.c	/^static inline void mpuio_init(struct gpio_bank *bank)$/;"	f	file:	signature:(struct gpio_bank *bank)
+node	gpiotest.c	/^	struct list_head node;$/;"	m	struct:gpio_bank	typeref:struct:gpio_bank::list_head	file:	access:public
+non_wakeup_gpios	gpiotest.c	/^	u32 non_wakeup_gpios;$/;"	m	struct:gpio_bank	file:	access:public
+non_wakeup_gpios	gpiotest.c	/^	u32 non_wakeup_gpios;$/;"	m	struct:gpiotest_platform_data	file:	access:public
+obj-m	Makefile	/^obj-m := $(TARGET).o  $/;"	m
+oe	gpiotest.c	/^	u32 oe;$/;"	m	struct:gpio_regs	file:	access:public
+omap2_gpio_prepare_for_idle	gpiotest.c	/^void omap2_gpio_prepare_for_idle(int pwr_mode)$/;"	f	signature:(int pwr_mode)
+omap2_gpio_resume_after_idle	gpiotest.c	/^void omap2_gpio_resume_after_idle(void)$/;"	f	signature:(void)
+omap_gpio_chip_init	gpiotest.c	/^static void omap_gpio_chip_init(struct gpio_bank *bank, struct irq_chip *irqc)$/;"	f	file:	signature:(struct gpio_bank *bank, struct irq_chip *irqc)
+omap_gpio_free	gpiotest.c	/^static void omap_gpio_free(struct gpio_chip *chip, unsigned offset)$/;"	f	file:	signature:(struct gpio_chip *chip, unsigned offset)
+omap_gpio_match	gpiotest.c	/^static const struct of_device_id omap_gpio_match[] = {$/;"	v	typeref:struct:of_device_id	file:
+omap_gpio_request	gpiotest.c	/^static int omap_gpio_request(struct gpio_chip *chip, unsigned offset) $/;"	f	file:	signature:(struct gpio_chip *chip, unsigned offset)
+omap_gpio_to_irq	gpiotest.c	/^static int  omap_gpio_to_irq(struct gpio_chip *chip, unsigned offset)$/;"	f	file:	signature:(struct gpio_chip *chip, unsigned offset)
+omap_mpuio_device	gpiotest.c	/^static struct platform_device omap_mpuio_device = {$/;"	v	typeref:struct:platform_device	file:
+omap_mpuio_driver	gpiotest.c	/^static struct platform_driver omap_mpuio_driver = {$/;"	v	typeref:struct:platform_driver	file:
+power_mode	gpiotest.c	/^	int power_mode;$/;"	m	struct:gpio_bank	file:	access:public
+prv_data	gpiotest.c	/^struct prv_data {$/;"	s	file:
+prv_data::flags	gpiotest.c	/^	int flags;$/;"	m	struct:prv_data	file:	access:public
+regs	gpiotest.c	/^	struct omap_gpio_reg_offs *regs;$/;"	m	struct:gpio_bank	typeref:struct:gpio_bank::omap_gpio_reg_offs	file:	access:public
+risingdetect	gpiotest.c	/^	u32 risingdetect;$/;"	m	struct:gpio_regs	file:	access:public
+saved_datain	gpiotest.c	/^	u32 saved_datain;$/;"	m	struct:gpio_bank	file:	access:public
+set_dataout	gpiotest.c	/^	void (*set_dataout)(struct gpio_bank *bank, int gpio, int enable);$/;"	m	struct:gpio_bank	file:	access:public
+stride	gpiotest.c	/^	int stride;$/;"	m	struct:gpio_bank	file:	access:public
+toggle_mask	gpiotest.c	/^	u32 toggle_mask;$/;"	m	struct:gpio_bank	file:	access:public
+wake_en	gpiotest.c	/^	u32 wake_en;$/;"	m	struct:gpio_regs	file:	access:public
+width	gpiotest.c	/^	u32 width;$/;"	m	struct:gpio_bank	file:	access:public
+workaround_enabled	gpiotest.c	/^	bool workaround_enabled;$/;"	m	struct:gpio_bank	file:	access:public
