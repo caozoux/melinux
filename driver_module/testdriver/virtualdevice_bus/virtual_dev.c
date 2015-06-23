@@ -11,11 +11,9 @@
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/irqdomain.h>
-#include <linux/irqchip/chained_irq.h>
 #include <linux/gpio.h>
 #include <linux/slab.h>
 #include <linux/kdev_t.h>
-#include <linux/platform_data/gpio-omap.h>
 #include "virtual_platform.h"
 #include "virtual_bus.h"
 
@@ -34,6 +32,7 @@ struct device *alloce_virtualme_dev(void *drvdata, char * name)
 	dev = kzalloc(sizeof(dev), GFP_KERNEL);
 	if (!dev)
 		goto out3;
+#if 0
 	minor = idr_alloc(&virme_devices, NULL, 0, 0, GFP_KERNEL);
 
 	if (minor < 0) {
@@ -45,13 +44,17 @@ struct device *alloce_virtualme_dev(void *drvdata, char * name)
 	dev = device_create(NULL, &virme_bus_d.dev,
 			MKDEV(VIRME_MARJOR, minor), NULL,
 			name);
+#else
+	dev = device_create(NULL, &virme_bus_d.dev,
+			0, NULL,
+			name);
+#endif
 
 	if (!dev) 
 		goto out1;
 
 	return dev;
 out1:
-	idr_free(&virme_devices, minor);
 out2:
 	kfree(dev);
 out3:
