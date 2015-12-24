@@ -131,11 +131,6 @@ static void altera_uart_set_mctrl(struct uart_port *port, unsigned int sigs)
 
 static void altera_uart_start_tx(struct uart_port *port)
 {
-#if 0
-	struct altera_uart *pp = container_of(port, struct altera_uart, port);
-	pp->imr |= ALTERA_UART_CONTROL_TRDY_MSK;
-	altera_uart_writel(port, pp->imr, ALTERA_UART_CONTROL_REG);
-#else
 	struct circ_buf *xmit = &port->state->xmit;
 	if (port->x_char) {
 		/* Send special char - probably flow control */
@@ -150,8 +145,6 @@ static void altera_uart_start_tx(struct uart_port *port)
 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
 		port->icount.tx++;
 	}
-
-#endif
 }
 
 static void altera_uart_stop_tx(struct uart_port *port)
@@ -334,6 +327,32 @@ static void altera_uart_config_port(struct uart_port *port, int flags)
 
 static int altera_uart_startup(struct uart_port *port)
 {
+#if 0
+	struct altera_uart *pp = container_of(port, struct altera_uart, port);
+	unsigned long flags;
+	int ret;
+	if (!port->irq) {
+		setup_timer(&pp->tmr, altera_uart_timer, (unsigned long)port);
+		mod_timer(&pp->tmr, jiffies + uart_poll_timeout(port));
+		return 0;
+	}
+
+	ret = request_irq(port->irq, altera_uart_interrupt, 0,
+			DRV_NAME, port);
+	if (ret) {
+		pr_err(DRV_NAME ": unable to attach Altera UART %d "
+		       "interrupt vector=%d\n", port->line, port->irq);
+		return ret;
+	}
+
+	spin_lock_irqsave(&port->lock, flags);
+
+	/* Enable RX interrupts now */
+	pp->imr = ALTERA_UART_CONTROL_RRDY_MSK;
+	writel(pp->imr, port->membase + ALTERA_UART_CONTROL_REG);
+
+	spin_unlock_irqrestore(&port->lock, flags);
+#endif
 
 	return 0;
 }
@@ -344,7 +363,11 @@ static void altera_uart_shutdown(struct uart_port *port)
 
 static const char *altera_uart_type(struct uart_port *port)
 {
+#if 0
 	return (port->type == PORT_ALTERA_UART) ? "Altera UART" : NULL;
+#else
+	return "Altera UART";
+#endif
 }
 
 static int altera_uart_request_port(struct uart_port *port)
@@ -418,11 +441,14 @@ static struct altera_uart altera_uart_ports[CONFIG_SERIAL_ALTERA_UART_MAXPORTS];
 
 static void altera_uart_console_putc(struct uart_port *port, int c)
 {
+	altera_uart_fifo_writel(port, c);
 }
 
 static void altera_uart_console_write(struct console *co, const char *s,
 				      unsigned int count)
 {
+	struct uart_port *port = &(altera_uart_ports + co->index)->port;
+	uart_console_write(port, s, count, altera_uart_console_putc);
 }
 
 static int __init altera_uart_console_setup(struct console *co, char *options)
@@ -433,6 +459,7 @@ static int __init altera_uart_console_setup(struct console *co, char *options)
 	int parity = 'n';
 	int flow = 'n';
 
+	//altera_uart_fifo_writel(port,'p');
 	if (co->index < 0 || co->index >= CONFIG_SERIAL_ALTERA_UART_MAXPORTS)
 		return -EINVAL;
 	port = &altera_uart_ports[co->index].port;
@@ -459,6 +486,7 @@ static struct console altera_uart_console = {
 
 static int __init altera_uart_console_init(void)
 {
+		printk("zz %s \n", __func__);
 	register_console(&altera_uart_console);
 	return 0;
 }
@@ -617,6 +645,7 @@ static int altera_uart_probe(struct platform_device *pdev)
 	struct clk *clk;
 	int ret;
 
+	printk("zz %s \n", __func__);
 	/* if id is -1 scan for a free id and use that one */
 	if (i == -1) {
 		for (i = 0; i < CONFIG_SERIAL_ALTERA_UART_MAXPORTS; i++)
@@ -685,6 +714,7 @@ static int altera_uart_probe(struct platform_device *pdev)
 
 	uart_add_one_port(&altera_uart_driver, port);
 
+	altera_uart_fifo_writel(port,'r');
 	return 0;
 }
 
