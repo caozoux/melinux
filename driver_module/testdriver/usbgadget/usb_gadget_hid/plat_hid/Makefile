@@ -1,5 +1,6 @@
 PWD = $(shell pwd)  
-KERNEL_SRC = /fslink/ti/kernel-4.1.x
+#KERNEL_SRC = /fslink/ti/kernel-4.1.x
+KERNEL_SRC = /fslink/ti/kernel-3.14.x
 #KER_OUT = /export/disk1T1/bsp_work/TI_AM335X/kernel-3.14.x/out
 TARGET := platform_hid_dev
 

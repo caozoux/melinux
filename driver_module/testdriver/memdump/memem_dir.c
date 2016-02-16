@@ -23,6 +23,7 @@
 #include <linux/sched.h>//find_task_by_vpid
 #include <linux/mm.h>//find_vma
 #include <asm/system_info.h>
+#include <asm/mach/map.h>
 
 static int pid;
 //static unsigned long va;
@@ -153,7 +154,7 @@ static ssize_t vir_write(struct device *dev, struct device_attribute *attr, cons
 }
 
 struct static_vm {
-     struct vm_struct vm;
+     //struct vm_struct vm;
      struct list_head list;
 };
 
@@ -164,16 +165,39 @@ static ssize_t vir_read(struct device *dev,struct device_attribute *attr, char *
 	
 	size = sprintf(buf, "vir %08x -> pfn:%08x phy 0x%08x\n", vir_address , __pfn_to_phys(vir_address), virt_to_phys((const volatile void *)vir_address));
 
+#if 0
 	vm = find_static_vm_vaddr((void*)vir_address);
 
 	if (vm)
 		printk("zz %s %08x\n", __func__, &vm->vm);
+#endif
 	return size;
 }
+
+static ssize_t fixed_map_write(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+{
+	unsigned long address;
+	if (!kstrtoul(buf, 0, &address)) {
+	}
+	return count; 
+}
+
 static DEVICE_ATTR(mem_op, S_IWUSR | S_IRUGO, mem_read, mem_write);
 static DEVICE_ATTR(mem_tag, S_IWUSR | S_IRUGO, tag_read, tag_write);
 static DEVICE_ATTR(mem_phy, S_IWUSR | S_IRUGO, phy_read, phy_write);
 static DEVICE_ATTR(mem_vir, S_IWUSR | S_IRUGO, vir_read, vir_write);
+//static DEVICE_ATTR(mem_map, S_IWUSR | S_IRUGO, vir_read, vir_write);
+//static DEVICE_ATTR(mem_fixed_map, S_IWUSR | S_IRUGO, fixed_map_read, fixed_map_write);
+
+
+static struct map_desc serria_io_desc[] __initdata = {
+		{
+		.virtual    = 0xf8022000, 
+		.pfn        = __phys_to_pfn(0x48022000), /* run-time */ 
+		.length     = SZ_4K,
+		.type       = MT_DEVICE,
+		}
+};
 static int __init mem_dir_init(void)
 {
 	int ret;
@@ -211,6 +235,7 @@ static int __init mem_dir_init(void)
 	testaddress = kmalloc(1024, GFP_KERNEL);
 
 	printk("zz %s %08x\n", __func__, testaddress);
+	iotable_init(serria_io_desc, ARRAY_SIZE(serria_io_desc));
 	return 0;
 }
 

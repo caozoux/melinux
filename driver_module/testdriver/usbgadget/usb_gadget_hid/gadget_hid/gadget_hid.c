@@ -24,6 +24,7 @@
 #define DRIVER_VERSION		"2010/03/16"
 
 #include "u_hid.h"
+#include "f_hid.c"
 
 /*-------------------------------------------------------------------------*/
 
@@ -269,9 +270,6 @@ static struct platform_driver hidg_plat_driver = {
 };
 
 
-MODULE_DESCRIPTION(DRIVER_DESC);
-MODULE_AUTHOR("Fabien Chouteau, Peter Korsgaard");
-MODULE_LICENSE("GPL");
 
 static int __init hidg_init(void)
 {
@@ -296,3 +294,7 @@ static void __exit hidg_cleanup(void)
 	platform_driver_unregister(&hidg_plat_driver);
 }
 module_exit(hidg_cleanup);
+
+MODULE_DESCRIPTION(DRIVER_DESC);
+MODULE_AUTHOR("Fabien Chouteau, Peter Korsgaard");
+MODULE_LICENSE("GPL");
