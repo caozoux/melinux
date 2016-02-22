@@ -3,7 +3,6 @@
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/err.h>
-#include <linux/usb/composite.h>
 #include <linux/cdev.h>
 #include <linux/mutex.h>
 #include <linux/poll.h>
@@ -12,10 +11,13 @@
 #include <linux/sched.h>
 #include <linux/usb/g_hid.h>
 #include <linux/usb/composite.h> 
+#include <linux/platform_device.h>
+#include <linux/list.h>
 //#include "u_serial.h"
 #include "gadget_chips.h"
 #include "generic.c"
 
+#include "f_hid.c"
 #define DRIVER_DESC		"Generic Gadget"
 #define DRIVER_VERSION	generic	"2010/03/16"
 
@@ -79,9 +81,19 @@ static struct usb_gadget_strings *dev_strings[] = {
 	NULL,
 };
 
+static struct hidg_func_descriptor my_hid_data = {
+    .subclass       = 0, /* No subclass */
+    .protocol       = 0, /* Keyboard */
+    .report_length      = 64,
+    .report_desc_length = 28,
+    .report_desc        = {
+    }
+};
+
 static int __init do_config(struct usb_configuration *c)
 {
 	int status = 0;
+	int func = 0;
 
 	if (gadget_is_otg(c->cdev->gadget)) {
 		c->descriptors = otg_desc;
@@ -97,6 +109,7 @@ static int __init do_config(struct usb_configuration *c)
 #endif
 
 	generic_bind_config(c);
+	hidg_bind_config(c, &my_hid_data, func++);
 	return status;
 }
 
