@@ -18,7 +18,7 @@
 #include "u_serial.h"
 #include "generic.c"
 
-#include "f_hid.c"
+//#include "f_hid.c"
 #define DRIVER_DESC		"Generic Gadget"
 #define DRIVER_VERSION	generic	"2010/03/16"
 
@@ -122,7 +122,9 @@ static struct usb_configuration config_driver = {
 };
 
 static struct usb_function_instance *fi_acm;
+static struct usb_function_instance *fi_hid;
 static struct usb_function *f_acm_multi;
+static struct usb_function *f_hid_multi;
 static __init int cdc_do_config(struct usb_configuration *c)
 {
 	int ret;
@@ -140,6 +142,22 @@ static __init int cdc_do_config(struct usb_configuration *c)
 	return 0;
 };
 
+static __init int hid_do_config(struct usb_configuration *c)
+{
+	int ret;
+	/* implicit port_num is zero */
+	f_hid_multi = usb_get_function(fi_hid);
+	if (IS_ERR(f_hid_multi)) {
+		ret = PTR_ERR(f_acm_multi);
+		return ret;
+	}
+
+	ret = usb_add_function(c, f_hid_multi);
+	if (ret)
+		return ret;;
+
+	return 0;
+};
 #define MULTI_CDC_CONFIG_NUM  1
 static int __init f_generic_bind(struct usb_composite_dev *cdev)
 {
@@ -155,6 +173,7 @@ static int __init f_generic_bind(struct usb_composite_dev *cdev)
 	if (status < 0)
 		return status;
 
+#if 0
 	fi_acm = usb_get_function_instance("acm");
 	if (IS_ERR(fi_acm)) {
 		status = PTR_ERR(fi_acm);
@@ -177,6 +196,30 @@ static int __init f_generic_bind(struct usb_composite_dev *cdev)
 		dev_info(&gadget->dev, "acm add config failed\n");
 		goto fail0;
 	}
+#else
+	fi_hid = usb_get_function_instance("hid");
+	if (IS_ERR(fi_hid)) {
+		status = PTR_ERR(fi_acm);
+		dev_info(&gadget->dev, "not get hid\n");
+		goto fail0;
+	}
+
+	{
+		static struct usb_configuration config = {
+			//.bConfigurationValue	= MULTI_CDC_CONFIG_NUM,
+			.bConfigurationValue	= 2,
+			.bmAttributes		= USB_CONFIG_ATT_SELFPOWER,
+		};
+		config.label          = "Multifunction with CDC ECM";
+		config.iConfiguration = 0;
+		status = usb_add_config(cdev, &config, hid_do_config);
+	}
+
+	if (unlikely(status < 0)) {
+		dev_info(&gadget->dev, "acm add config failed\n");
+		goto fail0;
+	}
+#endif
 
 	usb_composite_overwrite_options(cdev, &coverwrite);
 	return 0;
