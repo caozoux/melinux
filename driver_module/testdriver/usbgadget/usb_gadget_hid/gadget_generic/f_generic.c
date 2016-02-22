@@ -15,6 +15,7 @@
 #include <linux/list.h>
 //#include "u_serial.h"
 #include "gadget_chips.h"
+#include "u_serial.h"
 #include "generic.c"
 
 #include "f_hid.c"
@@ -109,7 +110,7 @@ static int __init do_config(struct usb_configuration *c)
 #endif
 
 	generic_bind_config(c);
-	hidg_bind_config(c, &my_hid_data, func++);
+	//hidg_bind_config(c, &my_hid_data, func++);
 	return status;
 }
 
@@ -120,9 +121,30 @@ static struct usb_configuration config_driver = {
 	.bmAttributes		= USB_CONFIG_ATT_SELFPOWER,
 };
 
+static struct usb_function_instance *fi_acm;
+static struct usb_function *f_acm_multi;
+static __init int cdc_do_config(struct usb_configuration *c)
+{
+	int ret;
+	/* implicit port_num is zero */
+	f_acm_multi = usb_get_function(fi_acm);
+	if (IS_ERR(f_acm_multi)) {
+		ret = PTR_ERR(f_acm_multi);
+		return ret;
+	}
+
+	ret = usb_add_function(c, f_acm_multi);
+	if (ret)
+		return ret;;
+
+	return 0;
+};
+
+#define MULTI_CDC_CONFIG_NUM  1
 static int __init f_generic_bind(struct usb_composite_dev *cdev)
 {
 	int status;
+	struct usb_gadget *gadget = cdev->gadget;
 	status = usb_string_ids_tab(cdev, strings_dev);
 	if (status < 0)
 		return status;
@@ -133,7 +155,33 @@ static int __init f_generic_bind(struct usb_composite_dev *cdev)
 	if (status < 0)
 		return status;
 
+	fi_acm = usb_get_function_instance("acm");
+	if (IS_ERR(fi_acm)) {
+		status = PTR_ERR(fi_acm);
+		dev_info(&gadget->dev, "not get acm\n");
+		goto fail0;
+	}
+
+	{
+		static struct usb_configuration config = {
+			//.bConfigurationValue	= MULTI_CDC_CONFIG_NUM,
+			.bConfigurationValue	= 2,
+			.bmAttributes		= USB_CONFIG_ATT_SELFPOWER,
+		};
+		config.label          = "Multifunction with CDC ECM";
+		config.iConfiguration = 0;
+		status = usb_add_config(cdev, &config, cdc_do_config);
+	}
+
+	if (unlikely(status < 0)) {
+		dev_info(&gadget->dev, "acm add config failed\n");
+		goto fail0;
+	}
+
 	usb_composite_overwrite_options(cdev, &coverwrite);
+	return 0;
+fail0:
+	dev_info(&gadget->dev, "bind faled\n");
 	return 0;
 }
 

@@ -8,6 +8,7 @@
 #include <linux/wait.h>
 #include <linux/sched.h>
 #include <linux/usb/g_hid.h>
+#include <linux/usb/composite.h>
 
 #define GENERIC_NAME "Generic Gadget"
 struct generic_dev {
