@@ -158,14 +158,18 @@ static __init int hid_do_config(struct usb_configuration *c)
 
 	return 0;
 };
+
+
 #define MULTI_CDC_CONFIG_NUM  1
 static int __init f_generic_bind(struct usb_composite_dev *cdev)
 {
 	int status;
 	struct usb_gadget *gadget = cdev->gadget;
 	status = usb_string_ids_tab(cdev, strings_dev);
+
 	if (status < 0)
 		return status;
+
 	/* register our configuration */
 	device_desc.iManufacturer = strings_dev[USB_GADGET_MANUFACTURER_IDX].id;
 	device_desc.iProduct = strings_dev[USB_GADGET_PRODUCT_IDX].id;
