@@ -26,6 +26,8 @@ struct generic_dev {
 
 	u16			interface_number;
 
+	atomic_t open_excl;
+
 	int online;
 	int error;
 	unsigned int		bulk_in_enabled:1;
@@ -279,6 +281,20 @@ static void generic_unbind(struct usb_configuration *c, struct usb_function *f)
 }
 
 
+static inline int adb_lock(atomic_t *excl)
+{
+	if (atomic_inc_return(excl) == 1) {
+		return 0;
+	} else {
+		atomic_dec(excl);
+		return -1;
+	}
+}
+
+static inline void adb_unlock(atomic_t *excl)
+{
+	atomic_dec(excl);
+}
 static struct usb_request *adb_request_new(struct usb_ep *ep, int buffer_size)
 {
 	struct usb_request *req = usb_ep_alloc_request(ep, GFP_KERNEL);
@@ -411,6 +427,15 @@ static ssize_t adb_write(struct file *fp, const char __user *buf,
 
 static int adb_open(struct inode *ip, struct file *fp)
 {
+	if (!_gen_dev)
+		return -ENODEV;
+
+	if (adb_lock(&_gen_dev->open_excl))
+		return -EBUSY;
+
+	fp->private_data = _gen_dev;
+	/* clear the error latch */
+	_gen_dev->error = 0;
 	return 0;
 }
 
@@ -428,7 +453,7 @@ static struct file_operations gen_fops = {
 	.release = adb_release,
 };
 
-static const char gen_shortname[] = "generic_usbdev";
+static const char gen_shortname[] = "gen_dev";
 static struct miscdevice gen_device = {
 	.minor = MISC_DYNAMIC_MINOR,
 	.name = gen_shortname,
@@ -517,6 +542,9 @@ static int generic_bind_config(struct usb_configuration *c)
 		kfree(dev);
 
 	spin_lock_init(&dev->lock);
+
+	atomic_set(&dev->open_excl, 0);
+
 	init_waitqueue_head(&dev->read_wq);
 	init_waitqueue_head(&dev->write_wq);
 
