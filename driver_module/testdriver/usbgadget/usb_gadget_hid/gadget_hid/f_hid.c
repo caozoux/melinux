@@ -62,6 +62,11 @@ struct f_hidg {
 	struct usb_ep			*out_ep;
 };
 
+struct hid_customer_data {
+	struct usb_function_instance instance;
+};
+
+static struct hid_customer_data *g_hid_customer_data;
 static inline struct f_hidg *func_to_hidg(struct usb_function *f)
 {
 	return container_of(f, struct f_hidg, func);
@@ -158,6 +163,56 @@ static struct usb_descriptor_header *hidg_fs_descriptors[] = {
 	(struct usb_descriptor_header *)&hidg_fs_in_ep_desc,
 	(struct usb_descriptor_header *)&hidg_fs_out_ep_desc,
 	NULL,
+};
+
+static struct hidg_func_descriptor my_hid_data = { 
+    .subclass       = 0, /* No subclass */
+    .protocol       = 0, /* Keyboard */
+    .report_length      = 8,
+#if 1
+    .report_desc_length = 32,
+    .report_desc        = {
+		0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
+		0x09, 0x00,                    // USAGE (Undefined)
+		0xa1, 0x01,                    // COLLECTION (Application)
+		0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
+		0x26, 0xff, 0x00,              //   LOGICAL_MAXIMUM (255)
+		0x85, 0x01,                    //   REPORT_ID (1)
+		0x75, 0x08,                    //   REPORT_SIZE (8)
+		0x95, 0x40,                    //   REPORT_COUNT (64)
+		0x09, 0x00,                    //   USAGE (Undefined)
+		0x81, 0x82,                    //   INPUT (Data,Var,Abs,Vol) - to the host
+		0x85, 0x02,                    //   REPORT_ID (2)
+		0x75, 0x08,                    //   REPORT_SIZE (8)
+		0x95, 0x40,                    //   REPORT_COUNT (64)
+		0x09, 0x00,                    //   USAGE (Undefined)
+		0x91, 0x82,                    //   OUTPUT (Data,Var,Abs,Vol) - from the host
+		0xc0                           // END_COLLECTION
+    },   
+#else
+    .report_desc_length = 21,
+    .report_desc        = {
+		0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
+		0x09, 0x00,                    // USAGE (Undefined)
+		0xa1, 0x01, // COLLECTION (Application)
+		//这是一个全局条目，说明逻辑值最小值为0。
+		0x15, 0x00, //     LOGICAL_MINIMUM (0)
+		//这是一个全局条目，说明逻辑值最大为255。
+		0x25, 0xff, //     LOGICAL_MAXIMUM (255)
+		//这是一个局部条目，说明用途的最小值为1。
+		0x19, 0x01, //     USAGE_MINIMUM (1)
+		//这是一个局部条目，说明用途的最大值8。
+		0x29, 0x08, //     USAGE_MAXIMUM (8) 
+		//这是一个全局条目，说明数据域的数量为八个。
+		0x95, 0x08, //     REPORT_COUNT (8)
+		//这是一个全局条目，说明每个数据域的长度为8bit，即1字节。
+		0x75, 0x08, //     REPORT_SIZE (8)
+		//这是一个主条目，说明有8个长度为8bit的数据域做为输入。
+		0x81, 0x02, //     INPUT (Data,Var,Abs)
+		//下面这个主条目用来关闭前面的集合。bSize为0，所以后面没数据。
+		0xc0        // END_COLLECTION
+	},
+#endif
 };
 
 /*-------------------------------------------------------------------------*/
@@ -451,6 +506,15 @@ respond:
 	return status;
 }
 
+static void hidg_free(struct usb_function *f)
+{
+	struct f_hidg *hidg;
+
+	hidg = func_to_hidg(f);
+	kfree(hidg->report_desc);
+	kfree(hidg);
+}
+
 static void hidg_disable(struct usb_function *f)
 {
 	struct f_hidg *hidg = func_to_hidg(f);
@@ -678,62 +742,6 @@ static struct usb_gadget_strings *ct_func_strings[] = {
 	NULL,
 };
 
-/*-------------------------------------------------------------------------*/
-/*                             usb_configuration                           */
-
-int __init hidg_bind_config(struct usb_configuration *c,
-			    struct hidg_func_descriptor *fdesc, int index)
-{
-	struct f_hidg *hidg;
-	int status;
-
-	if (index >= minors)
-		return -ENOENT;
-
-	/* maybe allocate device-global string IDs, and patch descriptors */
-	if (ct_func_string_defs[CT_FUNC_HID_IDX].id == 0) {
-		status = usb_string_id(c->cdev);
-		if (status < 0)
-			return status;
-		ct_func_string_defs[CT_FUNC_HID_IDX].id = status;
-		hidg_interface_desc.iInterface = status;
-	}
-
-	/* allocate and initialize one new instance */
-	hidg = kzalloc(sizeof *hidg, GFP_KERNEL);
-	if (!hidg)
-		return -ENOMEM;
-
-	hidg->minor = index;
-	hidg->bInterfaceSubClass = fdesc->subclass;
-	hidg->bInterfaceProtocol = fdesc->protocol;
-	hidg->report_length = fdesc->report_length;
-	hidg->report_desc_length = fdesc->report_desc_length;
-	hidg->report_desc = kmemdup(fdesc->report_desc,
-				    fdesc->report_desc_length,
-				    GFP_KERNEL);
-	if (!hidg->report_desc) {
-		kfree(hidg);
-		return -ENOMEM;
-	}
-
-	hidg->func.name    = "hid";
-	hidg->func.strings = ct_func_strings;
-	hidg->func.bind    = hidg_bind;
-	hidg->func.unbind  = hidg_unbind;
-	hidg->func.set_alt = hidg_set_alt;
-	hidg->func.disable = hidg_disable;
-	hidg->func.setup   = hidg_setup;
-
-	/* this could me made configurable at some point */
-	hidg->qlen	   = 4;
-
-	status = usb_add_function(c, &hidg->func);
-	if (status)
-		kfree(hidg);
-
-	return status;
-}
 
 int __init ghid_setup(struct usb_gadget *g, int count)
 {
@@ -761,3 +769,71 @@ void ghid_cleanup(void)
 	class_destroy(hidg_class);
 	hidg_class = NULL;
 }
+
+static struct usb_function *hidg_alloc(struct usb_function_instance *fi)
+{
+	struct f_hidg *hidg;
+
+	/* allocate and initialize one new instance */
+	hidg = kzalloc(sizeof(*hidg), GFP_KERNEL);
+	if (!hidg)
+		return ERR_PTR(-ENOMEM);
+
+
+	hidg->bInterfaceSubClass = my_hid_data.subclass;
+	hidg->bInterfaceProtocol = my_hid_data.protocol;
+	hidg->report_length = my_hid_data.report_length;
+	hidg->report_desc_length = my_hid_data.report_desc_length;
+	hidg->report_desc = kmemdup(&my_hid_data.report_desc,
+						my_hid_data.report_desc_length,
+					GFP_KERNEL);
+
+	hidg->func.name    = "hid";
+	hidg->func.bind    = hidg_bind;
+	hidg->func.unbind  = hidg_unbind;
+	hidg->func.set_alt = hidg_set_alt;
+	hidg->func.disable = hidg_disable;
+	hidg->func.setup   = hidg_setup;
+	hidg->func.free_func = hidg_free;
+
+	/* this could me made configurable at some point */
+	hidg->qlen	   = 4;
+
+	return &hidg->func;
+}
+
+static void hidg_free_inst(struct usb_function_instance *f)
+{
+	kfree(g_hid_customer_data);
+}
+
+static struct usb_function_instance *hidg_alloc_inst(void)
+{
+	struct hid_customer_data *hid_data;
+	struct usb_function_instance instance;
+	hid_data = kzalloc(sizeof(struct hid_customer_data), GFP_KERNEL);
+	hid_data->instance.free_func_inst = hidg_free_inst;
+	g_hid_customer_data = hid_data;
+	return &hid_data->instance;
+}
+
+static struct usb_function_driver hitcustomer_driver = {
+	.name = "hid_customer",
+	.alloc_inst = hidg_alloc_inst,
+	.alloc_func = hidg_alloc,
+};
+MODULE_ALIAS("usbfunc:hid_customer");
+
+int hid_customer_init(void)
+{
+	return usb_function_register(&hitcustomer_driver);
+}
+
+void hid_customer_exit(void)
+{
+	usb_function_unregister(&hitcustomer_driver);
+}
+
+//DECLARE_USB_FUNCTION_INIT(hid, hidg_alloc_inst, hidg_alloc);
+//MODULE_LICENSE("GPL");
+//MODULE_AUTHOR("Fabien Chouteau");

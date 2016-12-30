@@ -24,7 +24,7 @@
 #define DRIVER_VERSION		"2010/03/16"
 
 #include "u_hid.h"
-//#include "f_hid.c"
+#include "f_hid.c"
 
 /*-------------------------------------------------------------------------*/
 
@@ -40,6 +40,13 @@ struct hidg_func_node {
 	struct hidg_func_descriptor *func;
 };
 
+enum {
+  IN_REPORT_SIZE = 12,   // 1 byte report id + 11-byte report
+  OUT_REPORT_SIZE = 10,  // 1 byte report id + 9-byte report
+};
+
+
+static struct hidg_func_descriptor my_hid_data;
 static LIST_HEAD(hidg_func_list);
 
 /*-------------------------------------------------------------------------*/
@@ -151,6 +158,7 @@ static struct usb_configuration config_driver = {
 static int hid_bind(struct usb_composite_dev *cdev)
 {
 	struct usb_gadget *gadget = cdev->gadget;
+	//struct hidg_func_descriptor *func = &my_hid_data;
 	struct list_head *tmp;
 	struct hidg_func_node *n, *m;
 	struct f_hid_opts *hid_opts;
@@ -163,10 +171,10 @@ static int hid_bind(struct usb_composite_dev *cdev)
 		return -ENODEV;
 
 	list_for_each_entry(n, &hidg_func_list, node) {
-		n->fi = usb_get_function_instance("hid");
+		n->fi = usb_get_function_instance("hid_customer");
 		if (IS_ERR(n->fi)) {
-			status = PTR_ERR(n->fi);
-			goto put;
+			printk("Err: not find hid instance\n");
+			return -ENODEV;
 		}
 		hid_opts = container_of(n->fi, struct f_hid_opts, func_inst);
 		hid_opts->subclass = n->func->subclass;
@@ -268,114 +276,6 @@ static struct platform_driver hidg_plat_driver = {
 		.name	= "hidg",
 	},
 };
-#if 0
-/* hid descriptor for a keyboard */
-static struct hidg_func_descriptor my_hid_data = {
-    .subclass       = 0, /* No subclass */
-    .protocol       = 1, /* Keyboard */
-    .report_length      = 8,
-    .report_desc_length = 63,
-    .report_desc        = {
-        0x05, 0x01, /* USAGE_PAGE (Generic Desktop)           */
-        0x09, 0x06, /* USAGE (Keyboard)                       */
-        0xa1, 0x01, /* COLLECTION (Application)               */
-        0x05, 0x07, /*   USAGE_PAGE (Keyboard)                */
-        0x19, 0xe0, /*   USAGE_MINIMUM (Keyboard LeftControl) */
-        0x29, 0xe7, /*   USAGE_MAXIMUM (Keyboard Right GUI)   */
-        0x15, 0x00, /*   LOGICAL_MINIMUM (0)                  */
-        0x25, 0x01, /*   LOGICAL_MAXIMUM (1)                  */
-        0x75, 0x01, /*   REPORT_SIZE (1)                      */
-        0x95, 0x08, /*   REPORT_COUNT (8)                     */
-        0x81, 0x02, /*   INPUT (Data,Var,Abs)                 */
-        0x95, 0x01, /*   REPORT_COUNT (1)                     */
-        0x75, 0x08, /*   REPORT_SIZE (8)                      */
-        0x81, 0x03, /*   INPUT (Cnst,Var,Abs)                 */
-        0x95, 0x05, /*   REPORT_COUNT (5)                     */
-        0x75, 0x01, /*   REPORT_SIZE (1)                      */
-        0x05, 0x08, /*   USAGE_PAGE (LEDs)                    */
-        0x19, 0x01, /*   USAGE_MINIMUM (Num Lock)             */
-        0x29, 0x05, /*   USAGE_MAXIMUM (Kana)                 */
-        0x91, 0x02, /*   OUTPUT (Data,Var,Abs)                */
-        0x95, 0x01, /*   REPORT_COUNT (1)                     */
-        0x75, 0x03, /*   REPORT_SIZE (3)                      */
-        0x91, 0x03, /*   OUTPUT (Cnst,Var,Abs)                */
-        0x95, 0x06, /*   REPORT_COUNT (6)                     */
-        0x75, 0x08, /*   REPORT_SIZE (8)                      */
-        0x15, 0x00, /*   LOGICAL_MINIMUM (0)                  */
-        0x25, 0x65, /*   LOGICAL_MAXIMUM (101)                */
-        0x05, 0x07, /*   USAGE_PAGE (Keyboard)                */
-        0x19, 0x00, /*   USAGE_MINIMUM (Reserved)             */
-        0x29, 0x65, /*   USAGE_MAXIMUM (Keyboard Application) */
-        0x81, 0x00, /*   INPUT (Data,Ary,Abs)                 */
-        0xc0        /* END_COLLECTION                         */
-    }
-};
-#endif
-
-enum {
-  IN_REPORT_SIZE = 12,   // 1 byte report id + 11-byte report
-  OUT_REPORT_SIZE = 10,  // 1 byte report id + 9-byte report
-};
-
-static struct hidg_func_descriptor my_hid_data = { 
-    .subclass       = 0, /* No subclass */
-    .protocol       = 0, /* Keyboard */
-    //.report_length      = 64, 
-    .report_length      = 8,
-#if 0
-    .report_desc_length = 32,
-    .report_desc        = {
-		0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
-		0x09, 0x00,                    // USAGE (Undefined)
-		0xa1, 0x01,                    // COLLECTION (Application)
-		0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
-		0x26, 0xff, 0x00,              //   LOGICAL_MAXIMUM (255)
-		0x85, 0x01,                    //   REPORT_ID (1)
-		0x75, 0x08,                    //   REPORT_SIZE (8)
-		0x95, 0x40,                    //   REPORT_COUNT (64)
-		0x09, 0x00,                    //   USAGE (Undefined)
-		0x81, 0x82,                    //   INPUT (Data,Var,Abs,Vol) - to the host
-		0x85, 0x02,                    //   REPORT_ID (2)
-		0x75, 0x08,                    //   REPORT_SIZE (8)
-		0x95, 0x40,                    //   REPORT_COUNT (64)
-		0x09, 0x00,                    //   USAGE (Undefined)
-		0x91, 0x82,                    //   OUTPUT (Data,Var,Abs,Vol) - from the host
-		0xc0                           // END_COLLECTION
-    },   
-#else
-    .report_desc_length = 21,
-    .report_desc        = {
-0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
-0x09, 0x00,                    // USAGE (Undefined)
- 0xa1, 0x01, // COLLECTION (Application)
- 
- //这是一个全局条目，说明逻辑值最小值为0。
- 0x15, 0x00, //     LOGICAL_MINIMUM (0)
- 
- //这是一个全局条目，说明逻辑值最大为255。
- 0x25, 0xff, //     LOGICAL_MAXIMUM (255)
- 
- //这是一个局部条目，说明用途的最小值为1。
- 0x19, 0x01, //     USAGE_MINIMUM (1)
- 
- //这是一个局部条目，说明用途的最大值8。
- 0x29, 0x08, //     USAGE_MAXIMUM (8) 
- 
- //这是一个全局条目，说明数据域的数量为八个。
- 0x95, 0x08, //     REPORT_COUNT (8)
- 
- //这是一个全局条目，说明每个数据域的长度为8bit，即1字节。
- 0x75, 0x08, //     REPORT_SIZE (8)
- 
- //这是一个主条目，说明有8个长度为8bit的数据域做为输入。
- 0x81, 0x02, //     INPUT (Data,Var,Abs)
- 
- //下面这个主条目用来关闭前面的集合。bSize为0，所以后面没数据。
- 0xc0        // END_COLLECTION
-	},
-#endif
-};
-
 static void	plat_dev_release(struct device *dev)
 {
 	printk("zz %s \n", __func__);
@@ -393,8 +293,8 @@ static int __init hidg_init(void)
 {
 	int status;
 
+	hid_customer_init();
     status = platform_device_register(&my_hid);
-
 	if (status < 0)
 		return status;
 
@@ -404,8 +304,13 @@ static int __init hidg_init(void)
 		return status;
 
 	status = usb_composite_probe(&hidg_driver);
-	if (status < 0)
+	if (status < 0) {
+		printk("zz %s register error\n", __func__);
 		platform_driver_unregister(&hidg_plat_driver);
+		platform_device_unregister(&my_hid);
+		hid_customer_exit();
+	}
+
 
 	return status;
 }
@@ -416,6 +321,7 @@ static void __exit hidg_cleanup(void)
 	usb_composite_unregister(&hidg_driver);
 	platform_driver_unregister(&hidg_plat_driver);
 	platform_device_unregister(&my_hid);
+	hid_customer_exit();
 }
 module_exit(hidg_cleanup);
 
