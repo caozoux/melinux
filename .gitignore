@@ -6,4 +6,6 @@ Module.symvers
 *.mod.o
 *.o
 modules.order
+*.swp
+OUT
 
