@@ -726,6 +726,9 @@ int gather_statistics(__u8 *ptr, int cc, __u16 seq, int hops,
 		struct timeval tmp_tv;
 		memcpy(&tmp_tv, ptr, sizeof(tmp_tv));
 
+		printf("send %lx.%lx   reply %lx.%lx \n",
+				(long int)tv->tv_sec, (long int)tv->tv_usec,
+				(long int)tmp_tv.tv_sec, (long int)tmp_tv.tv_usec);
 restamp:
 		tvsub(tv, &tmp_tv);
 		triptime = tv->tv_sec * 1000000 + tv->tv_usec;
@@ -1120,6 +1123,48 @@ int send_probe()
 	return (cc == i ? 0 : i);
 }
 
+static void recv_dump_data(void *data, int size)
+{
+    int i,j;
+    unsigned int len;
+    unsigned int *p;
+    len = size;
+    p = (unsigned int *) data;
+
+    for (i = 0; i < len/4; i=i+4) {
+        for (j = i; j < len/4 && j < i+4 ; ++j) {
+            printf("%08x ", p[j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+static void send_dump_data(void *data, int size)
+{
+    int i,j;
+    unsigned int len;
+    unsigned int *p;
+    len = size;
+    p = (unsigned int *) data;
+
+    for (i = 0; i < len/4; i=i+4) {
+        for (j = i; j < len/4 && j < i+4 ; ++j) {
+            printf("%08x ", p[j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+static void dump_icmphdr(struct icmphdr *icp)
+{
+	printf("i_type:%lx \n", (long int)icp->type);
+	printf("icode:%lx \n", (long int)icp->code);
+	printf("i_id:%lx \n", (long int)icp->un.echo.id);
+	printf("i_seq:%lx \n", (long int)icp->un.echo.sequence);
+}
+
 /*
  * parse_reply --
  *	Print out the packet, if it came from us.  This logic is necessary
@@ -1147,11 +1192,13 @@ parse_reply(struct msghdr *msg, int cc, void *addr, struct timeval *tv)
 		return 1;
 	}
 
+	recv_dump_data(buf, cc);
 	/* Now the ICMP part */
 	cc -= hlen;
 	icp = (struct icmphdr *)(buf + hlen);
 	csfailed = in_cksum((u_short *)icp, cc, 0);
 
+	dump_icmphdr(icp);
 	if (icp->type == ICMP_ECHOREPLY) {
 		if (icp->un.echo.id != ident)
 			return 1;			/* 'Twas not our ECHO */
