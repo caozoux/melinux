@@ -9,6 +9,7 @@
 #include <linux/skbuff.h>
 #include <linux/icmp.h>
 #include <linux/ip.h>
+#include <linux/in.h>
 #include <linux/mm.h>
 
 static unsigned int hook_ping_pid = -1;
@@ -30,7 +31,7 @@ static void data_dump(struct sk_buff *skb)
 
 	for (i = 0; i < len/4; i=i+4) {
 		for (j = i; j < len/4 && j < i+4 ; ++j) {
-			printk("%08x ", p[j]);
+			printk("%08x ", htonl(p[j]));
 		}
 		printk("\n");
 	}
@@ -51,13 +52,17 @@ int dev_queue_xmit_handler(struct kprobe *p, struct pt_regs *regs)
 
 	skb = (struct sk_buff *) regs->di;
 	icp=icmp_hdr(skb);
-	iph = (struct iphdr *)skb->data;
-	if (iph->protocol != 0x6E)
+	iph = (struct iphdr *)(skb->data+14);
+	//iph = ip_hdr(skb);
+	if (iph->protocol != IPPROTO_ICMP )
 		return 0;
 
+
+	//printk("zz %s skb->transport_header:%lx skb->network_header:%lx \n",__func__, (long int)skb->transport_header, (long int)skb->network_header);
+	//printk("zz %s iph->saddr:%lx iph->daddr:%lx \n",__func__, (long int)iph->saddr, (long int)iph->daddr);
 	do_gettimeofday(&cur_time);
 	ping_time=(struct timeval *)(icp+1);
-	printk("%s skb=%lx id=%d seq=%d time=%ld.%06ld\n", 
+	trace_printk("%s skb=%lx id=%d seq=%d time=%ld.%06ld\n", 
 			__func__,
 			(long int)skb,
 			htons(icp->un.echo.id),
@@ -65,7 +70,7 @@ int dev_queue_xmit_handler(struct kprobe *p, struct pt_regs *regs)
 			cur_time.tv_sec-ping_time->tv_sec,
 			cur_time.tv_usec-ping_time->tv_usec);
 
-	data_dump(skb);
+	//data_dump(skb);
     return 0;
 }
 
