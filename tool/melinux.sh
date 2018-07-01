@@ -1,13 +1,13 @@
 #!/bin/bash
 
 function create_makefile() {
-	cp ../driver_module/template/Makefile . -f
+	cp ~/github/melinux/driver_module/template/Makefile . -f
 	sed -i "s/TARGET \:= medma_test/TARGET \:= $1/" Makefile
 	sed -i "s/\$(TARGET)-objs \:= dmatest_entry.o/\$(TARGET)-objs \:= $1_entry.o/" Makefile
 }
 
 function create_entry() {
-	cp ../driver_module/template/gpiotest.c $1_entry.c -f
+	cp ~/github/melinux/driver_module/template/gpiotest.c $1_entry.c -f
 	sed -i "s/gpiodriver/$1driver/" $1_entry.c
 }
 
@@ -30,7 +30,7 @@ function usage ()
 #  Handle command line arguments
 #-----------------------------------------------------------------------
 
-while getopts ":hvc:" opt
+while getopts ":hvc" opt
 do
   case $opt in
 
@@ -38,6 +38,7 @@ do
 	c|create   )
 		read -p "Your modules name:" MODULE_NAME
 		create_makefile $MODULE_NAME
+		create_entry $MODULE_NAME
 		exit 0   ;;
 
 	* )  echo -e "\n  Option does not exist : $OPTARG\n"
