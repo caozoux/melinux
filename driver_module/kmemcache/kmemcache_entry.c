@@ -11,24 +11,31 @@
 #include <linux/syscore_ops.h>
 
 #define NEW_CACHE_NAME "metest64"
+#define ALLOCE_SIZE 200
+#define FREE_SIZE 50
 
 struct kmem_cache *new_kmem_cache;
-static void *addr[12];
+static void *addr[ALLOCE_SIZE];
 
 static int __init kmemcachedriver_init(void)
 {
 	int i;
-	new_kmem_cache = kmem_cache_create(NEW_CACHE_NAME, 93, 0,
-						   SLAB_HWCACHE_ALIGN | SLAB_PANIC | SLAB_NOTRACK ,
+	new_kmem_cache = kmem_cache_create(NEW_CACHE_NAME, 1044, 0,
+						   SLAB_HWCACHE_ALIGN,
 						   NULL);
 
 	printk("zz %s new_kmem_cache:%lx \n",__func__, (long int)new_kmem_cache);
 
-	for (i = 0; i < 12; ++i) {
+	for (i = 0; i < ALLOCE_SIZE; ++i) {
 		addr[i] = kmem_cache_alloc(new_kmem_cache, GFP_KERNEL);
 		printk("zz %s addr:%lx \n",__func__, (long int)addr[i]);
 	}
 		
+	for (i = 0; i < FREE_SIZE; ++i) {
+		kmem_cache_free(new_kmem_cache, addr[i]);
+	}
+
+	kmem_cache_shrink(new_kmem_cache);
 	printk("kmemcachedriver load \n");
 	return 0;
 }
@@ -36,7 +43,7 @@ static int __init kmemcachedriver_init(void)
 static void __exit kmemcachedriver_exit(void)
 {
 	int i;
-	for (i = 0; i < 12; ++i) {
+	for (i = FREE_SIZE; i < ALLOCE_SIZE; ++i) {
 		kmem_cache_free(new_kmem_cache, addr[i]);
 	}
 	kmem_cache_destroy(new_kmem_cache);
