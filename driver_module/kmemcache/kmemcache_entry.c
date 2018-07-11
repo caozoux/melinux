@@ -13,18 +13,21 @@
 #define NEW_CACHE_NAME "metest64"
 
 struct kmem_cache *new_kmem_cache;
-static void *addr=NULL;
+static void *addr[12];
 
 static int __init kmemcachedriver_init(void)
 {
+	int i;
 	new_kmem_cache = kmem_cache_create(NEW_CACHE_NAME, 93, 0,
 						   SLAB_HWCACHE_ALIGN | SLAB_PANIC | SLAB_NOTRACK ,
 						   NULL);
 
 	printk("zz %s new_kmem_cache:%lx \n",__func__, (long int)new_kmem_cache);
 
-	addr = kmem_cache_alloc(new_kmem_cache, GFP_KERNEL);
-	printk("zz %s addr:%lx \n",__func__, (long int)addr);
+	for (i = 0; i < 12; ++i) {
+		addr[i] = kmem_cache_alloc(new_kmem_cache, GFP_KERNEL);
+		printk("zz %s addr:%lx \n",__func__, (long int)addr[i]);
+	}
 		
 	printk("kmemcachedriver load \n");
 	return 0;
@@ -32,6 +35,10 @@ static int __init kmemcachedriver_init(void)
 
 static void __exit kmemcachedriver_exit(void)
 {
+	int i;
+	for (i = 0; i < 12; ++i) {
+		kmem_cache_free(new_kmem_cache, addr[i]);
+	}
 	kmem_cache_destroy(new_kmem_cache);
 	printk("kmemcachedriver unload \n");
 }
