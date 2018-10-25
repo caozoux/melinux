@@ -9,6 +9,7 @@
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 #include <linux/syscore_ops.h>
+#include "kmemcache.h"
 
 #define NEW_CACHE_NAME "metest64"
 #define ALLOCE_SIZE 200
@@ -36,6 +37,7 @@ static int __init kmemcachedriver_init(void)
 	}
 
 	kmem_cache_shrink(new_kmem_cache);
+	oom_atomic_test();
 	printk("kmemcachedriver load \n");
 	return 0;
 }
