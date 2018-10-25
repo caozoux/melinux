@@ -37,7 +37,7 @@ static int __init kmemcachedriver_init(void)
 	}
 
 	kmem_cache_shrink(new_kmem_cache);
-	oom_atomic_test();
+	oom_atomic_test_init();
 	printk("kmemcachedriver load \n");
 	return 0;
 }
