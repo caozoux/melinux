@@ -5,7 +5,7 @@ TARGET := medma_test
 obj-m := $(TARGET).o  
 $(TARGET)-objs := dmatest_entry.o
 all:
-	$(MAKE) -C $(KERSRC) O=$(KEROUT) M=$(PWD) modules  
+	$(MAKE) -C /lib/modules/`uname -r`/build/ M=$(PWD) modules  
 		
 clean:
 	rm *.ko modules.order  Module.symvers *.mod.c *.ko.cmd *.o.cmd .tmp_versions/ -rf
