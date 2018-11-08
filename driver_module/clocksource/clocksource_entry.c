@@ -17,6 +17,7 @@ static struct clocksource **orig_curr_clocksource;
 static int orig_finished_booting;
 static struct work_struct *orig_watchdog_work;
 static void (*orig_timekeeping_notify)(struct clocksource *clock);
+struct timer_list *orig_watchdog_timer;
 //clocksource_mutex
 //timekeeping_notify
 
@@ -87,7 +88,13 @@ static int symbol_init(void)
 		printk("find sysmbol orig_timekeeping_notify failed\n");
 		return 1;
 	}
+
 #if 0
+	orig_watchdog_timer = (struct clocksource*)kallsyms_lookup_name("clocksource_enqueue_watchdog");
+	if (!orig_watchdog_timer) {
+		printk("find sysmbol orig_watchdog_timer failed\n");
+		return 1;
+	}
 	orig_watchdog_work = (struct work_struct*)kallsyms_lookup_name("watchdog_work");
 	if (!orig_watchdog_work) {
 		printk("find sysmbol orig_watchdog_work failed\n");

@@ -9,13 +9,15 @@
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 #include <linux/syscore_ops.h>
-#include "kmemcache.h"
 
-#define NEW_CACHE_NAME "metest64"
-#define ALLOCE_SIZE 200
-#define FREE_SIZE 50
+#define MODULE_CACHE_NAME "module_slub_cache"
+#define MODULE_FLAG_CACHE_NAME "module_slub_flagrcu_cache"
 
 struct kmem_cache *new_kmem_cache;
+struct kmem_cache *flag_kmem_cache;
+
+#define ALLOCE_SIZE 1024
+#define FREE_SIZE   512
 static void *addr[ALLOCE_SIZE];
 
 static void kemcache_alloc_test_init(void)
@@ -31,39 +33,45 @@ static void kemcache_alloc_test_init(void)
 	}
 }
 
-
 static void kemcache_alloc_test_exit(void)
 {
+	int i;
 	for (i = FREE_SIZE; i < ALLOCE_SIZE; ++i) {
 		kmem_cache_free(new_kmem_cache, addr[i]);
 	}
 }
 
-static int __init kmemcachedriver_init(void)
+static int kmemcache_init(void)
 {
-	int i;
-	new_kmem_cache = kmem_cache_create(NEW_CACHE_NAME, 1044, 0,
+	new_kmem_cache = kmem_cache_create(MODULE_CACHE_NAME, 1044, 0,
 						   SLAB_HWCACHE_ALIGN,
 						   NULL);
 
-	printk("new_kmem_cache:%lx \n",(long int)new_kmem_cache);
-
 	kmem_cache_shrink(new_kmem_cache);
-	//oom_atomic_test_init();
-	kmem_dump_zone();
-	printk("kmemcachedriver load \n");
+	//kmem_dump_zone();
 	return 0;
 }
 
-static void __exit kmemcachedriver_exit(void)
+static void kmemcache_exit(void)
 {
-	int i;
-	kmem_cache_destroy(new_kmem_cache);
-	printk("kmemcachedriver unload \n");
+	if (new_kmem_cache)
+		kmem_cache_destroy(new_kmem_cache);
 }
 
-module_init(kmemcachedriver_init);
-module_exit(kmemcachedriver_exit);
+static int kmemcache_flag_rcu_init(void)
+{
+	flag_kmem_cache = kmem_cache_create(MODULE_CACHE_NAME, 1044, 0,
+				SLAB_DESTROY_BY_RCU,
+						   NULL);
 
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Zou Cao<zoucaox@outlook.com>");
+	if(!flag_kmem_cache)
+		return 1;
+}
+
+static int kmemcache_flag_rcu_exit(void)
+{
+	if (flag_kmem_cache)
+		kmem_cache_destroy(flag_kmem_cache);
+	return 0;
+}
+
