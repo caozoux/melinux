@@ -3,7 +3,7 @@ PWD = $(shell pwd)
 TARGET := slub
 
 obj-m := $(TARGET).o  
-$(TARGET)-objs := slub_entry.o slubufa_entry.o kmemcache.o
+$(TARGET)-objs := slub_entry.o slubufa_entry.o kmemcache.o kmemcache_rcu.o
 all:
 	$(MAKE) -C /lib/modules/`uname -r`/build/ M=$(PWD) modules  
 		

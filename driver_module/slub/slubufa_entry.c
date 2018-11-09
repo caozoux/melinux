@@ -11,18 +11,3 @@
 #include <linux/syscore_ops.h>
 
 
-static int __init slubufadriver_init(void)
-{
-	return 0;
-}
-
-static void __exit slubufadriver_exit(void)
-{
-	printk("slubufadriver unload \n");
-}
-
-module_init(slubufadriver_init);
-module_exit(slubufadriver_exit);
-
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Zou Cao<zoucaox@outlook.com>");
