@@ -7,5 +7,7 @@ Module.symvers
 *.o
 modules.order
 *.swp
+*.swn
+*.swo
 OUT
 

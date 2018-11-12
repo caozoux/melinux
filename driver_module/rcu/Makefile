@@ -3,7 +3,7 @@ PWD = $(shell pwd)
 TARGET := rcu
 
 obj-m := $(TARGET).o  
-$(TARGET)-objs := rcu_entry.o
+$(TARGET)-objs := rcu_entry.o rcu_hood.o rcu_slub.o
 all:
 	$(MAKE) -C /lib/modules/`uname -r`/build/ M=$(PWD) modules  
 		
