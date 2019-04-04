@@ -3,8 +3,8 @@
 global device_of_interest
 
 probe begin {
-	device_of_interest = $1
-	printf ("device of interest: %x\n", device_of_interest)
+	#device_of_interest = $1
+	#printf ("device of interest: %x\n", device_of_interest)
 }
 
 probe kernel.function("submit_bio")

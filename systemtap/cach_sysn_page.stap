@@ -1,0 +1,29 @@
+#!/usr/bin/env stap
+
+probe begin {
+	printf("start.\n");
+}
+
+global alist
+global blist
+
+probe module("ext4").function("ext4_es_lru_add") {
+	alist[cpu()]=gettimeofday_us();
+}
+
+probe module("ext4").function("ext4_es_lru_add").return {
+	id=cpu()
+	d=gettimeofday_us()-alist[id];
+	if (d > blist[id]) {
+		blist[id]=d;
+	}
+}
+
+probe timer.s(10) {
+	printf("----\n");
+	foreach([x] in blist) {
+		if (blist[x] > 1000) {
+			printf("CPU%02d %d\n", x, blist[x]);
+		}
+	}
+}
