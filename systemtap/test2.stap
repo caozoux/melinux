@@ -1,6 +1,0 @@
-#!/usr/bin/stap
-
-probe kernel.function("shrink_node_memcg")
-{ 
-    printf ("shrink_node_memcg")
-}

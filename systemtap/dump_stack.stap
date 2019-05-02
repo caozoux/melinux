@@ -1,0 +1,5 @@
+#!/bin/bash
+
+prob_fun=$1
+stap -v -e "probe kernel.function(\"${prob_fun}\") {print_backtrace(); exit()}"
+

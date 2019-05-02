@@ -1,6 +1,0 @@
-#!/usr/bin/stap
-
-probe kernel.function("hugetlbfs_evict_inode")
-{ 
-    printf ("hugetlbfs_evict_inode")
-}
