@@ -11,6 +11,7 @@
 #include <linux/miscdevice.h>
 #include <linux/interrupt.h>
 #include <linux/syscore_ops.h>
+#include "template_iocmd.h"
 
 #define ARRT_MARCO(name) DEVICE_ATTR(name, S_IWUSR | S_IRUGO, read_##name, write_##name);
 
@@ -77,12 +78,23 @@ static int misc_template_release (struct inode *inode, struct file *file)
 	return 0;
 }
 
+static void test_user_page(u64 addr)
+{
+	struct page **pages;
+	struct page *page;
+	//alloc_page();
+	printk("zz %s addr:%lx \n",__func__, (unsigned long)addr);
+	pages = kcalloc(1, sizeof(struct page *), GFP_KERNEL);
+	get_user_pages_fast(addr, 1, 1, &pages[0]);
+}
+
 static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, unsigned long arg)
 {
 
 	struct ping_data data;
 	int ret = 0;
 
+#if 0
 	data.s_send = 3;
 	data.s_recv= 4;
 	if (copy_to_user((char __user *) arg, &data, sizeof(struct ping_data))) {
@@ -91,6 +103,15 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 		goto OUT;
 	}
 	printk("zz %s cmd:%lx arg:%lx \n",__func__, (unsigned long)cmd, (unsigned long)arg);
+#else
+	switch (cmd) {
+		case IOCMD_USERMAP:
+			test_user_page((u64)cmd);
+			break;
+		default:
+			goto OUT;
+	}
+#endif
 OUT:
 	return ret;
 }
