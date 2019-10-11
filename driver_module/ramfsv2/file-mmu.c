@@ -26,13 +26,40 @@
 
 #include <linux/fs.h>
 #include <linux/mm.h>
-#include <linux/ramfsv2.h>
 
 #include "internal.h"
 
+int __set_page_dirty_no_writeback(struct page *page)
+{
+	printk("zz %s %d \n", __func__, __LINE__);
+	if (!PageDirty(page))
+		return !TestSetPageDirty(page);
+	return 0;
+}
+
+static int local_simple_write_begin(struct file *file, struct address_space *mapping,
+            loff_t pos, unsigned len, unsigned flags,
+            struct page **pagep, void **fsdata)
+{
+	void **slot;
+	struct radix_tree_iter iter;
+	printk("zz %s pos:%lx len:%lx flags:%lx \n",__func__, (unsigned long)pos, (unsigned long)len, (unsigned long)flags);
+	radix_tree_for_each_slot(slot, &mapping->page_tree, &iter, 0) {
+		struct page *page;
+
+        page = radix_tree_deref_slot(slot);
+        if (unlikely(!page))
+            continue;
+
+		printk("zz %s page:%lx \n",__func__, (unsigned long)page);
+	}
+
+	return simple_write_begin(file, mapping, pos, len, flags, pagep, fsdata);
+}
+
 const struct address_space_operations ramfs_aopsv2 = {
 	.readpage	= simple_readpage,
-	.write_begin	= simple_write_begin,
+	.write_begin	= local_simple_write_begin,
 	.write_end	= simple_write_end,
 	.set_page_dirty = __set_page_dirty_no_writeback,
 };

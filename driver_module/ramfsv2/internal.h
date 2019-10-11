@@ -12,3 +12,4 @@
 
 extern const struct address_space_operations ramfs_aopsv2;
 extern const struct inode_operations ramfs_file_inode_operationsv2;
+extern const struct file_operations ramfs_file_operationsv2;

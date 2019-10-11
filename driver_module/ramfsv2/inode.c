@@ -30,7 +30,6 @@
 #include <linux/init.h>
 #include <linux/string.h>
 #include <linux/backing-dev.h>
-#include <linux/ramfsv2.h>
 #include <linux/sched.h>
 #include <linux/parser.h>
 #include <linux/magic.h>
@@ -97,6 +96,7 @@ ramfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t dev)
 	struct inode * inode = ramfs_get_inodev2(dir->i_sb, dir, mode, dev);
 	int error = -ENOSPC;
 
+	printk("zz %s %d \n", __func__, __LINE__);
 	if (inode) {
 		d_instantiate(dentry, inode);
 		dget(dentry);	/* Extra count - pin the dentry in core */
@@ -244,14 +244,9 @@ struct dentry *ramfs_mountv2(struct file_system_type *fs_type,
 	return mount_nodev(fs_type, flags, data, ramfs_fill_superv2);
 }
 
-static struct dentry *rootfs_mount(struct file_system_type *fs_type,
-	int flags, const char *dev_name, void *data)
-{
-	return mount_nodev(fs_type, flags|MS_NOUSER, data, ramfs_fill_superv2);
-}
-
 static void ramfs_kill_sb(struct super_block *sb)
 {
+	printk("zz %s %d \n", __func__, __LINE__);
 	kfree(sb->s_fs_info);
 	kill_litter_super(sb);
 }
@@ -262,29 +257,15 @@ static struct file_system_type ramfs_fs_type = {
 	.kill_sb	= ramfs_kill_sb,
 	.fs_flags	= FS_USERNS_MOUNT,
 };
-static struct file_system_type rootfs_fs_type = {
-	.name		= "rootfs",
-	.mount		= rootfs_mount,
-	.kill_sb	= kill_litter_super,
-};
 
 static int __init init_ramfs_fs(void)
 {
 	return register_filesystem(&ramfs_fs_type);
 }
-module_init(init_ramfs_fs)
-
-int __init init_rootfsv2(void)
+static void __exit exit_ramfs_fs(void)
 {
-	int err;
-
-	err = bdi_init(&ramfs_backing_dev_info);
-	if (err)
-		return err;
-
-	err = register_filesystem(&rootfs_fs_type);
-	if (err)
-		bdi_destroy(&ramfs_backing_dev_info);
-
-	return err;
+	unregister_filesystem(&ramfs_fs_type);
 }
+module_init(init_ramfs_fs);
+module_exit(exit_ramfs_fs);
+
