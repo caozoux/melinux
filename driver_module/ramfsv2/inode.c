@@ -34,7 +34,9 @@
 #include <linux/parser.h>
 #include <linux/magic.h>
 #include <linux/slab.h>
+#include <linux/kernel.h>
 #include <asm/uaccess.h>
+#include <linux/module.h>
 #include "internal.h"
 
 #define RAMFS_DEFAULT_MODE	0755
@@ -55,6 +57,7 @@ struct inode *ramfs_get_inodev2(struct super_block *sb,
 {
 	struct inode * inode = new_inode(sb);
 
+	trace_printk("\n");
 	if (inode) {
 		inode->i_ino = get_next_ino();
 		inode_init_owner(inode, dir, mode);
@@ -96,7 +99,7 @@ ramfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t dev)
 	struct inode * inode = ramfs_get_inodev2(dir->i_sb, dir, mode, dev);
 	int error = -ENOSPC;
 
-	printk("zz %s %d \n", __func__, __LINE__);
+	trace_printk("\n");
 	if (inode) {
 		d_instantiate(dentry, inode);
 		dget(dentry);	/* Extra count - pin the dentry in core */
@@ -109,6 +112,8 @@ ramfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t dev)
 static int ramfs_mkdir(struct inode * dir, struct dentry * dentry, umode_t mode)
 {
 	int retval = ramfs_mknod(dir, dentry, mode | S_IFDIR, 0);
+
+	trace_printk("\n");
 	if (!retval)
 		inc_nlink(dir);
 	return retval;
@@ -116,6 +121,7 @@ static int ramfs_mkdir(struct inode * dir, struct dentry * dentry, umode_t mode)
 
 static int ramfs_create(struct inode *dir, struct dentry *dentry, umode_t mode, bool excl)
 {
+	trace_printk("\n");
 	return ramfs_mknod(dir, dentry, mode | S_IFREG, 0);
 }
 
@@ -124,6 +130,7 @@ static int ramfs_symlink(struct inode * dir, struct dentry *dentry, const char *
 	struct inode *inode;
 	int error = -ENOSPC;
 
+	trace_printk("\n");
 	inode = ramfs_get_inodev2(dir->i_sb, dir, S_IFLNK|S_IRWXUGO, 0);
 	if (inode) {
 		int l = strlen(symname)+1;
@@ -181,6 +188,7 @@ static int ramfs_parse_options(char *data, struct ramfs_mount_opts *opts)
 	int token;
 	char *p;
 
+	trace_printk("\n");
 	opts->mode = RAMFS_DEFAULT_MODE;
 
 	while ((p = strsep(&data, ",")) != NULL) {
@@ -212,6 +220,7 @@ int ramfs_fill_superv2(struct super_block *sb, void *data, int silent)
 	struct inode *inode;
 	int err;
 
+	trace_printk("\n");
 	save_mount_options(sb, data);
 
 	fsi = kzalloc(sizeof(struct ramfs_fs_info), GFP_KERNEL);
@@ -241,12 +250,13 @@ int ramfs_fill_superv2(struct super_block *sb, void *data, int silent)
 struct dentry *ramfs_mountv2(struct file_system_type *fs_type,
 	int flags, const char *dev_name, void *data)
 {
+	trace_printk("\n");
 	return mount_nodev(fs_type, flags, data, ramfs_fill_superv2);
 }
 
 static void ramfs_kill_sb(struct super_block *sb)
 {
-	printk("zz %s %d \n", __func__, __LINE__);
+	trace_printk("\n");
 	kfree(sb->s_fs_info);
 	kill_litter_super(sb);
 }
@@ -269,3 +279,5 @@ static void __exit exit_ramfs_fs(void)
 module_init(init_ramfs_fs);
 module_exit(exit_ramfs_fs);
 
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Zou Cao<zoucaox@outlook.com>");
