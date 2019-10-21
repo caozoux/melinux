@@ -1,11 +1,16 @@
 PWD = $(shell pwd)  
 
-TARGET := medma_test
+PWD = $(shell pwd)  
+
+KERVER =$(shell uname -r)
+KERSRC :=/lib/modules/$(KERVER)/build
+
+TARGET := me_test
 
 obj-m := $(TARGET).o  
-$(TARGET)-objs := dmatest_entry.o
+$(TARGET)-objs := test_entry.o
 all:
-	$(MAKE) -C /lib/modules/`uname -r`/build/ M=$(PWD) modules  
+	$(MAKE) -C $(KERSRC) M=$(PWD) modules  
 		
 clean:
 	rm *.ko modules.order  Module.symvers *.mod.c *.ko.cmd *.o.cmd .tmp_versions/ -rf
