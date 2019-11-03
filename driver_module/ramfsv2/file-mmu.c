@@ -30,25 +30,60 @@
 #include <linux/writeback.h>
 #include <linux/buffer_head.h>
 #include <linux/kernel.h>
+#include <linux/mm.h>
+#include <linux/memcontrol.h>
+#include <linux/iomap.h>
+#include <linux/pagemap.h>
+#include <linux/uio.h>
+#include <linux/buffer_head.h>
+#include <linux/dax.h>
+#include <linux/writeback.h>
+#include <linux/swap.h>
+#include <linux/bio.h>
+#include <linux/sched/signal.h>
+#include <linux/migrate.h>
 
 #include "internal.h"
 
+#if 1
 int __set_page_dirty_no_writeback(struct page *page)
 {
+#if 0
+	struct address_space *mapping = page_mapping(page);
+	int newly_dirty;
+
+
+	/*
+	* Lock out page->mem_cgroup migration to keep PageDirty
+	* synchronized with per-memcg dirty page counters.
+	*/
+	newly_dirty = !TestSetPageDirty(page);
+	if (newly_dirty)                                                                                                                                                                                   
+		set_page_dirty(page);
+
+	if (newly_dirty)
+		__mark_inode_dirty(mapping->host, I_DIRTY_PAGES);
+	return newly_dirty;
+#else
+
 	trace_printk("\n");
 	if (!PageDirty(page))
 		return !TestSetPageDirty(page);
-	return 0;
+#endif
 }
 
+static int ramfsv2_write_size=0;
 static int local_simple_write_begin(struct file *file, struct address_space *mapping,
             loff_t pos, unsigned len, unsigned flags,
             struct page **pagep, void **fsdata)
 {
-	void **slot;
-	struct radix_tree_iter iter;
+//	void **slot;
+//	struct radix_tree_iter iter;
 
-	trace_printk("\n");
+	ramfsv2_write_size += len;
+	trace_printk("write:%d total:%d\n", len, ramfsv2_write_size);
+#if 0
+	//get the cache page
 	radix_tree_for_each_slot(slot, &mapping->page_tree, &iter, 0) {
 		struct page *page;
 
@@ -57,6 +92,7 @@ static int local_simple_write_begin(struct file *file, struct address_space *map
             continue;
 
 	}
+#endif
 
 	return simple_write_begin(file, mapping, pos, len, flags, pagep, fsdata);
 }
@@ -92,7 +128,7 @@ local_readpages(struct file *unused, struct address_space *mapping, struct list_
 
 static int local_writepage(struct page *page, struct writeback_control *wbc)
 {
-	printk("zz %s %d \n", __func__, __LINE__);
+	trace_printk("zz %s %d \n", __func__, __LINE__);
 	return 0;
 }
 
@@ -147,7 +183,7 @@ xfs_vm_direct_IO(
 	return 0;
 }
 
-#if 0
+#if 1
 const struct address_space_operations ramfs_aopsv2 = {
 	.readpage	= local_simple_readpage,
 	.write_begin	= local_simple_write_begin,
@@ -174,9 +210,9 @@ const struct address_space_operations ramfs_aopsv2 = {
 #endif
 
 const struct file_operations ramfs_file_operationsv2 = {
-	.read		= do_sync_read,
+	//.read		= do_sync_read,
 	.aio_read	= generic_file_aio_read,
-	.write		= do_sync_write,
+	//.write		= do_sync_write,
 	.aio_write	= generic_file_aio_write,
 	.mmap		= generic_file_mmap,
 	.fsync		= noop_fsync,
@@ -189,3 +225,29 @@ const struct inode_operations ramfs_file_inode_operationsv2 = {
 	.setattr	= simple_setattr,
 	.getattr	= simple_getattr,
 };
+#else
+
+const struct address_space_operations ramfs_aopsv2 = { 
+    .readpage   = simple_readpage,
+    .write_begin    = simple_write_begin,
+    .write_end  = simple_write_end,
+    .set_page_dirty = __set_page_dirty_no_writeback,
+};
+
+const struct file_operations ramfs_file_operationsv2 = { 
+    .read       = do_sync_read,
+    .aio_read   = generic_file_aio_read,
+    .write      = do_sync_write,
+    .aio_write  = generic_file_aio_write,
+    .mmap       = generic_file_mmap,
+    .fsync      = noop_fsync,
+    .splice_read    = generic_file_splice_read,
+    .splice_write   = generic_file_splice_write,
+    .llseek     = generic_file_llseek,
+};
+
+const struct inode_operations ramfs_file_inode_operationsv2 = { 
+    .setattr    = simple_setattr,
+    .getattr    = simple_getattr,
+};  
+#endif

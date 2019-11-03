@@ -1,6 +1,8 @@
 #include <linux/module.h>
 #include <linux/blkdev.h>
 
+#define BLOCK_DISK_SIZE (1024*1024*1024)
+
 #define SIMP_BLKDEV_DISKNAME "simp_blkdev"          //块设备名
 #define SIMP_BLKDEV_DEVICEMAJOR COMPAQ_SMART2_MAJOR //主设备号
 #define SIMP_BLKDEV_BYTES (50*1024*1024)            // 块设备大小为50MB
@@ -11,7 +13,8 @@ static struct block_device_operations simp_blkdev_fops = { //块设备操作，g
     .owner = THIS_MODULE,
 };
 static struct request_queue *simp_blkdev_queue;//指向块设备请求队列的指针
-unsigned char simp_blkdev_data[SIMP_BLKDEV_BYTES];// 虚拟磁盘块设备的存储空间
+//unsigned char simp_blkdev_data[SIMP_BLKDEV_BYTES];// 虚拟磁盘块设备的存储空间
+unsigned char *simp_blkdev_data;// 虚拟磁盘块设备的存储空间
 
 
 static int count_cnt=0;
@@ -68,8 +71,8 @@ static void simp_blkdev_do_request(struct request_queue *q){
                 }
                 req_bio = req_bio->bi_next;
             }
-			if (count_cnt++ !=35)
-            	__blk_end_request_all(req, 0);
+			//if (count_cnt++ !=35)
+            //	__blk_end_request_all(req, 0);
             break;
         default:
             /* No default because rq_data_dir(req) is 1 bit */
@@ -86,6 +89,12 @@ static void simp_blkdev_do_request(struct request_queue *q){
 ******************************************************/
 static int __init simp_blkdev_init(void){
     int ret;
+
+	simp_blkdev_data = vmalloc(BLOCK_DISK_SIZE);
+	if (!simp_blkdev_data) {
+		printk("malloc block %lx failed\n", BLOCK_DISK_SIZE);
+		return -ENOMEM;
+	}
 
     //1.添加设备之前，先申请设备的资源
     simp_blkdev_disk = alloc_disk(1);
@@ -106,15 +115,16 @@ static int __init simp_blkdev_init(void){
         goto err_init_queue;
     }
     simp_blkdev_disk->queue = simp_blkdev_queue;
-    set_capacity(simp_blkdev_disk, SIMP_BLKDEV_BYTES>>9);
+    set_capacity(simp_blkdev_disk, BLOCK_DISK_SIZE>>9);
 
     //3.入口处添加磁盘块设备
     add_disk(simp_blkdev_disk);
     return 0;
 
     err_alloc_disk:
-        return ret;
+		
     err_init_queue:
+		kfree(simp_blkdev_data);
         return ret;
 }
 
@@ -129,6 +139,7 @@ static void __exit simp_blkdev_exit(void)
     del_gendisk(simp_blkdev_disk);// 释放磁盘块设备
     put_disk(simp_blkdev_disk);   // 释放申请的设备资源
     blk_cleanup_queue(simp_blkdev_queue);// 清除请求队列
+	vfree(simp_blkdev_data);
 }
 
 module_init(simp_blkdev_init);// 声明模块的入口
