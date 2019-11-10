@@ -1,11 +1,11 @@
 PWD = $(shell pwd)  
 
-TARGET := memtest
+TARGET := page
 
 obj-m := $(TARGET).o  
-$(TARGET)-objs := memory_entry.o
+$(TARGET)-objs := page_entry.o page_scan.o hugepage_info.o vma_dump.o page_scan.o page_protect.o
 all:
-	$(MAKE) -C $(KERBUILD) M=$(PWD) modules  
+	$(MAKE) -C /lib/modules/3.10.0-327.ali2016.alios7.x86_64/build/ M=$(PWD) modules  
 		
 clean:
 	rm *.ko modules.order  Module.symvers *.mod.c *.ko.cmd *.o.cmd .tmp_versions/ -rf
