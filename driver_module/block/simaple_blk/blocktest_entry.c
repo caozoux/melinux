@@ -30,7 +30,6 @@ static void simp_blkdev_do_request(struct request_queue *q){
     struct bio_vec *bvec;// 当前请求的bio的段(segment)链表
     unsigned long *disk_mem;      // 需要读/写的磁盘区域
     char *buffer;        // 磁盘块设备的请求在内存中的缓冲区
-	void *data;
 	int offset;
     int i = 0;
 
@@ -54,27 +53,22 @@ static void simp_blkdev_do_request(struct request_queue *q){
                     bvec = &(req_bio->bi_io_vec[i]);
                     buffer = kmap(bvec->bv_page) + bvec->bv_offset;
 					//printk("read bi_vcnt:%d i\n", (int)req_bio->bi_vcnt);
-					printk("read bi_vcnt:%d offset:%d\n", (int)req_bio->bi_vcnt, offset);
+					//printk("read bi_vcnt:%d offset:%d\n", (int)req_bio->bi_vcnt, offset);
 					if (offset >= MAX_OFFSET) {
 						printk("Warning: offet over memory\n ");
 						break;
 					}
 					if (!simp_blkdev_data[offset]) {
 
-						data = kzalloc(4096, GFP_KERNEL);
-						simp_blkdev_data[offset] = (unsigned long*)data;
-						printk("%lx %lx\n", data, simp_blkdev_data[offset] );
-						//simp_blkdev_data[offset] = (unsigned long*)kzalloc(4096, GFP_KERNEL);
+						simp_blkdev_data[offset] = (unsigned long*)kzalloc(4096, GFP_KERNEL);
 						if (!simp_blkdev_data[offset]) {
 							printk("Warning: read malloc memory failed\n ");
 							break;
 						}
 
-						printk("sk_mem:%lx\n", simp_blkdev_data[offset]);
 					}
 
 					disk_mem = (unsigned long *)simp_blkdev_data[offset];
-					printk("disk_mem:%lx\n", disk_mem);
                     memcpy(buffer, disk_mem, bvec->bv_len);
 
                     kunmap(bvec->bv_page);
@@ -86,7 +80,6 @@ static void simp_blkdev_do_request(struct request_queue *q){
             __blk_end_request_all(req, 0);
             break;
         case WRITE:
-			printk("%s write +\n");
             while(req_bio != NULL){
 				//printk("write bi_vcnt:%lx offset:%d\n", (unsigned long)req_bio->bi_vcnt, offset);
                 for(i=0; i<req_bio->bi_vcnt; i++){
@@ -113,9 +106,7 @@ static void simp_blkdev_do_request(struct request_queue *q){
                 }
                 req_bio = req_bio->bi_next;
             }
-			printk("%s write -\n");
-			//if (count_cnt++ !=35)
-            //	__blk_end_request_all(req, 0);
+            __blk_end_request_all(req, 0);
             break;
         default:
             /* No default because rq_data_dir(req) is 1 bit */
