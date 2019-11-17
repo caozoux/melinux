@@ -30,6 +30,7 @@ static void simp_blkdev_do_request(struct request_queue *q){
     struct bio_vec *bvec;// 当前请求的bio的段(segment)链表
     unsigned long *disk_mem;      // 需要读/写的磁盘区域
     char *buffer;        // 磁盘块设备的请求在内存中的缓冲区
+	void *data;
 	int offset;
     int i = 0;
 
@@ -41,9 +42,7 @@ static void simp_blkdev_do_request(struct request_queue *q){
             continue;
         }
         //获取需要操作的内存位置
-        //disk_mem = simp_blkdev_data + (blk_rq_pos(req) << SECTOR_SIZE_SHIFT);
         offset = (blk_rq_pos(req) << SECTOR_SIZE_SHIFT)>>12;
-        printk("request pos:%d \n",(blk_rq_pos(req)));
         req_bio = req->bio;// 获取当前请求的bio
 
         switch (rq_data_dir(req)) {  //判断请求的类型
@@ -54,20 +53,28 @@ static void simp_blkdev_do_request(struct request_queue *q){
                 for(i=0; i<req_bio->bi_vcnt; i++){
                     bvec = &(req_bio->bi_io_vec[i]);
                     buffer = kmap(bvec->bv_page) + bvec->bv_offset;
-					printk("zz %s read req_bio->bi_vcnt:%lx len:%d offset:%d\n",__func__, (unsigned long)req_bio->bi_vcnt, bvec->bv_len, offset);
+					//printk("read bi_vcnt:%d i\n", (int)req_bio->bi_vcnt);
+					printk("read bi_vcnt:%d offset:%d\n", (int)req_bio->bi_vcnt, offset);
 					if (offset >= MAX_OFFSET) {
 						printk("Warning: offet over memory\n ");
 						break;
 					}
 					if (!simp_blkdev_data[offset]) {
-						simp_blkdev_data[offset] = kmalloc(4096, GFP_KERNEL);
+
+						data = kzalloc(4096, GFP_KERNEL);
+						simp_blkdev_data[offset] = (unsigned long*)data;
+						printk("%lx %lx\n", data, simp_blkdev_data[offset] );
+						//simp_blkdev_data[offset] = (unsigned long*)kzalloc(4096, GFP_KERNEL);
 						if (!simp_blkdev_data[offset]) {
 							printk("Warning: read malloc memory failed\n ");
 							break;
 						}
-						disk_mem = simp_blkdev_data[offset];
+
+						printk("sk_mem:%lx\n", simp_blkdev_data[offset]);
 					}
 
+					disk_mem = (unsigned long *)simp_blkdev_data[offset];
+					printk("disk_mem:%lx\n", disk_mem);
                     memcpy(buffer, disk_mem, bvec->bv_len);
 
                     kunmap(bvec->bv_page);
@@ -79,26 +86,34 @@ static void simp_blkdev_do_request(struct request_queue *q){
             __blk_end_request_all(req, 0);
             break;
         case WRITE:
+			printk("%s write +\n");
             while(req_bio != NULL){
-				printk("zz %s write req_bio->bi_vcnt:%lx \n",__func__, (unsigned long)req_bio->bi_vcnt);
+				//printk("write bi_vcnt:%lx offset:%d\n", (unsigned long)req_bio->bi_vcnt, offset);
                 for(i=0; i<req_bio->bi_vcnt; i++){
                     bvec = &(req_bio->bi_io_vec[i]);
                     buffer = kmap(bvec->bv_page) + bvec->bv_offset;
-#if 0
-					disk_mem = simp_blkdev_data[offset];
-
-					if (!disk_mem) {
-						printk("Warning: write malloc memory failed\n ");
+					if (offset >= MAX_OFFSET) {
+						printk("Warning: offet over memory\n ");
 						break;
 					}
+					if (!simp_blkdev_data[offset]) {
+						void *data;
 
+						simp_blkdev_data[offset] = (unsigned long*)kzalloc(4096, GFP_KERNEL);
+						if (!simp_blkdev_data[offset]) {
+							printk("Warning: write malloc memory failed\n ");
+							break;
+						}
+					}
+
+					disk_mem = (unsigned long*)simp_blkdev_data[offset];
                     memcpy(disk_mem, buffer, bvec->bv_len);
-#endif
                     kunmap(bvec->bv_page);
-                    disk_mem += bvec->bv_len;
+					offset += bvec->bv_len>>12;
                 }
                 req_bio = req_bio->bi_next;
             }
+			printk("%s write -\n");
 			//if (count_cnt++ !=35)
             //	__blk_end_request_all(req, 0);
             break;
@@ -118,9 +133,9 @@ static void simp_blkdev_do_request(struct request_queue *q){
 static int __init simp_blkdev_init(void){
     int ret;
 
-	simp_blkdev_data = kzalloc(MAX_OFFSET, GFP_KERNEL);
+	simp_blkdev_data = kzalloc(MAX_OFFSET*8, GFP_KERNEL);
 	if (!simp_blkdev_data) {
-		printk("malloc block %lx failed\n", BLOCK_DISK_SIZE);
+		printk("malloc block %x failed\n", BLOCK_DISK_SIZE);
 		return -ENOMEM;
 	}
 
