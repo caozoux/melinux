@@ -44,6 +44,7 @@
 static const struct super_operations ramfs_ops;
 static const struct inode_operations ramfs_dir_inode_operations;
 
+#if 0
 static struct backing_dev_info ramfs_backing_dev_info = {
 	.name		= "ramfs",
 	.ra_pages	= 0,	/* No readahead */
@@ -51,6 +52,7 @@ static struct backing_dev_info ramfs_backing_dev_info = {
 			  BDI_CAP_MAP_DIRECT | BDI_CAP_MAP_COPY |
 			  BDI_CAP_READ_MAP | BDI_CAP_WRITE_MAP | BDI_CAP_EXEC_MAP,
 };
+#endif
 
 struct inode *ramfs_get_inodev2(struct super_block *sb,
 				const struct inode *dir, umode_t mode, dev_t dev)
@@ -62,10 +64,10 @@ struct inode *ramfs_get_inodev2(struct super_block *sb,
 		inode->i_ino = get_next_ino();
 		inode_init_owner(inode, dir, mode);
 		inode->i_mapping->a_ops = &ramfs_aopsv2;
-		inode->i_mapping->backing_dev_info = &ramfs_backing_dev_info;
+		//inode->i_mapping->backing_dev_info = &ramfs_backing_dev_info;
 		mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
 		mapping_set_unevictable(inode->i_mapping);
-		inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
+		inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
 		switch (mode & S_IFMT) {
 		default:
 			init_special_inode(inode, mode, dev);
@@ -104,7 +106,7 @@ ramfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t dev)
 		d_instantiate(dentry, inode);
 		dget(dentry);	/* Extra count - pin the dentry in core */
 		error = 0;
-		dir->i_mtime = dir->i_ctime = CURRENT_TIME;
+		dir->i_mtime = dir->i_ctime =current_time(inode);
 	}
 	return error;
 }
@@ -138,7 +140,7 @@ static int ramfs_symlink(struct inode * dir, struct dentry *dentry, const char *
 		if (!error) {
 			d_instantiate(dentry, inode);
 			dget(dentry);
-			dir->i_mtime = dir->i_ctime = CURRENT_TIME;
+			dir->i_mtime = dir->i_ctime = current_time(inode);
 		} else
 			iput(inode);
 	}
@@ -157,12 +159,6 @@ static const struct inode_operations ramfs_dir_inode_operations = {
 	.rename		= simple_rename,
 };
 
-static const struct super_operations ramfs_ops = {
-	.statfs		= simple_statfs,
-	.drop_inode	= generic_delete_inode,
-	.show_options	= generic_show_options,
-};
-
 struct ramfs_mount_opts {
 	umode_t mode;
 };
@@ -179,6 +175,23 @@ static const match_table_t tokens = {
 
 struct ramfs_fs_info {
 	struct ramfs_mount_opts mount_opts;
+};
+
+/*
+ * Display the mount options in /proc/mounts.
+ */
+static int ramfs_show_options(struct seq_file *m, struct dentry *root)
+{
+	struct ramfs_fs_info *fsi = root->d_sb->s_fs_info;
+
+	if (fsi->mount_opts.mode != RAMFS_DEFAULT_MODE)
+		seq_printf(m, ",mode=%o", fsi->mount_opts.mode);
+	return 0;
+}
+static const struct super_operations ramfs_ops = {
+	.statfs		= simple_statfs,
+	.drop_inode	= generic_delete_inode,
+	.show_options	= ramfs_show_options,
 };
 
 static int ramfs_parse_options(char *data, struct ramfs_mount_opts *opts)
@@ -221,7 +234,7 @@ int ramfs_fill_superv2(struct super_block *sb, void *data, int silent)
 	int err;
 
 	trace_printk("\n");
-	save_mount_options(sb, data);
+	//save_mount_options(sb, data);
 
 	fsi = kzalloc(sizeof(struct ramfs_fs_info), GFP_KERNEL);
 	sb->s_fs_info = fsi;
@@ -233,8 +246,8 @@ int ramfs_fill_superv2(struct super_block *sb, void *data, int silent)
 		return err;
 
 	sb->s_maxbytes		= MAX_LFS_FILESIZE;
-	sb->s_blocksize		= PAGE_CACHE_SIZE;
-	sb->s_blocksize_bits	= PAGE_CACHE_SHIFT;
+	sb->s_blocksize		= PAGE_SIZE;
+	sb->s_blocksize_bits	= PAGE_SHIFT;
 	sb->s_magic		= RAMFS_MAGIC;
 	sb->s_op		= &ramfs_ops;
 	sb->s_time_gran		= 1;

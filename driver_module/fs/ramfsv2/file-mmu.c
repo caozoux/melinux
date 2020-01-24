@@ -48,17 +48,19 @@
 #if 1
 int __set_page_dirty_no_writeback(struct page *page)
 {
-#if 0
+#if 1
 	struct address_space *mapping = page_mapping(page);
 	int newly_dirty;
 
+	WARN_ON_ONCE(!PageLocked(page) && !PageDirty(page));
+	WARN_ON_ONCE(!page_has_buffers(page));
 
 	/*
 	* Lock out page->mem_cgroup migration to keep PageDirty
 	* synchronized with per-memcg dirty page counters.
 	*/
 	newly_dirty = !TestSetPageDirty(page);
-	if (newly_dirty)                                                                                                                                                                                   
+	if (newly_dirty)
 		set_page_dirty(page);
 
 	if (newly_dirty)
@@ -159,7 +161,8 @@ static void xfs_vm_invalidatepage (
     unsigned int        offset,
     unsigned int        length)
 {
-    block_invalidatepage_range(page, offset, length);
+    //block_invalidatepage_range(page, offset, length);
+	iomap_invalidatepage(page, offset, length);
 }
 
 static sector_t
@@ -173,17 +176,12 @@ xfs_vm_bmap(
 }
 
 static ssize_t
-xfs_vm_direct_IO(
-    int         rw,
-    struct kiocb        *iocb,
-    const struct iovec  *iov,
-    loff_t          offset,
-    unsigned long       nr_segs)
+xfs_vm_direct_IO(struct kiocb *iocb, struct iov_iter *iov)
 {
 	return 0;
 }
 
-#if 1
+#if 0
 const struct address_space_operations ramfs_aopsv2 = {
 	.readpage	= local_simple_readpage,
 	.write_begin	= local_simple_write_begin,
@@ -198,7 +196,7 @@ const struct address_space_operations ramfs_aopsv2 = {
 	.writepages     = local_writepages,
 	.set_page_dirty = __set_page_dirty_no_writeback,
 	.releasepage        = xfs_vm_releasepage,
-	.invalidatepage_range   = xfs_vm_invalidatepage,
+	.invalidatepage = xfs_vm_invalidatepage,
 	.write_begin	= local_simple_write_begin,
 	.write_end	= local_simple_write_end,
 	.bmap           = xfs_vm_bmap,
@@ -210,14 +208,12 @@ const struct address_space_operations ramfs_aopsv2 = {
 #endif
 
 const struct file_operations ramfs_file_operationsv2 = {
-	//.read		= do_sync_read,
-	.aio_read	= generic_file_aio_read,
-	//.write		= do_sync_write,
-	.aio_write	= generic_file_aio_write,
+	.read_iter  = generic_file_read_iter,
+	.write_iter = generic_file_write_iter,
 	.mmap		= generic_file_mmap,
 	.fsync		= noop_fsync,
 	.splice_read	= generic_file_splice_read,
-	.splice_write	= generic_file_splice_write,
+	.splice_write	= iter_file_splice_write,
 	.llseek		= generic_file_llseek,
 };
 

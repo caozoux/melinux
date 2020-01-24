@@ -1,7 +1,8 @@
 PWD = $(shell pwd)  
 
 KERVER =$(shell uname -r)
-KERSRC :=/lib/modules/$(KERVER)/build
+KERSRC = /export/disk1T/zoucao.zcdisk/cach/ck
+#KERSRC :=/lib/modules/$(KERVER)/build
 TARGET := ramfsv2
 
 obj-m := $(TARGET).o  
