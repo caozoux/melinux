@@ -37,11 +37,9 @@
 #include <linux/kernel.h>
 #include <asm/uaccess.h>
 #include <linux/module.h>
+#include "ramfsv2_inode.h"
 #include "internal.h"
 
-#define RAMFS_DEFAULT_MODE	0755
-
-static const struct super_operations ramfs_ops;
 static const struct inode_operations ramfs_dir_inode_operations;
 
 #if 0
@@ -159,9 +157,6 @@ static const struct inode_operations ramfs_dir_inode_operations = {
 	.rename		= simple_rename,
 };
 
-struct ramfs_mount_opts {
-	umode_t mode;
-};
 
 enum {
 	Opt_mode,
@@ -171,27 +166,6 @@ enum {
 static const match_table_t tokens = {
 	{Opt_mode, "mode=%o"},
 	{Opt_err, NULL}
-};
-
-struct ramfs_fs_info {
-	struct ramfs_mount_opts mount_opts;
-};
-
-/*
- * Display the mount options in /proc/mounts.
- */
-static int ramfs_show_options(struct seq_file *m, struct dentry *root)
-{
-	struct ramfs_fs_info *fsi = root->d_sb->s_fs_info;
-
-	if (fsi->mount_opts.mode != RAMFS_DEFAULT_MODE)
-		seq_printf(m, ",mode=%o", fsi->mount_opts.mode);
-	return 0;
-}
-static const struct super_operations ramfs_ops = {
-	.statfs		= simple_statfs,
-	.drop_inode	= generic_delete_inode,
-	.show_options	= ramfs_show_options,
 };
 
 static int ramfs_parse_options(char *data, struct ramfs_mount_opts *opts)
@@ -281,14 +255,34 @@ static struct file_system_type ramfs_fs_type = {
 	.fs_flags	= FS_USERNS_MOUNT,
 };
 
+static void init_once(void *foo)
+{
+    struct ramfsv2_inode_info *ei = (struct ramfsv2_inode_info *) foo;
+
+    inode_init_once(&ei->vfs_inode);
+}
+
 static int __init init_ramfs_fs(void)
 {
-	return register_filesystem(&ramfs_fs_type);
+
+    ramfsv2_inode_cachep = kmem_cache_create_usercopy("ramfsv2_inode_cache",
+                sizeof(struct ramfsv2_inode_info), 0,
+                (SLAB_RECLAIM_ACCOUNT|SLAB_MEM_SPREAD|   SLAB_ACCOUNT),
+				0,0,init_once);
+                
+    if (ramfsv2_inode_cachep == NULL)
+        return -ENOMEM;
+
+	return  register_filesystem(&ramfs_fs_type);
 }
+
 static void __exit exit_ramfs_fs(void)
 {
 	unregister_filesystem(&ramfs_fs_type);
+	rcu_barrier();
+	kmem_cache_destroy(ramfsv2_inode_cachep);
 }
+
 module_init(init_ramfs_fs);
 module_exit(exit_ramfs_fs);
 

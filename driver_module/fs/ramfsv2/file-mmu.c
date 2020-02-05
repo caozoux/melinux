@@ -83,7 +83,7 @@ static int local_simple_write_begin(struct file *file, struct address_space *map
 //	struct radix_tree_iter iter;
 
 	ramfsv2_write_size += len;
-	trace_printk("write:%d total:%d\n", len, ramfsv2_write_size);
+	printk("%s write:%d total:%d\n", __func__, len, ramfsv2_write_size);
 #if 0
 	//get the cache page
 	radix_tree_for_each_slot(slot, &mapping->page_tree, &iter, 0) {
@@ -103,20 +103,20 @@ int local_simple_write_end(struct file *file, struct address_space *mapping,
             loff_t pos, unsigned len, unsigned copied,
             struct page *page, void *fsdata)
 {
-	trace_printk("\n");
+	printk("\n");
 	return simple_write_end(file, mapping, pos, len, copied, page, fsdata);
 }
 
 int local_simple_readpage(struct file *file, struct page *page)
 {
-	trace_printk("\n");
+	printk("\n");
 	return simple_readpage(file, page);
 }
 
 static int local_get_blocks(struct inode *inode, sector_t iblock, struct buffer_head  *bh_result,
     			int create)
 {
-	trace_printk("\n");
+	printk("\n");
 	return 0;	
 }
 
@@ -124,13 +124,13 @@ static int
 local_readpages(struct file *unused, struct address_space *mapping, struct list_head *pages,
     			unsigned        nr_pages)
 {
-	trace_printk("\n");
+	printk("\n");
     return mpage_readpages(mapping, pages, nr_pages, local_get_blocks);
 }
 
 static int local_writepage(struct page *page, struct writeback_control *wbc)
 {
-	trace_printk("zz %s %d \n", __func__, __LINE__);
+	printk("zz %s %d \n", __func__, __LINE__);
 	return 0;
 }
 
@@ -138,7 +138,7 @@ static int local_writepages(
     struct address_space    *mapping,
     struct writeback_control *wbc)
 {
-	trace_printk("\n");
+	printk("\n");
     return generic_writepages(mapping, wbc);
 }
 
@@ -171,7 +171,7 @@ xfs_vm_bmap(
     sector_t        block)
 {
 
-	trace_printk("\n");
+	printk("\n");
     return generic_block_bmap(mapping, block, local_get_blocks);
 }
 
@@ -207,9 +207,28 @@ const struct address_space_operations ramfs_aopsv2 = {
 };
 #endif
 
+ssize_t ramfsv2_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
+{
+    struct file *file = iocb->ki_filp;
+    struct inode *inode = file->f_mapping->host;
+    ssize_t ret;
+
+	printk("zz %s %d \n", __func__, __LINE__);
+
+    inode_lock(inode);
+    ret = generic_write_checks(iocb, from);
+    if (ret > 0)                          
+        ret = __generic_file_write_iter(iocb, from);
+    inode_unlock(inode);
+
+    if (ret > 0) 
+        ret = generic_write_sync(iocb, ret);
+    return ret;
+}
+
 const struct file_operations ramfs_file_operationsv2 = {
 	.read_iter  = generic_file_read_iter,
-	.write_iter = generic_file_write_iter,
+	.write_iter = ramfsv2_file_write_iter,
 	.mmap		= generic_file_mmap,
 	.fsync		= noop_fsync,
 	.splice_read	= generic_file_splice_read,

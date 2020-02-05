@@ -6,7 +6,7 @@ KERSRC = /export/disk1T/zoucao.zcdisk/cach/ck
 TARGET := ramfsv2
 
 obj-m := $(TARGET).o  
-$(TARGET)-objs := inode.o file-mmu.o
+$(TARGET)-objs := inode.o file-mmu.o supper.o
 all:
 	$(MAKE) -C $(KERSRC)  M=$(PWD) modules  
 		
