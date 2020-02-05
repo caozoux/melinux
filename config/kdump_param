@@ -1,0 +1,1 @@
+LANG=en_US.UTF-8 numa=off console=ttyS0,115200 fsck.repair=yes irqpoll nr_cpus=1 swiotlb=noforce cma=0 reset_devices cgroup_disable=memory udev.children-max=2 panic=10 rootflags=nofail modprobe.blacklist=hibmc_drm,mlx5_core,mlx5_ib,hinic,hns3
