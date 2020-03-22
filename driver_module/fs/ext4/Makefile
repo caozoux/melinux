@@ -1,0 +1,21 @@
+KERSRC := /lib/modules/`uname -r`/build
+PWD = $(shell pwd)  
+
+TARGET := ext4_test
+
+obj-m := $(TARGET).o
+
+$(TARGET)-objs := balloc.o bitmap.o block_validity.o dir.o ext4_jbd2.o extents.o \
+		extents_status.o file.o fsmap.o fsync.o hash.o ialloc.o \
+		indirect.o inline.o inode.o ioctl.o mballoc.o migrate.o \
+		mmp.o move_extent.o namei.o page-io.o readpage.o resize.o \
+		super.o symlink.o sysfs.o xattr.o xattr_trusted.o xattr_user.o \
+		acl.o xattr_security.o
+
+all:
+	$(MAKE) -C $(KERSRC) O=$(KEROUT) M=$(PWD) modules  
+		
+clean:
+	rm *.ko modules.order  Module.symvers *.mod.c *.ko.cmd *.o.cmd .tmp_versions/ -rf
+	rm *.o -f
+	rm .*.cmd -f
