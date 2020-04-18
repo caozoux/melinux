@@ -1,0 +1,579 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+KERSRC	Makefile	/^KERSRC := \/lib\/modules\/`uname -r`\/build$/;"	m
+OPT_DEFAULT_PERMISSIONS	super.c	/^	OPT_DEFAULT_PERMISSIONS,$/;"	e	enum:__anon5	file:
+OPT_ERR	super.c	/^	OPT_ERR,$/;"	e	enum:__anon5	file:
+OPT_INDEX_OFF	super.c	/^	OPT_INDEX_OFF,$/;"	e	enum:__anon5	file:
+OPT_INDEX_ON	super.c	/^	OPT_INDEX_ON,$/;"	e	enum:__anon5	file:
+OPT_LOWERDIR	super.c	/^	OPT_LOWERDIR,$/;"	e	enum:__anon5	file:
+OPT_METACOPY_OFF	super.c	/^	OPT_METACOPY_OFF,$/;"	e	enum:__anon5	file:
+OPT_METACOPY_ON	super.c	/^	OPT_METACOPY_ON,$/;"	e	enum:__anon5	file:
+OPT_NFS_EXPORT_OFF	super.c	/^	OPT_NFS_EXPORT_OFF,$/;"	e	enum:__anon5	file:
+OPT_NFS_EXPORT_ON	super.c	/^	OPT_NFS_EXPORT_ON,$/;"	e	enum:__anon5	file:
+OPT_REDIRECT_DIR	super.c	/^	OPT_REDIRECT_DIR,$/;"	e	enum:__anon5	file:
+OPT_UPPERDIR	super.c	/^	OPT_UPPERDIR,$/;"	e	enum:__anon5	file:
+OPT_WORKDIR	super.c	/^	OPT_WORKDIR,$/;"	e	enum:__anon5	file:
+OPT_XINO_AUTO	super.c	/^	OPT_XINO_AUTO,$/;"	e	enum:__anon5	file:
+OPT_XINO_OFF	super.c	/^	OPT_XINO_OFF,$/;"	e	enum:__anon5	file:
+OPT_XINO_ON	super.c	/^	OPT_XINO_ON,$/;"	e	enum:__anon5	file:
+OVL_CATTR	overlayfs.h	398;"	d
+OVL_CLONE	file.c	/^	OVL_CLONE,$/;"	e	enum:ovl_copyop	file:
+OVL_CONST_INO	overlayfs.h	/^	OVL_CONST_INO,$/;"	e	enum:ovl_inode_flag
+OVL_COPY	file.c	/^	OVL_COPY,$/;"	e	enum:ovl_copyop	file:
+OVL_COPY_UP_CHUNK_SIZE	copy_up.c	26;"	d	file:
+OVL_DEDUPE	file.c	/^	OVL_DEDUPE,$/;"	e	enum:ovl_copyop	file:
+OVL_E	ovl_entry.h	/^static inline struct ovl_entry *OVL_E(struct dentry *dentry)$/;"	f
+OVL_E_CONNECTED	overlayfs.h	/^	OVL_E_CONNECTED,$/;"	e	enum:ovl_entry_flag
+OVL_E_OPAQUE	overlayfs.h	/^	OVL_E_OPAQUE,$/;"	e	enum:ovl_entry_flag
+OVL_E_UPPER_ALIAS	overlayfs.h	/^	OVL_E_UPPER_ALIAS,$/;"	e	enum:ovl_entry_flag
+OVL_FH_FLAG_ALL	overlayfs.h	66;"	d
+OVL_FH_FLAG_ANY_ENDIAN	overlayfs.h	62;"	d
+OVL_FH_FLAG_BIG_ENDIAN	overlayfs.h	61;"	d
+OVL_FH_FLAG_CPU_ENDIAN	overlayfs.h	70;"	d
+OVL_FH_FLAG_CPU_ENDIAN	overlayfs.h	72;"	d
+OVL_FH_FLAG_PATH_UPPER	overlayfs.h	64;"	d
+OVL_FH_MAGIC	overlayfs.h	58;"	d
+OVL_FH_VERSION	overlayfs.h	57;"	d
+OVL_FILEID	overlayfs.h	78;"	d
+OVL_I	ovl_entry.h	/^static inline struct ovl_inode *OVL_I(struct inode *inode)$/;"	f
+OVL_IMPURE	overlayfs.h	/^	OVL_IMPURE,$/;"	e	enum:ovl_inode_flag
+OVL_INDEX	overlayfs.h	/^	OVL_INDEX,$/;"	e	enum:ovl_inode_flag
+OVL_INDEXDIR_NAME	super.c	610;"	d	file:
+OVL_MAX_NESTING	inode.c	527;"	d	file:
+OVL_MAX_STACK	super.c	30;"	d	file:
+OVL_NLINK_ADD_UPPER	inode.c	626;"	d	file:
+OVL_SETFL_MASK	file.c	45;"	d	file:
+OVL_TYPE_MERGE	overlayfs.h	22;"	d
+OVL_TYPE_ORIGIN	overlayfs.h	23;"	d
+OVL_TYPE_UPPER	overlayfs.h	21;"	d
+OVL_UPPERDATA	overlayfs.h	/^	OVL_UPPERDATA,$/;"	e	enum:ovl_inode_flag
+OVL_WHITEOUTS	overlayfs.h	/^	OVL_WHITEOUTS,$/;"	e	enum:ovl_inode_flag
+OVL_WORKDIR_NAME	super.c	609;"	d	file:
+OVL_XATTR_IMPURE	overlayfs.h	29;"	d
+OVL_XATTR_METACOPY	overlayfs.h	32;"	d
+OVL_XATTR_NLINK	overlayfs.h	30;"	d
+OVL_XATTR_OPAQUE	overlayfs.h	26;"	d
+OVL_XATTR_ORIGIN	overlayfs.h	28;"	d
+OVL_XATTR_PREFIX	overlayfs.h	25;"	d
+OVL_XATTR_REDIRECT	overlayfs.h	27;"	d
+OVL_XATTR_UPPER	overlayfs.h	31;"	d
+OVL_XINO_AUTO	super.c	/^	OVL_XINO_AUTO,$/;"	e	enum:__anon4	file:
+OVL_XINO_OFF	super.c	/^	OVL_XINO_OFF,$/;"	e	enum:__anon4	file:
+OVL_XINO_ON	super.c	/^	OVL_XINO_ON,$/;"	e	enum:__anon4	file:
+PWD	Makefile	/^PWD = $(shell pwd)  $/;"	m
+TARGET	Makefile	/^TARGET := overlay_test$/;"	m
+__OVL_PATH_MERGE	overlayfs.h	/^	__OVL_PATH_MERGE	= (1 << 1),$/;"	e	enum:ovl_path_type
+__OVL_PATH_ORIGIN	overlayfs.h	/^	__OVL_PATH_ORIGIN	= (1 << 2),$/;"	e	enum:ovl_path_type
+__OVL_PATH_UPPER	overlayfs.h	/^	__OVL_PATH_UPPER	= (1 << 0),$/;"	e	enum:ovl_path_type
+__packed	overlayfs.h	/^} __packed;$/;"	v	typeref:struct:ovl_fh
+__upperdentry	ovl_entry.h	/^	struct dentry *__upperdentry;$/;"	m	struct:ovl_inode	typeref:struct:ovl_inode::dentry
+cache	ovl_entry.h	/^		struct ovl_dir_cache *cache;	\/* directory *\/$/;"	m	union:ovl_inode::__anon3	typeref:struct:ovl_inode::__anon3::ovl_dir_cache
+cache	readdir.c	/^	struct ovl_dir_cache *cache;$/;"	m	struct:ovl_dir_file	typeref:struct:ovl_dir_file::ovl_dir_cache	file:
+cache	readdir.c	/^	struct ovl_dir_cache *cache;$/;"	m	struct:ovl_readdir_translate	typeref:struct:ovl_readdir_translate::ovl_dir_cache	file:
+config	ovl_entry.h	/^	struct ovl_config config;$/;"	m	struct:ovl_fs	typeref:struct:ovl_fs::ovl_config
+count	readdir.c	/^	int count;$/;"	m	struct:ovl_readdir_data	file:
+creator_cred	ovl_entry.h	/^	const struct cred *creator_cred;$/;"	m	struct:ovl_fs	typeref:struct:ovl_fs::cred
+ctx	readdir.c	/^	struct dir_context ctx;$/;"	m	struct:ovl_readdir_data	typeref:struct:ovl_readdir_data::dir_context	file:
+ctx	readdir.c	/^	struct dir_context ctx;$/;"	m	struct:ovl_readdir_translate	typeref:struct:ovl_readdir_translate::dir_context	file:
+cursor	readdir.c	/^	struct list_head *cursor;$/;"	m	struct:ovl_dir_file	typeref:struct:ovl_dir_file::list_head	file:
+d_type_supported	readdir.c	/^	bool d_type_supported;$/;"	m	struct:ovl_readdir_data	file:
+default_permissions	ovl_entry.h	/^	bool default_permissions;$/;"	m	struct:ovl_config
+dentry	copy_up.c	/^	struct dentry *dentry;$/;"	m	struct:ovl_copy_up_ctx	typeref:struct:ovl_copy_up_ctx::dentry	file:
+dentry	ovl_entry.h	/^	struct dentry *dentry;$/;"	m	struct:ovl_path	typeref:struct:ovl_path::dentry
+dentry	readdir.c	/^	struct dentry *dentry;$/;"	m	struct:ovl_readdir_data	typeref:struct:ovl_readdir_data::dentry	file:
+destdir	copy_up.c	/^	struct dentry *destdir;$/;"	m	struct:ovl_copy_up_ctx	typeref:struct:ovl_copy_up_ctx::dentry	file:
+destname	copy_up.c	/^	struct qstr destname;$/;"	m	struct:ovl_copy_up_ctx	typeref:struct:ovl_copy_up_ctx::qstr	file:
+entries	readdir.c	/^	struct list_head entries;$/;"	m	struct:ovl_dir_cache	typeref:struct:ovl_dir_cache::list_head	file:
+err	readdir.c	/^	int err;$/;"	m	struct:ovl_readdir_data	file:
+fid	overlayfs.h	/^	u8 fid[0];	\/* file identifier *\/$/;"	m	struct:ovl_fh
+first_maybe_whiteout	readdir.c	/^	struct ovl_cache_entry *first_maybe_whiteout;$/;"	m	struct:ovl_readdir_data	typeref:struct:ovl_readdir_data::ovl_cache_entry	file:
+flags	overlayfs.h	/^	u8 flags;	\/* OVL_FH_FLAG_* *\/$/;"	m	struct:ovl_fh
+flags	ovl_entry.h	/^			unsigned long flags;$/;"	m	struct:ovl_entry::__anon1::__anon2
+flags	ovl_entry.h	/^	unsigned long flags;$/;"	m	struct:ovl_inode
+fs	ovl_entry.h	/^	struct ovl_sb *fs;$/;"	m	struct:ovl_layer	typeref:struct:ovl_layer::ovl_sb
+fsid	ovl_entry.h	/^	int fsid;$/;"	m	struct:ovl_layer
+fsid	readdir.c	/^	int fsid;$/;"	m	struct:ovl_readdir_translate	file:
+hardlink	overlayfs.h	/^	struct dentry *hardlink;$/;"	m	struct:ovl_cattr	typeref:struct:ovl_cattr::dentry
+idx	ovl_entry.h	/^	int idx;$/;"	m	struct:ovl_layer
+index	overlayfs.h	/^	struct dentry *index;$/;"	m	struct:ovl_inode_params	typeref:struct:ovl_inode_params::dentry
+index	ovl_entry.h	/^	bool index;$/;"	m	struct:ovl_config
+indexdir	ovl_entry.h	/^	struct dentry *indexdir;$/;"	m	struct:ovl_fs	typeref:struct:ovl_fs::dentry
+indexed	copy_up.c	/^	bool indexed;$/;"	m	struct:ovl_copy_up_ctx	file:
+ino	readdir.c	/^	u64 ino;$/;"	m	struct:ovl_cache_entry	file:
+is_dir	namei.c	/^	bool is_dir;$/;"	m	struct:ovl_lookup_data	file:
+is_lowest	readdir.c	/^	bool is_lowest;$/;"	m	struct:ovl_readdir_data	file:
+is_real	readdir.c	/^	bool is_real;$/;"	m	struct:ovl_dir_file	file:
+is_upper	readdir.c	/^	bool is_upper;$/;"	m	struct:ovl_cache_entry	file:
+is_upper	readdir.c	/^	bool is_upper;$/;"	m	struct:ovl_dir_file	file:
+is_upper	readdir.c	/^	bool is_upper;$/;"	m	struct:ovl_readdir_data	file:
+is_whiteout	readdir.c	/^	bool is_whiteout;$/;"	m	struct:ovl_cache_entry	file:
+l_node	readdir.c	/^	struct list_head l_node;$/;"	m	struct:ovl_cache_entry	typeref:struct:ovl_cache_entry::list_head	file:
+last	namei.c	/^	bool last;$/;"	m	struct:ovl_lookup_data	file:
+layer	ovl_entry.h	/^	struct ovl_layer *layer;$/;"	m	struct:ovl_path	typeref:struct:ovl_path::ovl_layer
+len	overlayfs.h	/^	u8 len;		\/* size of this header + size of fid *\/$/;"	m	struct:ovl_fh
+len	readdir.c	/^	unsigned int len;$/;"	m	struct:ovl_cache_entry	file:
+link	copy_up.c	/^	const char *link;$/;"	m	struct:ovl_copy_up_ctx	file:
+link	overlayfs.h	/^	const char *link;$/;"	m	struct:ovl_cattr
+list	readdir.c	/^	struct list_head *list;$/;"	m	struct:ovl_readdir_data	typeref:struct:ovl_readdir_data::list_head	file:
+lock	ovl_entry.h	/^	struct mutex lock;$/;"	m	struct:ovl_inode	typeref:struct:ovl_inode::mutex
+lower	ovl_entry.h	/^	struct inode *lower;$/;"	m	struct:ovl_inode	typeref:struct:ovl_inode::inode
+lower_fs	ovl_entry.h	/^	struct ovl_sb *lower_fs;$/;"	m	struct:ovl_fs	typeref:struct:ovl_fs::ovl_sb
+lower_layers	ovl_entry.h	/^	struct ovl_layer *lower_layers;$/;"	m	struct:ovl_fs	typeref:struct:ovl_fs::ovl_layer
+lowerdata	overlayfs.h	/^	struct dentry *lowerdata;$/;"	m	struct:ovl_inode_params	typeref:struct:ovl_inode_params::dentry
+lowerdata	ovl_entry.h	/^		struct inode *lowerdata;	\/* regular file *\/$/;"	m	union:ovl_inode::__anon3	typeref:struct:ovl_inode::__anon3::inode
+lowerdir	ovl_entry.h	/^	char *lowerdir;$/;"	m	struct:ovl_config
+lowerpath	copy_up.c	/^	struct path lowerpath;$/;"	m	struct:ovl_copy_up_ctx	typeref:struct:ovl_copy_up_ctx::path	file:
+lowerpath	overlayfs.h	/^	struct ovl_path *lowerpath;$/;"	m	struct:ovl_inode_params	typeref:struct:ovl_inode_params::ovl_path
+lowerstack	ovl_entry.h	/^	struct ovl_path lowerstack[];$/;"	m	struct:ovl_entry	typeref:struct:ovl_entry::ovl_path
+magic	overlayfs.h	/^	u8 magic;	\/* 0xfb *\/$/;"	m	struct:ovl_fh
+metacopy	copy_up.c	/^	bool metacopy;$/;"	m	struct:ovl_copy_up_ctx	file:
+metacopy	namei.c	/^	bool metacopy;$/;"	m	struct:ovl_lookup_data	file:
+metacopy	ovl_entry.h	/^	bool metacopy;$/;"	m	struct:ovl_config
+middle	readdir.c	/^	struct list_head middle;$/;"	m	struct:ovl_readdir_data	typeref:struct:ovl_readdir_data::list_head	file:
+mnt	ovl_entry.h	/^	struct vfsmount *mnt;$/;"	m	struct:ovl_layer	typeref:struct:ovl_layer::vfsmount
+mode	overlayfs.h	/^	umode_t mode;$/;"	m	struct:ovl_cattr
+name	namei.c	/^	struct qstr name;$/;"	m	struct:ovl_lookup_data	typeref:struct:ovl_lookup_data::qstr	file:
+name	readdir.c	/^	char name[];$/;"	m	struct:ovl_cache_entry	file:
+namelen	ovl_entry.h	/^	long namelen;$/;"	m	struct:ovl_fs
+newinode	overlayfs.h	/^	struct inode *newinode;$/;"	m	struct:ovl_inode_params	typeref:struct:ovl_inode_params::inode
+next_maybe_whiteout	readdir.c	/^	struct ovl_cache_entry *next_maybe_whiteout;$/;"	m	struct:ovl_cache_entry	typeref:struct:ovl_cache_entry::ovl_cache_entry	file:
+nfs_export	ovl_entry.h	/^	bool nfs_export;$/;"	m	struct:ovl_config
+node	readdir.c	/^	struct rb_node node;$/;"	m	struct:ovl_cache_entry	typeref:struct:ovl_cache_entry::rb_node	file:
+noxattr	ovl_entry.h	/^	bool noxattr;$/;"	m	struct:ovl_fs
+numlower	overlayfs.h	/^	unsigned int numlower;$/;"	m	struct:ovl_inode_params
+numlower	ovl_entry.h	/^	unsigned int numlower;$/;"	m	struct:ovl_fs
+numlower	ovl_entry.h	/^	unsigned numlower;$/;"	m	struct:ovl_entry
+numlowerfs	ovl_entry.h	/^	unsigned int numlowerfs;$/;"	m	struct:ovl_fs
+obj-m	Makefile	/^obj-m := $(TARGET).o$/;"	m
+opaque	namei.c	/^	bool opaque;$/;"	m	struct:ovl_lookup_data	file:
+orig_ctx	readdir.c	/^	struct dir_context *orig_ctx;$/;"	m	struct:ovl_readdir_translate	typeref:struct:ovl_readdir_translate::dir_context	file:
+origin	copy_up.c	/^	bool origin;$/;"	m	struct:ovl_copy_up_ctx	file:
+ovl_acceptable	namei.c	/^static int ovl_acceptable(void *ctx, struct dentry *dentry)$/;"	f	file:
+ovl_alloc_entry	util.c	/^struct ovl_entry *ovl_alloc_entry(unsigned int numlower)$/;"	f
+ovl_alloc_inode	super.c	/^static struct inode *ovl_alloc_inode(struct super_block *sb)$/;"	f	file:
+ovl_already_copied_up	util.c	/^bool ovl_already_copied_up(struct dentry *dentry, int flags)$/;"	f
+ovl_already_copied_up_locked	util.c	/^static bool ovl_already_copied_up_locked(struct dentry *dentry, int flags)$/;"	f	file:
+ovl_aops	inode.c	/^static const struct address_space_operations ovl_aops = {$/;"	v	typeref:struct:address_space_operations	file:
+ovl_cache_entry	readdir.c	/^struct ovl_cache_entry {$/;"	s	file:
+ovl_cache_entry_add_rb	readdir.c	/^static int ovl_cache_entry_add_rb(struct ovl_readdir_data *rdd,$/;"	f	file:
+ovl_cache_entry_find	readdir.c	/^static struct ovl_cache_entry *ovl_cache_entry_find(struct rb_root *root,$/;"	f	file:
+ovl_cache_entry_find_link	readdir.c	/^static bool ovl_cache_entry_find_link(const char *name, int len,$/;"	f	file:
+ovl_cache_entry_from_node	readdir.c	/^static struct ovl_cache_entry *ovl_cache_entry_from_node(struct rb_node *n)$/;"	f	file:
+ovl_cache_entry_new	readdir.c	/^static struct ovl_cache_entry *ovl_cache_entry_new(struct ovl_readdir_data *rdd,$/;"	f	file:
+ovl_cache_free	readdir.c	/^void ovl_cache_free(struct list_head *list)$/;"	f
+ovl_cache_get	readdir.c	/^static struct ovl_dir_cache *ovl_cache_get(struct dentry *dentry)$/;"	f	file:
+ovl_cache_get_impure	readdir.c	/^static struct ovl_dir_cache *ovl_cache_get_impure(struct path *path)$/;"	f	file:
+ovl_cache_put	readdir.c	/^static void ovl_cache_put(struct ovl_dir_file *od, struct dentry *dentry)$/;"	f	file:
+ovl_cache_update_ino	readdir.c	/^static int ovl_cache_update_ino(struct path *path, struct ovl_cache_entry *p)$/;"	f	file:
+ovl_calc_d_ino	readdir.c	/^static bool ovl_calc_d_ino(struct ovl_readdir_data *rdd,$/;"	f	file:
+ovl_can_decode_fh	util.c	/^int ovl_can_decode_fh(struct super_block *sb)$/;"	f
+ovl_can_list	inode.c	/^static bool ovl_can_list(const char *s)$/;"	f	file:
+ovl_can_move	dir.c	/^static bool ovl_can_move(struct dentry *dentry)$/;"	f	file:
+ovl_cattr	overlayfs.h	/^struct ovl_cattr {$/;"	s
+ovl_ccup_get	copy_up.c	/^static int ovl_ccup_get(char *buf, const struct kernel_param *param)$/;"	f	file:
+ovl_ccup_set	copy_up.c	/^static int ovl_ccup_set(const char *buf, const struct kernel_param *param)$/;"	f	file:
+ovl_change_flags	file.c	/^static int ovl_change_flags(struct file *file, unsigned int flags)$/;"	f	file:
+ovl_check_d_type	readdir.c	/^static int ovl_check_d_type(struct dir_context *ctx, const char *name,$/;"	f	file:
+ovl_check_d_type_supported	readdir.c	/^int ovl_check_d_type_supported(struct path *realpath)$/;"	f
+ovl_check_dir_xattr	util.c	/^bool ovl_check_dir_xattr(struct dentry *dentry, const char *name)$/;"	f
+ovl_check_empty_dir	readdir.c	/^int ovl_check_empty_dir(struct dentry *dentry, struct list_head *list)$/;"	f
+ovl_check_encode_origin	export.c	/^static int ovl_check_encode_origin(struct dentry *dentry)$/;"	f	file:
+ovl_check_fh_len	namei.c	/^int ovl_check_fh_len(struct ovl_fh *fh, int fh_len)$/;"	f
+ovl_check_metacopy_xattr	util.c	/^int ovl_check_metacopy_xattr(struct dentry *dentry)$/;"	f
+ovl_check_namelen	super.c	/^static int ovl_check_namelen(struct path *path, struct ovl_fs *ofs,$/;"	f	file:
+ovl_check_origin	namei.c	/^static int ovl_check_origin(struct ovl_fs *ofs, struct dentry *upperdentry,$/;"	f	file:
+ovl_check_origin_fh	namei.c	/^int ovl_check_origin_fh(struct ovl_fs *ofs, struct ovl_fh *fh, bool connected,$/;"	f
+ovl_check_origin_xattr	util.c	/^bool ovl_check_origin_xattr(struct dentry *dentry)$/;"	f
+ovl_check_redirect	namei.c	/^static int ovl_check_redirect(struct dentry *dentry, struct ovl_lookup_data *d,$/;"	f	file:
+ovl_check_setxattr	util.c	/^int ovl_check_setxattr(struct dentry *dentry, struct dentry *upperdentry,$/;"	f
+ovl_check_whiteouts	readdir.c	/^static int ovl_check_whiteouts(struct dentry *dir, struct ovl_readdir_data *rdd)$/;"	f	file:
+ovl_cleanup	dir.c	/^int ovl_cleanup(struct inode *wdir, struct dentry *wdentry)$/;"	f
+ovl_cleanup_and_whiteout	dir.c	/^int ovl_cleanup_and_whiteout(struct dentry *workdir, struct inode *dir,$/;"	f
+ovl_cleanup_index	util.c	/^static void ovl_cleanup_index(struct dentry *dentry)$/;"	f	file:
+ovl_cleanup_whiteouts	readdir.c	/^void ovl_cleanup_whiteouts(struct dentry *upper, struct list_head *list)$/;"	f
+ovl_clear_empty	dir.c	/^static struct dentry *ovl_clear_empty(struct dentry *dentry,$/;"	f	file:
+ovl_clear_flag	util.c	/^void ovl_clear_flag(unsigned long flag, struct inode *inode)$/;"	f
+ovl_clone_file_range	file.c	/^static int ovl_clone_file_range(struct file *file_in, loff_t pos_in,$/;"	f	file:
+ovl_compat_ioctl	file.c	/^static long ovl_compat_ioctl(struct file *file, unsigned int cmd,$/;"	f	file:
+ovl_config	ovl_entry.h	/^struct ovl_config {$/;"	s
+ovl_connect_layer	export.c	/^static int ovl_connect_layer(struct dentry *dentry)$/;"	f	file:
+ovl_connectable_layer	export.c	/^static int ovl_connectable_layer(struct dentry *dentry)$/;"	f	file:
+ovl_copy_file_range	file.c	/^static ssize_t ovl_copy_file_range(struct file *file_in, loff_t pos_in,$/;"	f	file:
+ovl_copy_up	copy_up.c	/^int ovl_copy_up(struct dentry *dentry)$/;"	f
+ovl_copy_up_ctx	copy_up.c	/^struct ovl_copy_up_ctx {$/;"	s	file:
+ovl_copy_up_data	copy_up.c	/^static int ovl_copy_up_data(struct path *old, struct path *new, loff_t len)$/;"	f	file:
+ovl_copy_up_end	util.c	/^void ovl_copy_up_end(struct dentry *dentry)$/;"	f
+ovl_copy_up_flags	copy_up.c	/^int ovl_copy_up_flags(struct dentry *dentry, int flags)$/;"	f
+ovl_copy_up_inode	copy_up.c	/^static int ovl_copy_up_inode(struct ovl_copy_up_ctx *c, struct dentry *temp)$/;"	f	file:
+ovl_copy_up_locked	copy_up.c	/^static int ovl_copy_up_locked(struct ovl_copy_up_ctx *c)$/;"	f	file:
+ovl_copy_up_meta_inode_data	copy_up.c	/^static int ovl_copy_up_meta_inode_data(struct ovl_copy_up_ctx *c)$/;"	f	file:
+ovl_copy_up_one	copy_up.c	/^static int ovl_copy_up_one(struct dentry *parent, struct dentry *dentry,$/;"	f	file:
+ovl_copy_up_start	util.c	/^int ovl_copy_up_start(struct dentry *dentry, int flags)$/;"	f
+ovl_copy_up_with_data	copy_up.c	/^int ovl_copy_up_with_data(struct dentry *dentry)$/;"	f
+ovl_copy_xattr	copy_up.c	/^int ovl_copy_xattr(struct dentry *old, struct dentry *new)$/;"	f
+ovl_copyattr	overlayfs.h	/^static inline void ovl_copyattr(struct inode *from, struct inode *to)$/;"	f
+ovl_copyfile	file.c	/^static ssize_t ovl_copyfile(struct file *file_in, loff_t pos_in,$/;"	f	file:
+ovl_copyflags	overlayfs.h	/^static inline void ovl_copyflags(struct inode *from, struct inode *to)$/;"	f
+ovl_copyop	file.c	/^enum ovl_copyop {$/;"	g	file:
+ovl_create	dir.c	/^static int ovl_create(struct inode *dir, struct dentry *dentry, umode_t mode,$/;"	f	file:
+ovl_create_index	copy_up.c	/^static int ovl_create_index(struct dentry *dentry, struct dentry *origin,$/;"	f	file:
+ovl_create_object	dir.c	/^static int ovl_create_object(struct dentry *dentry, int mode, dev_t rdev,$/;"	f	file:
+ovl_create_or_link	dir.c	/^static int ovl_create_or_link(struct dentry *dentry, struct inode *inode,$/;"	f	file:
+ovl_create_over_whiteout	dir.c	/^static int ovl_create_over_whiteout(struct dentry *dentry, struct inode *inode,$/;"	f	file:
+ovl_create_real	dir.c	/^struct dentry *ovl_create_real(struct inode *dir, struct dentry *newdentry,$/;"	f
+ovl_create_temp	dir.c	/^struct dentry *ovl_create_temp(struct dentry *workdir, struct ovl_cattr *attr)$/;"	f
+ovl_create_upper	dir.c	/^static int ovl_create_upper(struct dentry *dentry, struct inode *inode,$/;"	f	file:
+ovl_d_real	super.c	/^static struct dentry *ovl_d_real(struct dentry *dentry,$/;"	f	file:
+ovl_d_to_fh	export.c	/^static int ovl_d_to_fh(struct dentry *dentry, char *buf, int buflen)$/;"	f	file:
+ovl_decode_real_fh	namei.c	/^struct dentry *ovl_decode_real_fh(struct ovl_fh *fh, struct vfsmount *mnt,$/;"	f
+ovl_dedupe_file_range	file.c	/^static int ovl_dedupe_file_range(struct file *file_in, loff_t pos_in,$/;"	f	file:
+ovl_dentry_clear_flag	util.c	/^void ovl_dentry_clear_flag(unsigned long flag, struct dentry *dentry)$/;"	f
+ovl_dentry_get_redirect	util.c	/^const char *ovl_dentry_get_redirect(struct dentry *dentry)$/;"	f
+ovl_dentry_has_upper_alias	util.c	/^bool ovl_dentry_has_upper_alias(struct dentry *dentry)$/;"	f
+ovl_dentry_is_opaque	util.c	/^bool ovl_dentry_is_opaque(struct dentry *dentry)$/;"	f
+ovl_dentry_is_whiteout	util.c	/^bool ovl_dentry_is_whiteout(struct dentry *dentry)$/;"	f
+ovl_dentry_lower	util.c	/^struct dentry *ovl_dentry_lower(struct dentry *dentry)$/;"	f
+ovl_dentry_lowerdata	util.c	/^struct dentry *ovl_dentry_lowerdata(struct dentry *dentry)$/;"	f
+ovl_dentry_needs_data_copy_up	util.c	/^bool ovl_dentry_needs_data_copy_up(struct dentry *dentry, int flags)$/;"	f
+ovl_dentry_needs_data_copy_up_locked	util.c	/^bool ovl_dentry_needs_data_copy_up_locked(struct dentry *dentry, int flags)$/;"	f
+ovl_dentry_operations	super.c	/^static const struct dentry_operations ovl_dentry_operations = {$/;"	v	typeref:struct:dentry_operations	file:
+ovl_dentry_real	util.c	/^struct dentry *ovl_dentry_real(struct dentry *dentry)$/;"	f
+ovl_dentry_real_at	export.c	/^static struct dentry *ovl_dentry_real_at(struct dentry *dentry, int idx)$/;"	f	file:
+ovl_dentry_release	super.c	/^static void ovl_dentry_release(struct dentry *dentry)$/;"	f	file:
+ovl_dentry_remote	util.c	/^bool ovl_dentry_remote(struct dentry *dentry)$/;"	f
+ovl_dentry_revalidate	super.c	/^static int ovl_dentry_revalidate(struct dentry *dentry, unsigned int flags)$/;"	f	file:
+ovl_dentry_set_flag	util.c	/^void ovl_dentry_set_flag(unsigned long flag, struct dentry *dentry)$/;"	f
+ovl_dentry_set_opaque	util.c	/^void ovl_dentry_set_opaque(struct dentry *dentry)$/;"	f
+ovl_dentry_set_redirect	util.c	/^void ovl_dentry_set_redirect(struct dentry *dentry, const char *redirect)$/;"	f
+ovl_dentry_set_upper_alias	util.c	/^void ovl_dentry_set_upper_alias(struct dentry *dentry)$/;"	f
+ovl_dentry_test_flag	util.c	/^bool ovl_dentry_test_flag(unsigned long flag, struct dentry *dentry)$/;"	f
+ovl_dentry_to_fh	export.c	/^static int ovl_dentry_to_fh(struct dentry *dentry, u32 *fid, int *max_len)$/;"	f	file:
+ovl_dentry_upper	util.c	/^struct dentry *ovl_dentry_upper(struct dentry *dentry)$/;"	f
+ovl_dentry_version_get	util.c	/^u64 ovl_dentry_version_get(struct dentry *dentry)$/;"	f
+ovl_dentry_version_inc	util.c	/^static void ovl_dentry_version_inc(struct dentry *dentry, bool impurity)$/;"	f	file:
+ovl_dentry_weak_revalidate	super.c	/^static int ovl_dentry_weak_revalidate(struct dentry *dentry, unsigned int flags)$/;"	f	file:
+ovl_dentry_weird	util.c	/^bool ovl_dentry_weird(struct dentry *dentry)$/;"	f
+ovl_destroy_inode	super.c	/^static void ovl_destroy_inode(struct inode *inode)$/;"	f	file:
+ovl_dir_cache	readdir.c	/^struct ovl_dir_cache {$/;"	s	file:
+ovl_dir_cache	util.c	/^struct ovl_dir_cache *ovl_dir_cache(struct inode *inode)$/;"	f
+ovl_dir_cache_free	readdir.c	/^void ovl_dir_cache_free(struct inode *inode)$/;"	f
+ovl_dir_file	readdir.c	/^struct ovl_dir_file {$/;"	s	file:
+ovl_dir_fsync	readdir.c	/^static int ovl_dir_fsync(struct file *file, loff_t start, loff_t end,$/;"	f	file:
+ovl_dir_inode_operations	dir.c	/^const struct inode_operations ovl_dir_inode_operations = {$/;"	v	typeref:struct:inode_operations
+ovl_dir_is_real	readdir.c	/^static bool ovl_dir_is_real(struct dentry *dir)$/;"	f	file:
+ovl_dir_llseek	readdir.c	/^static loff_t ovl_dir_llseek(struct file *file, loff_t offset, int origin)$/;"	f	file:
+ovl_dir_modified	util.c	/^void ovl_dir_modified(struct dentry *dentry, bool impurity)$/;"	f
+ovl_dir_open	readdir.c	/^static int ovl_dir_open(struct inode *inode, struct file *file)$/;"	f	file:
+ovl_dir_operations	readdir.c	/^const struct file_operations ovl_dir_operations = {$/;"	v	typeref:struct:file_operations
+ovl_dir_read	readdir.c	/^static inline int ovl_dir_read(struct path *realpath,$/;"	f	file:
+ovl_dir_read_impure	readdir.c	/^static int ovl_dir_read_impure(struct path *path,  struct list_head *list,$/;"	f	file:
+ovl_dir_read_merged	readdir.c	/^static int ovl_dir_read_merged(struct dentry *dentry, struct list_head *list,$/;"	f	file:
+ovl_dir_release	readdir.c	/^static int ovl_dir_release(struct inode *inode, struct file *file)$/;"	f	file:
+ovl_dir_reset	readdir.c	/^static void ovl_dir_reset(struct file *file)$/;"	f	file:
+ovl_do_copy_up	copy_up.c	/^static int ovl_do_copy_up(struct ovl_copy_up_ctx *c)$/;"	f	file:
+ovl_do_create	overlayfs.h	/^static inline int ovl_do_create(struct inode *dir, struct dentry *dentry,$/;"	f
+ovl_do_link	overlayfs.h	/^static inline int ovl_do_link(struct dentry *old_dentry, struct inode *dir,$/;"	f
+ovl_do_mkdir	overlayfs.h	/^static inline int ovl_do_mkdir(struct inode *dir, struct dentry *dentry,$/;"	f
+ovl_do_mknod	overlayfs.h	/^static inline int ovl_do_mknod(struct inode *dir, struct dentry *dentry,$/;"	f
+ovl_do_remove	dir.c	/^static int ovl_do_remove(struct dentry *dentry, bool is_dir)$/;"	f	file:
+ovl_do_removexattr	overlayfs.h	/^static inline int ovl_do_removexattr(struct dentry *dentry, const char *name)$/;"	f
+ovl_do_rename	overlayfs.h	/^static inline int ovl_do_rename(struct inode *olddir, struct dentry *olddentry,$/;"	f
+ovl_do_rmdir	overlayfs.h	/^static inline int ovl_do_rmdir(struct inode *dir, struct dentry *dentry)$/;"	f
+ovl_do_setxattr	overlayfs.h	/^static inline int ovl_do_setxattr(struct dentry *dentry, const char *name,$/;"	f
+ovl_do_symlink	overlayfs.h	/^static inline int ovl_do_symlink(struct inode *dir, struct dentry *dentry,$/;"	f
+ovl_do_tmpfile	overlayfs.h	/^static inline struct dentry *ovl_do_tmpfile(struct dentry *dentry, umode_t mode)$/;"	f
+ovl_do_unlink	overlayfs.h	/^static inline int ovl_do_unlink(struct inode *dir, struct dentry *dentry)$/;"	f
+ovl_do_whiteout	overlayfs.h	/^static inline int ovl_do_whiteout(struct inode *dir, struct dentry *dentry)$/;"	f
+ovl_drop_write	util.c	/^void ovl_drop_write(struct dentry *dentry)$/;"	f
+ovl_encode_fh	export.c	/^static int ovl_encode_fh(struct inode *inode, u32 *fid, int *max_len,$/;"	f	file:
+ovl_encode_maybe_copy_up	export.c	/^static int ovl_encode_maybe_copy_up(struct dentry *dentry)$/;"	f	file:
+ovl_encode_real_fh	copy_up.c	/^struct ovl_fh *ovl_encode_real_fh(struct dentry *real, bool is_upper)$/;"	f
+ovl_entry	ovl_entry.h	/^struct ovl_entry {$/;"	s
+ovl_entry_flag	overlayfs.h	/^enum ovl_entry_flag {$/;"	g
+ovl_entry_stack_free	super.c	/^static void ovl_entry_stack_free(struct ovl_entry *oe)$/;"	f	file:
+ovl_exit	super.c	/^module_exit(ovl_exit);$/;"	v
+ovl_exit	super.c	/^static void __exit ovl_exit(void)$/;"	f	file:
+ovl_export_operations	export.c	/^const struct export_operations ovl_export_operations = {$/;"	v	typeref:struct:export_operations
+ovl_fadvise	file.c	/^static int ovl_fadvise(struct file *file, loff_t offset, loff_t len, int advice)$/;"	f	file:
+ovl_fallocate	file.c	/^static long ovl_fallocate(struct file *file, int mode, loff_t offset, loff_t len)$/;"	f	file:
+ovl_fh	overlayfs.h	/^struct ovl_fh {$/;"	s
+ovl_fh_to_dentry	export.c	/^static struct dentry *ovl_fh_to_dentry(struct super_block *sb, struct fid *fid,$/;"	f	file:
+ovl_fh_to_parent	export.c	/^static struct dentry *ovl_fh_to_parent(struct super_block *sb, struct fid *fid,$/;"	f	file:
+ovl_fiemap	inode.c	/^static int ovl_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,$/;"	f	file:
+ovl_file_accessed	file.c	/^static void ovl_file_accessed(struct file *file)$/;"	f	file:
+ovl_file_inode_operations	inode.c	/^static const struct inode_operations ovl_file_inode_operations = {$/;"	v	typeref:struct:inode_operations	file:
+ovl_file_operations	file.c	/^const struct file_operations ovl_file_operations = {$/;"	v	typeref:struct:file_operations
+ovl_fill_inode	inode.c	/^static void ovl_fill_inode(struct inode *inode, umode_t mode, dev_t rdev,$/;"	f	file:
+ovl_fill_lowest	readdir.c	/^static int ovl_fill_lowest(struct ovl_readdir_data *rdd,$/;"	f	file:
+ovl_fill_merge	readdir.c	/^static int ovl_fill_merge(struct dir_context *ctx, const char *name,$/;"	f	file:
+ovl_fill_plain	readdir.c	/^static int ovl_fill_plain(struct dir_context *ctx, const char *name,$/;"	f	file:
+ovl_fill_real	readdir.c	/^static int ovl_fill_real(struct dir_context *ctx, const char *name,$/;"	f	file:
+ovl_fill_super	super.c	/^static int ovl_fill_super(struct super_block *sb, void *data, int silent)$/;"	f	file:
+ovl_fix_origin	namei.c	/^static int ovl_fix_origin(struct dentry *dentry, struct dentry *lower,$/;"	f	file:
+ovl_force_readonly	super.c	/^static bool ovl_force_readonly(struct ovl_fs *ofs)$/;"	f	file:
+ovl_free_fs	super.c	/^static void ovl_free_fs(struct ovl_fs *ofs)$/;"	f	file:
+ovl_fs	ovl_entry.h	/^struct ovl_fs {$/;"	s
+ovl_fs_type	super.c	/^static struct file_system_type ovl_fs_type = {$/;"	v	typeref:struct:file_system_type	file:
+ovl_fsync	file.c	/^static int ovl_fsync(struct file *file, loff_t start, loff_t end, int datasync)$/;"	f	file:
+ovl_get_acl	inode.c	/^struct posix_acl *ovl_get_acl(struct inode *inode, int type)$/;"	f
+ovl_get_dentry	export.c	/^static struct dentry *ovl_get_dentry(struct super_block *sb,$/;"	f	file:
+ovl_get_fh	namei.c	/^static struct ovl_fh *ovl_get_fh(struct dentry *dentry, const char *name)$/;"	f	file:
+ovl_get_fsid	super.c	/^static int ovl_get_fsid(struct ovl_fs *ofs, struct super_block *sb)$/;"	f	file:
+ovl_get_index_fh	namei.c	/^struct dentry *ovl_get_index_fh(struct ovl_fs *ofs, struct ovl_fh *fh)$/;"	f
+ovl_get_index_name	namei.c	/^int ovl_get_index_name(struct dentry *origin, struct qstr *name)$/;"	f
+ovl_get_index_name_fh	namei.c	/^static int ovl_get_index_name_fh(struct ovl_fh *fh, struct qstr *name)$/;"	f	file:
+ovl_get_indexdir	super.c	/^static int ovl_get_indexdir(struct ovl_fs *ofs, struct ovl_entry *oe,$/;"	f	file:
+ovl_get_inode	inode.c	/^struct inode *ovl_get_inode(struct super_block *sb,$/;"	f
+ovl_get_link	inode.c	/^static const char *ovl_get_link(struct dentry *dentry,$/;"	f	file:
+ovl_get_lower_layers	super.c	/^static int ovl_get_lower_layers(struct ovl_fs *ofs, struct path *stack,$/;"	f	file:
+ovl_get_lowerstack	super.c	/^static struct ovl_entry *ovl_get_lowerstack(struct super_block *sb,$/;"	f	file:
+ovl_get_name	export.c	/^static int ovl_get_name(struct dentry *parent, char *name,$/;"	f	file:
+ovl_get_nlink	inode.c	/^unsigned int ovl_get_nlink(struct dentry *lowerdentry,$/;"	f
+ovl_get_parent	export.c	/^static struct dentry *ovl_get_parent(struct dentry *dentry)$/;"	f	file:
+ovl_get_redirect	dir.c	/^static char *ovl_get_redirect(struct dentry *dentry, bool abs_redirect)$/;"	f	file:
+ovl_get_redirect_xattr	util.c	/^char *ovl_get_redirect_xattr(struct dentry *dentry, int padding)$/;"	f
+ovl_get_tmpfile	copy_up.c	/^static struct dentry *ovl_get_tmpfile(struct ovl_copy_up_ctx *c)$/;"	f	file:
+ovl_get_upper	super.c	/^static int ovl_get_upper(struct ovl_fs *ofs, struct path *upperpath)$/;"	f	file:
+ovl_get_workdir	super.c	/^static int ovl_get_workdir(struct ovl_fs *ofs, struct path *upperpath)$/;"	f	file:
+ovl_getattr	inode.c	/^int ovl_getattr(const struct path *path, struct kstat *stat,$/;"	f
+ovl_has_upperdata	util.c	/^bool ovl_has_upperdata(struct inode *inode)$/;"	f
+ovl_hash_bylower	inode.c	/^static bool ovl_hash_bylower(struct super_block *sb, struct dentry *upper,$/;"	f	file:
+ovl_i_callback	super.c	/^static void ovl_i_callback(struct rcu_head *head)$/;"	f	file:
+ovl_i_dentry_upper	util.c	/^struct dentry *ovl_i_dentry_upper(struct inode *inode)$/;"	f
+ovl_iget5	inode.c	/^static struct inode *ovl_iget5(struct super_block *sb, struct inode *newinode,$/;"	f	file:
+ovl_index_all	util.c	/^bool ovl_index_all(struct super_block *sb)$/;"	f
+ovl_index_def	super.c	/^static bool ovl_index_def = IS_ENABLED(CONFIG_OVERLAY_FS_INDEX);$/;"	v	file:
+ovl_index_upper	namei.c	/^struct dentry *ovl_index_upper(struct ovl_fs *ofs, struct dentry *index)$/;"	f
+ovl_indexdir	util.c	/^struct dentry *ovl_indexdir(struct super_block *sb)$/;"	f
+ovl_indexdir_cleanup	readdir.c	/^int ovl_indexdir_cleanup(struct ovl_fs *ofs)$/;"	f
+ovl_init	super.c	/^module_init(ovl_init);$/;"	v
+ovl_init	super.c	/^static int __init ovl_init(void)$/;"	f	file:
+ovl_inode	ovl_entry.h	/^struct ovl_inode {$/;"	s
+ovl_inode_cachep	super.c	/^static struct kmem_cache *ovl_inode_cachep;$/;"	v	typeref:struct:kmem_cache	file:
+ovl_inode_flag	overlayfs.h	/^enum ovl_inode_flag {$/;"	g
+ovl_inode_init	util.c	/^void ovl_inode_init(struct inode *inode, struct dentry *upperdentry,$/;"	f
+ovl_inode_init_once	super.c	/^static void ovl_inode_init_once(void *foo)$/;"	f	file:
+ovl_inode_lower	util.c	/^struct inode *ovl_inode_lower(struct inode *inode)$/;"	f
+ovl_inode_lowerdata	util.c	/^struct inode *ovl_inode_lowerdata(struct inode *inode)$/;"	f
+ovl_inode_params	overlayfs.h	/^struct ovl_inode_params {$/;"	s
+ovl_inode_real	util.c	/^struct inode *ovl_inode_real(struct inode *inode)$/;"	f
+ovl_inode_realdata	util.c	/^struct inode *ovl_inode_realdata(struct inode *inode)$/;"	f
+ovl_inode_set	inode.c	/^static int ovl_inode_set(struct inode *inode, void *data)$/;"	f	file:
+ovl_inode_test	inode.c	/^static int ovl_inode_test(struct inode *inode, void *data)$/;"	f	file:
+ovl_inode_update	util.c	/^void ovl_inode_update(struct inode *inode, struct dentry *upperdentry)$/;"	f
+ovl_inode_upper	util.c	/^struct inode *ovl_inode_upper(struct inode *inode)$/;"	f
+ovl_install_temp	copy_up.c	/^static int ovl_install_temp(struct ovl_copy_up_ctx *c, struct dentry *temp,$/;"	f	file:
+ovl_instantiate	dir.c	/^static int ovl_instantiate(struct dentry *dentry, struct inode *inode,$/;"	f	file:
+ovl_inuse_trylock	util.c	/^bool ovl_inuse_trylock(struct dentry *dentry)$/;"	f
+ovl_inuse_unlock	util.c	/^void ovl_inuse_unlock(struct dentry *dentry)$/;"	f
+ovl_iocb_to_rwf	file.c	/^static rwf_t ovl_iocb_to_rwf(struct kiocb *iocb)$/;"	f	file:
+ovl_ioctl	file.c	/^static long ovl_ioctl(struct file *file, unsigned int cmd, unsigned long arg)$/;"	f	file:
+ovl_is_impure_dir	readdir.c	/^static bool ovl_is_impure_dir(struct file *file)$/;"	f	file:
+ovl_is_impuredir	overlayfs.h	/^static inline bool ovl_is_impuredir(struct dentry *dentry)$/;"	f
+ovl_is_metacopy_dentry	util.c	/^bool ovl_is_metacopy_dentry(struct dentry *dentry)$/;"	f
+ovl_is_opaquedir	namei.c	/^static bool ovl_is_opaquedir(struct dentry *dentry)$/;"	f	file:
+ovl_is_private_xattr	inode.c	/^bool ovl_is_private_xattr(const char *name)$/;"	f
+ovl_is_temp_index	namei.c	/^static bool ovl_is_temp_index(struct dentry *index)$/;"	f	file:
+ovl_is_whiteout	util.c	/^bool ovl_is_whiteout(struct dentry *dentry)$/;"	f
+ovl_iterate	readdir.c	/^static int ovl_iterate(struct file *file, struct dir_context *ctx)$/;"	f	file:
+ovl_iterate_real	readdir.c	/^static int ovl_iterate_real(struct file *file, struct dir_context *ctx)$/;"	f	file:
+ovl_layer	ovl_entry.h	/^struct ovl_layer {$/;"	s
+ovl_layer_lower	util.c	/^struct ovl_layer *ovl_layer_lower(struct dentry *dentry)$/;"	f
+ovl_link	dir.c	/^static int ovl_link(struct dentry *old, struct inode *newdir,$/;"	f	file:
+ovl_link_up	copy_up.c	/^static int ovl_link_up(struct ovl_copy_up_ctx *c)$/;"	f	file:
+ovl_listxattr	inode.c	/^ssize_t ovl_listxattr(struct dentry *dentry, char *list, size_t size)$/;"	f
+ovl_llseek	file.c	/^static loff_t ovl_llseek(struct file *file, loff_t offset, int whence)$/;"	f	file:
+ovl_lock_rename_workdir	util.c	/^int ovl_lock_rename_workdir(struct dentry *workdir, struct dentry *upperdir)$/;"	f
+ovl_lockdep_annotate_inode_mutex_key	inode.c	/^static inline void ovl_lockdep_annotate_inode_mutex_key(struct inode *inode)$/;"	f	file:
+ovl_lookup	namei.c	/^struct dentry *ovl_lookup(struct inode *dir, struct dentry *dentry,$/;"	f
+ovl_lookup_data	namei.c	/^struct ovl_lookup_data {$/;"	s	file:
+ovl_lookup_index	namei.c	/^struct dentry *ovl_lookup_index(struct ovl_fs *ofs, struct dentry *upper,$/;"	f
+ovl_lookup_inode	inode.c	/^struct inode *ovl_lookup_inode(struct super_block *sb, struct dentry *real,$/;"	f
+ovl_lookup_layer	namei.c	/^static int ovl_lookup_layer(struct dentry *base, struct ovl_lookup_data *d,$/;"	f	file:
+ovl_lookup_real	export.c	/^static struct dentry *ovl_lookup_real(struct super_block *sb,$/;"	f	file:
+ovl_lookup_real_ancestor	export.c	/^static struct dentry *ovl_lookup_real_ancestor(struct super_block *sb,$/;"	f	file:
+ovl_lookup_real_inode	export.c	/^static struct dentry *ovl_lookup_real_inode(struct super_block *sb,$/;"	f	file:
+ovl_lookup_real_one	export.c	/^static struct dentry *ovl_lookup_real_one(struct dentry *connected,$/;"	f	file:
+ovl_lookup_single	namei.c	/^static int ovl_lookup_single(struct dentry *base, struct ovl_lookup_data *d,$/;"	f	file:
+ovl_lookup_temp	dir.c	/^static struct dentry *ovl_lookup_temp(struct dentry *workdir)$/;"	f	file:
+ovl_lower_dir	super.c	/^static int ovl_lower_dir(const char *name, struct path *path,$/;"	f	file:
+ovl_lower_fh_to_d	export.c	/^static struct dentry *ovl_lower_fh_to_d(struct super_block *sb,$/;"	f	file:
+ovl_lower_positive	namei.c	/^bool ovl_lower_positive(struct dentry *dentry)$/;"	f
+ovl_make_workdir	super.c	/^static int ovl_make_workdir(struct ovl_fs *ofs, struct path *workpath)$/;"	f	file:
+ovl_map_dev_ino	inode.c	/^static int ovl_map_dev_ino(struct dentry *dentry, struct kstat *stat,$/;"	f	file:
+ovl_matches_upper	dir.c	/^static bool ovl_matches_upper(struct dentry *dentry, struct dentry *upper)$/;"	f	file:
+ovl_metacopy_def	super.c	/^static bool ovl_metacopy_def = IS_ENABLED(CONFIG_OVERLAY_FS_METACOPY);$/;"	v	file:
+ovl_mkdir	dir.c	/^static int ovl_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)$/;"	f	file:
+ovl_mkdir_real	dir.c	/^static int ovl_mkdir_real(struct inode *dir, struct dentry **newdentry,$/;"	f	file:
+ovl_mknod	dir.c	/^static int ovl_mknod(struct inode *dir, struct dentry *dentry, umode_t mode,$/;"	f	file:
+ovl_mmap	file.c	/^static int ovl_mmap(struct file *file, struct vm_area_struct *vma)$/;"	f	file:
+ovl_mount	super.c	/^static struct dentry *ovl_mount(struct file_system_type *fs_type, int flags,$/;"	f	file:
+ovl_mount_dir	super.c	/^static int ovl_mount_dir(const char *name, struct path *path)$/;"	f	file:
+ovl_mount_dir_noesc	super.c	/^static int ovl_mount_dir_noesc(const char *name, struct path *path)$/;"	f	file:
+ovl_need_absolute_redirect	dir.c	/^static bool ovl_need_absolute_redirect(struct dentry *dentry, bool samedir)$/;"	f	file:
+ovl_need_index	util.c	/^bool ovl_need_index(struct dentry *dentry)$/;"	f
+ovl_need_meta_copy_up	copy_up.c	/^static bool ovl_need_meta_copy_up(struct dentry *dentry, umode_t mode,$/;"	f	file:
+ovl_new_inode	inode.c	/^struct inode *ovl_new_inode(struct super_block *sb, umode_t mode, dev_t rdev)$/;"	f
+ovl_next_opt	super.c	/^static char *ovl_next_opt(char **s)$/;"	f	file:
+ovl_nfs_export_def	super.c	/^static bool ovl_nfs_export_def = IS_ENABLED(CONFIG_OVERLAY_FS_NFS_EXPORT);$/;"	v	file:
+ovl_nlink_end	util.c	/^void ovl_nlink_end(struct dentry *dentry, bool locked)$/;"	f
+ovl_nlink_start	util.c	/^int ovl_nlink_start(struct dentry *dentry, bool *locked)$/;"	f
+ovl_obtain_alias	export.c	/^static struct dentry *ovl_obtain_alias(struct super_block *sb,$/;"	f	file:
+ovl_open	file.c	/^static int ovl_open(struct inode *inode, struct file *file)$/;"	f	file:
+ovl_open_flags_need_copy_up	overlayfs.h	/^static inline bool ovl_open_flags_need_copy_up(int flags)$/;"	f
+ovl_open_maybe_copy_up	copy_up.c	/^int ovl_open_maybe_copy_up(struct dentry *dentry, unsigned int file_flags)$/;"	f
+ovl_open_need_copy_up	copy_up.c	/^static bool ovl_open_need_copy_up(struct dentry *dentry, int flags)$/;"	f	file:
+ovl_open_realfile	file.c	/^static struct file *ovl_open_realfile(const struct file *file,$/;"	f	file:
+ovl_other_xattr_get	super.c	/^static int ovl_other_xattr_get(const struct xattr_handler *handler,$/;"	f	file:
+ovl_other_xattr_handler	super.c	/^static const struct xattr_handler ovl_other_xattr_handler = {$/;"	v	typeref:struct:xattr_handler	file:
+ovl_other_xattr_set	super.c	/^static int ovl_other_xattr_set(const struct xattr_handler *handler,$/;"	f	file:
+ovl_override_creds	util.c	/^const struct cred *ovl_override_creds(struct super_block *sb)$/;"	f
+ovl_own_xattr_get	super.c	/^static int ovl_own_xattr_get(const struct xattr_handler *handler,$/;"	f	file:
+ovl_own_xattr_handler	super.c	/^static const struct xattr_handler ovl_own_xattr_handler = {$/;"	v	typeref:struct:xattr_handler	file:
+ovl_own_xattr_set	super.c	/^static int ovl_own_xattr_set(const struct xattr_handler *handler,$/;"	f	file:
+ovl_parse_opt	super.c	/^static int ovl_parse_opt(char *opt, struct ovl_config *config)$/;"	f	file:
+ovl_parse_redirect_mode	super.c	/^static int ovl_parse_redirect_mode(struct ovl_config *config, const char *mode)$/;"	f	file:
+ovl_path	ovl_entry.h	/^struct ovl_path {$/;"	s
+ovl_path_lower	util.c	/^void ovl_path_lower(struct dentry *dentry, struct path *path)$/;"	f
+ovl_path_lowerdata	util.c	/^void ovl_path_lowerdata(struct dentry *dentry, struct path *path)$/;"	f
+ovl_path_next	namei.c	/^int ovl_path_next(int idx, struct dentry *dentry, struct path *path)$/;"	f
+ovl_path_open	util.c	/^struct file *ovl_path_open(struct path *path, int flags)$/;"	f
+ovl_path_real	util.c	/^enum ovl_path_type ovl_path_real(struct dentry *dentry, struct path *path)$/;"	f
+ovl_path_type	overlayfs.h	/^enum ovl_path_type {$/;"	g
+ovl_path_type	util.c	/^enum ovl_path_type ovl_path_type(struct dentry *dentry)$/;"	f
+ovl_path_upper	util.c	/^void ovl_path_upper(struct dentry *dentry, struct path *path)$/;"	f
+ovl_permission	inode.c	/^int ovl_permission(struct inode *inode, int mask)$/;"	f
+ovl_posix_acl_access_xattr_handler	super.c	/^ovl_posix_acl_access_xattr_handler = {$/;"	v	typeref:struct:__maybe_unused	file:
+ovl_posix_acl_default_xattr_handler	super.c	/^ovl_posix_acl_default_xattr_handler = {$/;"	v	typeref:struct:__maybe_unused	file:
+ovl_posix_acl_xattr_get	super.c	/^ovl_posix_acl_xattr_get(const struct xattr_handler *handler,$/;"	f	file:
+ovl_posix_acl_xattr_set	super.c	/^ovl_posix_acl_xattr_set(const struct xattr_handler *handler,$/;"	f	file:
+ovl_pure_upper	dir.c	/^static bool ovl_pure_upper(struct dentry *dentry)$/;"	f	file:
+ovl_put_super	super.c	/^static void ovl_put_super(struct super_block *sb)$/;"	f	file:
+ovl_read_iter	file.c	/^static ssize_t ovl_read_iter(struct kiocb *iocb, struct iov_iter *iter)$/;"	f	file:
+ovl_readdir_data	readdir.c	/^struct ovl_readdir_data {$/;"	s	file:
+ovl_readdir_translate	readdir.c	/^struct ovl_readdir_translate {$/;"	s	file:
+ovl_real_fdget	file.c	/^static int ovl_real_fdget(const struct file *file, struct fd *real)$/;"	f	file:
+ovl_real_fdget_meta	file.c	/^static int ovl_real_fdget_meta(const struct file *file, struct fd *real,$/;"	f	file:
+ovl_real_ioctl	file.c	/^static long ovl_real_ioctl(struct file *file, unsigned int cmd,$/;"	f	file:
+ovl_redirect_always_follow	super.c	/^static bool ovl_redirect_always_follow =$/;"	v	file:
+ovl_redirect_dir	util.c	/^bool ovl_redirect_dir(struct super_block *sb)$/;"	f
+ovl_redirect_dir_def	super.c	/^static bool ovl_redirect_dir_def = IS_ENABLED(CONFIG_OVERLAY_FS_REDIRECT_DIR);$/;"	v	file:
+ovl_redirect_max	dir.c	/^static unsigned short ovl_redirect_max = 256;$/;"	v	file:
+ovl_redirect_mode_def	super.c	/^static const char *ovl_redirect_mode_def(void)$/;"	f	file:
+ovl_release	file.c	/^static int ovl_release(struct inode *inode, struct file *file)$/;"	f	file:
+ovl_remap_lower_ino	readdir.c	/^static u64 ovl_remap_lower_ino(u64 ino, int xinobits, int fsid,$/;"	f	file:
+ovl_remount	super.c	/^static int ovl_remount(struct super_block *sb, int *flags, char *data)$/;"	f	file:
+ovl_remove_and_whiteout	dir.c	/^static int ovl_remove_and_whiteout(struct dentry *dentry,$/;"	f	file:
+ovl_remove_upper	dir.c	/^static int ovl_remove_upper(struct dentry *dentry, bool is_dir,$/;"	f	file:
+ovl_rename	dir.c	/^static int ovl_rename(struct inode *olddir, struct dentry *old,$/;"	f	file:
+ovl_reval_dentry_operations	super.c	/^static const struct dentry_operations ovl_reval_dentry_operations = {$/;"	v	typeref:struct:dentry_operations	file:
+ovl_rmdir	dir.c	/^static int ovl_rmdir(struct inode *dir, struct dentry *dentry)$/;"	f	file:
+ovl_same_sb	util.c	/^struct super_block *ovl_same_sb(struct super_block *sb)$/;"	f
+ovl_sb	ovl_entry.h	/^struct ovl_sb {$/;"	s
+ovl_seek_cursor	readdir.c	/^static void ovl_seek_cursor(struct ovl_dir_file *od, loff_t pos)$/;"	f	file:
+ovl_set_attr	copy_up.c	/^int ovl_set_attr(struct dentry *upperdentry, struct kstat *stat)$/;"	f
+ovl_set_dir_cache	util.c	/^void ovl_set_dir_cache(struct inode *inode, struct ovl_dir_cache *cache)$/;"	f
+ovl_set_flag	util.c	/^void ovl_set_flag(unsigned long flag, struct inode *inode)$/;"	f
+ovl_set_impure	util.c	/^int ovl_set_impure(struct dentry *dentry, struct dentry *upperdentry)$/;"	f
+ovl_set_link_redirect	dir.c	/^static int ovl_set_link_redirect(struct dentry *dentry)$/;"	f	file:
+ovl_set_nlink_common	inode.c	/^static int ovl_set_nlink_common(struct dentry *dentry,$/;"	f	file:
+ovl_set_nlink_lower	inode.c	/^int ovl_set_nlink_lower(struct dentry *dentry)$/;"	f
+ovl_set_nlink_upper	inode.c	/^int ovl_set_nlink_upper(struct dentry *dentry)$/;"	f
+ovl_set_opaque	dir.c	/^static int ovl_set_opaque(struct dentry *dentry, struct dentry *upperdentry)$/;"	f	file:
+ovl_set_opaque_xerr	dir.c	/^static int ovl_set_opaque_xerr(struct dentry *dentry, struct dentry *upper,$/;"	f	file:
+ovl_set_origin	copy_up.c	/^int ovl_set_origin(struct dentry *dentry, struct dentry *lower,$/;"	f
+ovl_set_redirect	dir.c	/^static int ovl_set_redirect(struct dentry *dentry, bool samedir)$/;"	f	file:
+ovl_set_size	copy_up.c	/^static int ovl_set_size(struct dentry *upperdentry, struct kstat *stat)$/;"	f	file:
+ovl_set_timestamps	copy_up.c	/^static int ovl_set_timestamps(struct dentry *upperdentry, struct kstat *stat)$/;"	f	file:
+ovl_set_upper_acl	dir.c	/^static int ovl_set_upper_acl(struct dentry *upperdentry, const char *name,$/;"	f	file:
+ovl_set_upper_fh	copy_up.c	/^static int ovl_set_upper_fh(struct dentry *upper, struct dentry *index)$/;"	f	file:
+ovl_set_upperdata	util.c	/^void ovl_set_upperdata(struct inode *inode)$/;"	f
+ovl_setattr	inode.c	/^int ovl_setattr(struct dentry *dentry, struct iattr *attr)$/;"	f
+ovl_should_check_upperdata	util.c	/^static bool ovl_should_check_upperdata(struct inode *inode)$/;"	f	file:
+ovl_show_options	super.c	/^static int ovl_show_options(struct seq_file *m, struct dentry *dentry)$/;"	f	file:
+ovl_special_inode_operations	inode.c	/^static const struct inode_operations ovl_special_inode_operations = {$/;"	v	typeref:struct:inode_operations	file:
+ovl_split_lowerdirs	super.c	/^static unsigned int ovl_split_lowerdirs(char *str)$/;"	f	file:
+ovl_statfs	super.c	/^static int ovl_statfs(struct dentry *dentry, struct kstatfs *buf)$/;"	f	file:
+ovl_super_operations	super.c	/^static const struct super_operations ovl_super_operations = {$/;"	v	typeref:struct:super_operations	file:
+ovl_symlink	dir.c	/^static int ovl_symlink(struct inode *dir, struct dentry *dentry,$/;"	f	file:
+ovl_symlink_inode_operations	inode.c	/^static const struct inode_operations ovl_symlink_inode_operations = {$/;"	v	typeref:struct:inode_operations	file:
+ovl_sync_fs	super.c	/^static int ovl_sync_fs(struct super_block *sb, int wait)$/;"	f	file:
+ovl_test_flag	util.c	/^bool ovl_test_flag(unsigned long flag, struct inode *inode)$/;"	f
+ovl_tokens	super.c	/^static const match_table_t ovl_tokens = {$/;"	v	file:
+ovl_type_merge	dir.c	/^static bool ovl_type_merge(struct dentry *dentry)$/;"	f	file:
+ovl_type_merge_or_lower	dir.c	/^static bool ovl_type_merge_or_lower(struct dentry *dentry)$/;"	f	file:
+ovl_type_origin	dir.c	/^static bool ovl_type_origin(struct dentry *dentry)$/;"	f	file:
+ovl_unescape	super.c	/^static void ovl_unescape(char *s)$/;"	f	file:
+ovl_unlink	dir.c	/^static int ovl_unlink(struct inode *dir, struct dentry *dentry)$/;"	f	file:
+ovl_update_time	inode.c	/^int ovl_update_time(struct inode *inode, struct timespec64 *ts, int flags)$/;"	f
+ovl_upper_fh_to_d	export.c	/^static struct dentry *ovl_upper_fh_to_d(struct super_block *sb,$/;"	f	file:
+ovl_upperdentry_dereference	ovl_entry.h	/^static inline struct dentry *ovl_upperdentry_dereference(struct ovl_inode *oi)$/;"	f
+ovl_verify_fh	namei.c	/^static int ovl_verify_fh(struct dentry *dentry, const char *name,$/;"	f	file:
+ovl_verify_index	namei.c	/^int ovl_verify_index(struct ovl_fs *ofs, struct dentry *index)$/;"	f
+ovl_verify_inode	inode.c	/^static bool ovl_verify_inode(struct inode *inode, struct dentry *lowerdentry,$/;"	f	file:
+ovl_verify_lower	util.c	/^bool ovl_verify_lower(struct super_block *sb)$/;"	f
+ovl_verify_origin	overlayfs.h	/^static inline int ovl_verify_origin(struct dentry *upper,$/;"	f
+ovl_verify_set_fh	namei.c	/^int ovl_verify_set_fh(struct dentry *dentry, const char *name,$/;"	f
+ovl_verify_upper	overlayfs.h	/^static inline int ovl_verify_upper(struct dentry *index,$/;"	f
+ovl_want_write	util.c	/^int ovl_want_write(struct dentry *dentry)$/;"	f
+ovl_whatisit	file.c	/^static char ovl_whatisit(struct inode *inode, struct inode *realinode)$/;"	f	file:
+ovl_whiteout	dir.c	/^static struct dentry *ovl_whiteout(struct dentry *workdir)$/;"	f	file:
+ovl_workdir	util.c	/^struct dentry *ovl_workdir(struct dentry *dentry)$/;"	f
+ovl_workdir_cleanup	readdir.c	/^void ovl_workdir_cleanup(struct inode *dir, struct vfsmount *mnt,$/;"	f
+ovl_workdir_cleanup_recurse	readdir.c	/^static void ovl_workdir_cleanup_recurse(struct path *path, int level)$/;"	f	file:
+ovl_workdir_create	super.c	/^static struct dentry *ovl_workdir_create(struct ovl_fs *ofs,$/;"	f	file:
+ovl_workdir_ok	super.c	/^static bool ovl_workdir_ok(struct dentry *workdir, struct dentry *upperdir)$/;"	f	file:
+ovl_write_iter	file.c	/^static ssize_t ovl_write_iter(struct kiocb *iocb, struct iov_iter *iter)$/;"	f	file:
+ovl_xattr_get	inode.c	/^int ovl_xattr_get(struct dentry *dentry, struct inode *inode, const char *name,$/;"	f
+ovl_xattr_handlers	super.c	/^static const struct xattr_handler *ovl_xattr_handlers[] = {$/;"	v	typeref:struct:xattr_handler	file:
+ovl_xattr_set	inode.c	/^int ovl_xattr_set(struct dentry *dentry, struct inode *inode, const char *name,$/;"	f
+ovl_xino_auto_def	super.c	/^static bool ovl_xino_auto_def = IS_ENABLED(CONFIG_OVERLAY_FS_XINO_AUTO);$/;"	v	file:
+ovl_xino_bits	overlayfs.h	/^static inline unsigned int ovl_xino_bits(struct super_block *sb)$/;"	f
+ovl_xino_def	super.c	/^static inline int ovl_xino_def(void)$/;"	f	file:
+ovl_xino_str	super.c	/^static const char * const ovl_xino_str[] = {$/;"	v	file:
+parent	copy_up.c	/^	struct dentry *parent;$/;"	m	struct:ovl_copy_up_ctx	typeref:struct:ovl_copy_up_ctx::dentry	file:
+parent_ino	readdir.c	/^	u64 parent_ino;$/;"	m	struct:ovl_readdir_translate	file:
+pseudo_dev	ovl_entry.h	/^	dev_t pseudo_dev;$/;"	m	struct:ovl_sb
+pstat	copy_up.c	/^	struct kstat pstat;$/;"	m	struct:ovl_copy_up_ctx	typeref:struct:ovl_copy_up_ctx::kstat	file:
+rcu	ovl_entry.h	/^		struct rcu_head rcu;$/;"	m	union:ovl_entry::__anon1	typeref:struct:ovl_entry::__anon1::rcu_head
+rdev	overlayfs.h	/^	dev_t rdev;$/;"	m	struct:ovl_cattr
+real_ino	readdir.c	/^	u64 real_ino;$/;"	m	struct:ovl_cache_entry	file:
+realfile	readdir.c	/^	struct file *realfile;$/;"	m	struct:ovl_dir_file	typeref:struct:ovl_dir_file::file	file:
+redirect	namei.c	/^	char *redirect;$/;"	m	struct:ovl_lookup_data	file:
+redirect	overlayfs.h	/^	char *redirect;$/;"	m	struct:ovl_inode_params
+redirect	ovl_entry.h	/^	const char *redirect;$/;"	m	struct:ovl_inode
+redirect_dir	ovl_entry.h	/^	bool redirect_dir;$/;"	m	struct:ovl_config
+redirect_follow	ovl_entry.h	/^	bool redirect_follow;$/;"	m	struct:ovl_config
+redirect_mode	ovl_entry.h	/^	const char *redirect_mode;$/;"	m	struct:ovl_config
+refcount	readdir.c	/^	long refcount;$/;"	m	struct:ovl_dir_cache	file:
+root	readdir.c	/^	struct rb_root *root;$/;"	m	struct:ovl_readdir_data	typeref:struct:ovl_readdir_data::rb_root	file:
+root	readdir.c	/^	struct rb_root root;$/;"	m	struct:ovl_dir_cache	typeref:struct:ovl_dir_cache::rb_root	file:
+sb	ovl_entry.h	/^	struct super_block *sb;$/;"	m	struct:ovl_sb	typeref:struct:ovl_sb::super_block
+stat	copy_up.c	/^	struct kstat stat;$/;"	m	struct:ovl_copy_up_ctx	typeref:struct:ovl_copy_up_ctx::kstat	file:
+stop	namei.c	/^	bool stop;$/;"	m	struct:ovl_lookup_data	file:
+tmpfile	copy_up.c	/^	bool tmpfile;$/;"	m	struct:ovl_copy_up_ctx	file:
+tmpfile	ovl_entry.h	/^	bool tmpfile;$/;"	m	struct:ovl_fs
+type	overlayfs.h	/^	u8 type;	\/* fid_type of fid *\/$/;"	m	struct:ovl_fh
+type	readdir.c	/^	unsigned int type;$/;"	m	struct:ovl_cache_entry	file:
+upper_mnt	ovl_entry.h	/^	struct vfsmount *upper_mnt;$/;"	m	struct:ovl_fs	typeref:struct:ovl_fs::vfsmount
+upperdentry	overlayfs.h	/^	struct dentry *upperdentry;$/;"	m	struct:ovl_inode_params	typeref:struct:ovl_inode_params::dentry
+upperdir	ovl_entry.h	/^	char *upperdir;$/;"	m	struct:ovl_config
+upperdir_locked	ovl_entry.h	/^	bool upperdir_locked;$/;"	m	struct:ovl_fs
+upperfile	readdir.c	/^	struct file *upperfile;$/;"	m	struct:ovl_dir_file	typeref:struct:ovl_dir_file::file	file:
+uuid	overlayfs.h	/^	uuid_t uuid;	\/* uuid of filesystem *\/$/;"	m	struct:ovl_fh
+version	overlayfs.h	/^	u8 version;	\/* 0 *\/$/;"	m	struct:ovl_fh
+version	ovl_entry.h	/^	u64 version;$/;"	m	struct:ovl_inode
+version	readdir.c	/^	u64 version;$/;"	m	struct:ovl_dir_cache	file:
+vfs_inode	ovl_entry.h	/^	struct inode vfs_inode;$/;"	m	struct:ovl_inode	typeref:struct:ovl_inode::inode
+workbasedir	ovl_entry.h	/^	struct dentry *workbasedir;$/;"	m	struct:ovl_fs	typeref:struct:ovl_fs::dentry
+workdir	copy_up.c	/^	struct dentry *workdir;$/;"	m	struct:ovl_copy_up_ctx	typeref:struct:ovl_copy_up_ctx::dentry	file:
+workdir	ovl_entry.h	/^	char *workdir;$/;"	m	struct:ovl_config
+workdir	ovl_entry.h	/^	struct dentry *workdir;$/;"	m	struct:ovl_fs	typeref:struct:ovl_fs::dentry
+workdir_locked	ovl_entry.h	/^	bool workdir_locked;$/;"	m	struct:ovl_fs
+xino	ovl_entry.h	/^	int xino;$/;"	m	struct:ovl_config
+xino_bits	ovl_entry.h	/^	unsigned int xino_bits;$/;"	m	struct:ovl_fs
+xinobits	readdir.c	/^	int xinobits;$/;"	m	struct:ovl_readdir_translate	file:
