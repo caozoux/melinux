@@ -1,12 +1,9 @@
 #include <linux/module.h>
 #include <linux/blkdev.h>
 
-#define BLOCK_DISK_SIZE (1024*1024*1024)
-
 #define SIMP_BLKDEV_DISKNAME "simp_blkdev"          //块设备名
 #define SIMP_BLKDEV_DEVICEMAJOR COMPAQ_SMART2_MAJOR //主设备号
-#define SIMP_BLKDEV_BYTES (4*1024*1024*1024)            // 块设备大小为50MB
-#define MAX_OFFSET  (SIMP_BLKDEV_BYTES>>12)
+#define SIMP_BLKDEV_BYTES (50*1024*1024)            // 块设备大小为50MB
 #define SECTOR_SIZE_SHIFT 9
 
 static struct gendisk *simp_blkdev_disk;// gendisk结构表示一个简单的磁盘设备
@@ -14,8 +11,7 @@ static struct block_device_operations simp_blkdev_fops = { //块设备操作，g
     .owner = THIS_MODULE,
 };
 static struct request_queue *simp_blkdev_queue;//指向块设备请求队列的指针
-//unsigned char simp_blkdev_data[SIMP_BLKDEV_BYTES];// 虚拟磁盘块设备的存储空间
-unsigned long *simp_blkdev_data;// 虚拟磁盘块设备的存储空间
+unsigned char simp_blkdev_data[SIMP_BLKDEV_BYTES];// 虚拟磁盘块设备的存储空间
 
 
 static int count_cnt=0;
@@ -28,53 +24,33 @@ static void simp_blkdev_do_request(struct request_queue *q){
     struct request *req;// 正在处理的请求队列中的请求
     struct bio *req_bio;// 当前请求的bio
     struct bio_vec *bvec;// 当前请求的bio的段(segment)链表
-    unsigned long *disk_mem;      // 需要读/写的磁盘区域
+    char *disk_mem;      // 需要读/写的磁盘区域
     char *buffer;        // 磁盘块设备的请求在内存中的缓冲区
-	int offset;
     int i = 0;
 
     while((req = blk_fetch_request(q)) != NULL){
         // 判断当前req是否合法
-        offset = (blk_rq_pos(req) << SECTOR_SIZE_SHIFT)>>12;
-		printk("zz %s offset:%08x \n",__func__, (int)offset);
         if((blk_rq_pos(req)<<SECTOR_SIZE_SHIFT) + blk_rq_bytes(req) > SIMP_BLKDEV_BYTES){
             printk(KERN_ERR SIMP_BLKDEV_DISKNAME":bad request:block=%llu, count=%u\n",(unsigned long long)blk_rq_pos(req),blk_rq_sectors(req));
             blk_end_request_all(req, -EIO);
             continue;
         }
         //获取需要操作的内存位置
+        disk_mem = simp_blkdev_data + (blk_rq_pos(req) << SECTOR_SIZE_SHIFT);
         req_bio = req->bio;// 获取当前请求的bio
 
         switch (rq_data_dir(req)) {  //判断请求的类型
         case READ:
             // 遍历req请求的bio链表
             while(req_bio != NULL){
+				printk("zz %s read req_bio->bi_vcnt:%lx \n",__func__, (unsigned long)req_bio->bi_vcnt);
                 //　for循环处理bio结构中的bio_vec结构体数组（bio_vec结构体数组代表一个完整的缓冲区）
                 for(i=0; i<req_bio->bi_vcnt; i++){
                     bvec = &(req_bio->bi_io_vec[i]);
                     buffer = kmap(bvec->bv_page) + bvec->bv_offset;
-					//printk("read bi_vcnt:%d i\n", (int)req_bio->bi_vcnt);
-					//printk("read bi_vcnt:%d offset:%d\n", (int)req_bio->bi_vcnt, offset);
-					if (offset >= MAX_OFFSET) {
-						printk("Warning: offet over memory\n ");
-						break;
-					}
-					if (!simp_blkdev_data[offset]) {
-
-						simp_blkdev_data[offset] = (unsigned long*)kzalloc(4096, GFP_KERNEL);
-						if (!simp_blkdev_data[offset]) {
-							printk("Warning: read malloc memory failed\n ");
-							break;
-						}
-
-					}
-
-					disk_mem = (unsigned long *)simp_blkdev_data[offset];
                     memcpy(buffer, disk_mem, bvec->bv_len);
-
                     kunmap(bvec->bv_page);
-                    //disk_mem += bvec->bv_len;
-					offset += bvec->bv_len>>12;
+                    disk_mem += bvec->bv_len;
                 }
                 req_bio = req_bio->bi_next;
             }
@@ -82,32 +58,18 @@ static void simp_blkdev_do_request(struct request_queue *q){
             break;
         case WRITE:
             while(req_bio != NULL){
-				//printk("write bi_vcnt:%lx offset:%d\n", (unsigned long)req_bio->bi_vcnt, offset);
+				printk("zz %s write req_bio->bi_vcnt:%lx \n",__func__, (unsigned long)req_bio->bi_vcnt);
                 for(i=0; i<req_bio->bi_vcnt; i++){
                     bvec = &(req_bio->bi_io_vec[i]);
                     buffer = kmap(bvec->bv_page) + bvec->bv_offset;
-					if (offset >= MAX_OFFSET) {
-						printk("Warning: offet over memory\n ");
-						break;
-					}
-					if (!simp_blkdev_data[offset]) {
-						void *data;
-
-						simp_blkdev_data[offset] = (unsigned long*)kzalloc(4096, GFP_KERNEL);
-						if (!simp_blkdev_data[offset]) {
-							printk("Warning: write malloc memory failed\n ");
-							break;
-						}
-					}
-
-					disk_mem = (unsigned long*)simp_blkdev_data[offset];
                     memcpy(disk_mem, buffer, bvec->bv_len);
                     kunmap(bvec->bv_page);
-					offset += bvec->bv_len>>12;
+                    disk_mem += bvec->bv_len;
                 }
                 req_bio = req_bio->bi_next;
             }
-            __blk_end_request_all(req, 0);
+			if (count_cnt++ !=35)
+            	__blk_end_request_all(req, 0);
             break;
         default:
             /* No default because rq_data_dir(req) is 1 bit */
@@ -124,12 +86,6 @@ static void simp_blkdev_do_request(struct request_queue *q){
 ******************************************************/
 static int __init simp_blkdev_init(void){
     int ret;
-
-	simp_blkdev_data = kzalloc(MAX_OFFSET*8, GFP_KERNEL);
-	if (!simp_blkdev_data) {
-		printk("malloc block %x failed\n", BLOCK_DISK_SIZE);
-		return -ENOMEM;
-	}
 
     //1.添加设备之前，先申请设备的资源
     simp_blkdev_disk = alloc_disk(1);
@@ -150,16 +106,15 @@ static int __init simp_blkdev_init(void){
         goto err_init_queue;
     }
     simp_blkdev_disk->queue = simp_blkdev_queue;
-    set_capacity(simp_blkdev_disk, BLOCK_DISK_SIZE>>9);
+    set_capacity(simp_blkdev_disk, SIMP_BLKDEV_BYTES>>9);
 
     //3.入口处添加磁盘块设备
     add_disk(simp_blkdev_disk);
     return 0;
 
     err_alloc_disk:
-		
+        return ret;
     err_init_queue:
-		kfree(simp_blkdev_data);
         return ret;
 }
 
@@ -174,7 +129,6 @@ static void __exit simp_blkdev_exit(void)
     del_gendisk(simp_blkdev_disk);// 释放磁盘块设备
     put_disk(simp_blkdev_disk);   // 释放申请的设备资源
     blk_cleanup_queue(simp_blkdev_queue);// 清除请求队列
-	kfree(simp_blkdev_data);
 }
 
 module_init(simp_blkdev_init);// 声明模块的入口

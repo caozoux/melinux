@@ -6,6 +6,7 @@
 */
 
 #include <linux/posix_acl_xattr.h>
+#include "ext4_dbg.h"
 
 #define EXT4_ACL_VERSION	0x0001
 

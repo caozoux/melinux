@@ -1,0 +1,91 @@
+
+test.o:     file format elf64-littleaarch64
+
+
+Disassembly of section .init.text:
+
+0000000000000000 <init_module>:
+   0:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+   4:	90000000 	adrp	x0, 0 <init_module>
+   8:	91000000 	add	x0, x0, #0x0
+   c:	910003fd 	mov	x29, sp
+  10:	94000000 	bl	0 <printk>
+  14:	94000000 	bl	0 <trace_test_init>
+  18:	52800000 	mov	w0, #0x0                   	// #0
+  1c:	a8c17bfd 	ldp	x29, x30, [sp], #16
+  20:	d65f03c0 	ret
+
+Disassembly of section .exit.text:
+
+0000000000000000 <cleanup_module>:
+   0:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+   4:	90000000 	adrp	x0, 0 <cleanup_module>
+   8:	91000000 	add	x0, x0, #0x0
+   c:	910003fd 	mov	x29, sp
+  10:	94000000 	bl	0 <printk>
+  14:	a8c17bfd 	ldp	x29, x30, [sp], #16
+  18:	d65f03c0 	ret
+
+Disassembly of section .modinfo:
+
+0000000000000000 <__UNIQUE_ID_license14>:
+   0:	6563696c 	fnmls	z12.h, p2/m, z11.h, z3.h
+   4:	3d65736e 	ldr	b14, [x27, #2396]
+   8:	6c617544 	ldnp	d4, d29, [x10, #-496]
+   c:	44534220 	.inst	0x44534220 ; undefined
+  10:	4c50472f 	.inst	0x4c50472f ; undefined
+	...
+
+0000000000000015 <__UNIQUE_ID_author13>:
+  15:	61          	.byte	0x61
+  16:	7475      	.short	0x7475
+  18:	3d726f68 	.word	0x3d726f68
+  1c:	20756f5a 	.word	0x20756f5a
+  20:	3c6f6143 	.word	0x3c6f6143
+  24:	63756f7a 	.word	0x63756f7a
+  28:	40786f61 	.word	0x40786f61
+  2c:	6c74756f 	.word	0x6c74756f
+  30:	2e6b6f6f 	.word	0x2e6b6f6f
+  34:	3e6d6f63 	.word	0x3e6d6f63
+	...
+
+0000000000000039 <__UNIQUE_ID_license12>:
+  39:	6c          	.byte	0x6c
+  3a:	6369      	.short	0x6369
+  3c:	65736e65 	.word	0x65736e65
+  40:	4c50473d 	.word	0x4c50473d
+	...
+
+Disassembly of section .rodata.str1.8:
+
+0000000000000000 <.rodata.str1.8>:
+   0:	6f697067 	.word	0x6f697067
+   4:	76697264 	.word	0x76697264
+   8:	6c207265 	.word	0x6c207265
+   c:	2064616f 	.word	0x2064616f
+  10:	0000000a 	.word	0x0000000a
+  14:	00          	.byte	0x00
+  15:	00          	.byte	0x00
+  16:	0000      	.short	0x0000
+  18:	6f697067 	.word	0x6f697067
+  1c:	76697264 	.word	0x76697264
+  20:	75207265 	.word	0x75207265
+  24:	616f6c6e 	.word	0x616f6c6e
+  28:	000a2064 	.word	0x000a2064
+
+Disassembly of section .comment:
+
+0000000000000000 <.comment>:
+   0:	43434700 	.inst	0x43434700 ; undefined
+   4:	4c28203a 	.inst	0x4c28203a ; undefined
+   8:	72616e69 	.inst	0x72616e69 ; undefined
+   c:	4347206f 	.inst	0x4347206f ; undefined
+  10:	2e372043 	usubl	v3.8h, v2.8b, v23.8b
+  14:	30322d31 	adr	x17, 645b9 <__UNIQUE_ID_license12+0x64580>
+  18:	302e3731 	adr	x17, 5c6fd <__UNIQUE_ID_license12+0x5c6c4>
+  1c:	37202935 	tbnz	w21, #4, 540 <__UNIQUE_ID_license12+0x507>
+  20:	312e312e 	adds	w14, w9, #0xb8c
+  24:	31303220 	adds	w0, w17, #0xc0c
+  28:	31353037 	adds	w23, w1, #0xd4c
+  2c:	Address 0x000000000000002c is out of bounds.
+

@@ -1,7 +1,5 @@
 PWD = $(shell pwd)  
 
-KERVER =$(shell uname -r)
-KERSRC := /export/disk1T/cache/linux-stable
 TARGET := meblock_test
 
 obj-m := $(TARGET).o  

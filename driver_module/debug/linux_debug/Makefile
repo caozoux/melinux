@@ -1,13 +1,16 @@
 PWD = $(shell pwd)  
 
+PWD = $(shell pwd)  
+
 KERVER =$(shell uname -r)
-KERSRC := /export/disk1T/cache/linux-stable
-TARGET := ramfsv2
+KERSRC :=/lib/modules/$(KERVER)/build
+
+TARGET := me_test
 
 obj-m := $(TARGET).o  
-$(TARGET)-objs := inode.o file-mmu.o supper.o
+$(TARGET)-objs := test_entry.o
 all:
-	$(MAKE) -C $(KERSRC)  M=$(PWD) modules  
+	$(MAKE) -C $(KERSRC) M=$(PWD) modules  
 		
 clean:
 	rm *.ko modules.order  Module.symvers *.mod.c *.ko.cmd *.o.cmd .tmp_versions/ -rf

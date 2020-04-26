@@ -39,6 +39,7 @@ static struct inode *ramfsv2_alloc_inode(struct super_block *sb)
 {
 	struct ramfsv2_inode_info *ei;
 
+	dump_stack();
 	ei = kmem_cache_alloc(ramfsv2_inode_cachep, GFP_NOFS);
 	if (!ei)
 		return NULL;
@@ -69,6 +70,7 @@ static int ramfsv2_write_inode(struct inode *inode, struct writeback_control *wb
 static void ramfsv2_dirty_inode(struct inode *inode, int flags)
 {
 	//struct buffer_head *ibh;
+	dump_stack();
 	printk("zz %s %d \n", __func__, __LINE__);
 	//mark_buffer_dirty(ibh);
 }
