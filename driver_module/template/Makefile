@@ -3,7 +3,7 @@ PWD = $(shell pwd)
 PWD = $(shell pwd)  
 
 KERVER =$(shell uname -r)
-KERSRC :=/lib/modules/$(KERVER)/build
+KERSRC ?=/lib/modules/$(KERVER)/build
 
 TARGET := me_test
 
