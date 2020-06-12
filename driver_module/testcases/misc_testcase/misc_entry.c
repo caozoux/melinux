@@ -8,6 +8,7 @@
 #include <linux/slab.h>
 #include <linux/mm.h>
 #include <linux/fs.h>
+#include <linux/uaccess.h>
 #include <linux/miscdevice.h>
 #include <linux/interrupt.h>
 #include <linux/syscore_ops.h>
@@ -41,6 +42,7 @@ static int enable;
 struct misc_private_data {
 	int flag;		
 	const struct device *dev;
+	struct workqueue_struct  *thread_wq;
 };
 
 static struct misc_private_data *misc_data;
@@ -81,9 +83,9 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 		goto OUT;
 	}
 
-	dev_dbg(dev_data->dev, "ioctl cmd:%d\n", data.cmdtype);
+	dev_dbg(dev_data->dev, "ioctl cmd:%d\n", data.normal);
 
-	switch (data.cmdtype) {
+	switch (data.type) {
 
 		case  IOCTL_USERMAP:
 			page_ioctl_func(cmd, arg);
@@ -96,6 +98,7 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 		case  IOCTL_USERCU:
 			rcu_ioctl_func(cmd, arg, &data);
 			break;
+
 		default:
 			goto OUT;
 
@@ -121,25 +124,64 @@ ARRT_MARCO_READ(enable);
 ARRT_MARCO_WRITE(enable);
 ARRT_MARCO(enable);
 
+static int misctest_workquere_init(void)
+{
+	misc_data->thread_wq = create_workqueue("misc_workquere");
+	if (!misc_data->thread_wq)
+		return 1;
+	return 0;
+}
+
+static void misctest_workquere_exit(void)
+{
+	if (!misc_data->thread_wq)
+		destroy_workqueue(misc_data->thread_wq);
+}
+
 static int __init miscdriver_init(void)
 {
+	int ret;
+
 	misc_data = kzalloc(sizeof(struct misc_private_data), GFP_KERNEL);
 	if (!misc_data) {
 		return -ENOMEM;
 	}
-	if (misc_register(&misc_dev)) {
+
+	ret = misc_register(&misc_dev);
+	if (ret) {
 		pr_err(" misc register err\n");
-		return 1;
+		goto out1;
 	}
 
-	device_create_file(misc_dev.this_device, &dev_attr_enable);
+	ret = device_create_file(misc_dev.this_device, &dev_attr_enable);
+	if (ret)
+		goto out2;
+
 	misc_data->dev = misc_dev.this_device;
+
+	if (misctest_workquere_init()) {
+		ret = 1;
+		goto out3;
+	}
+
+	rcutest_init();
+
 	printk("miscdriver load \n");
+
 	return 0;
+out3:
+	device_remove_file(misc_dev.this_device, &dev_attr_enable);
+out2:
+	misc_deregister(&misc_dev);
+out1:
+	kfree(misc_data);
+
+	return ret;
 }
 
 static void __exit miscdriver_exit(void)
 {
+	misctest_workquere_exit();
 	device_remove_file(misc_dev.this_device, &dev_attr_enable);
 	misc_deregister(&misc_dev);
 	kfree(misc_data);

@@ -3,7 +3,7 @@ PWD = $(shell pwd)
 TARGET := misc
 
 KERVER =$(shell uname -r)
-KERSRC :=/lib/modules/$(KERVER)/build
+KERSRC ?= /lib/modules/$(KERVER)/build
 obj-m := $(TARGET).o  
 $(TARGET)-objs := misc_entry.o page_test.o mem_test.o rcu_test.o
 all:

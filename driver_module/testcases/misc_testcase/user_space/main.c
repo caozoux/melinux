@@ -51,17 +51,16 @@ int main(int argc, char *argv[])
 				usage_help();
 				break;
 			case 's':
-				data.cmdtype = IOCTL_SOFTLOCK;
+				data.type = IOCTL_SOFTLOCK;
 				break;
 			case 'w':
-				data.cmdtype = IOCTL_HARDLOCK;
+				data.type = IOCTL_HARDLOCK;
 				break;
 			case 'r':
-				data.cmdtype = IOCTL_USERCU;
-				ruc_test(fd, &data);
+				ruc_test(fd);
 				goto out;
 			case 'm':
-				data.cmdtype = IOCTL_MEM;
+				data.type = IOCTL_MEM;
 				data.cmdcode = IOCTL_TYPE_VMALLOC_MAX;
 				break;
 			default:

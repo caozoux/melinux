@@ -23,17 +23,18 @@ static pte_t *pgd_pud_pnd_pte_dump(unsigned long addr)
 	struct mm_struct *mm;
 	unsigned long *p_buf;
 	struct page *page;
-
-	mm = current->mm;
 	pgd_t *pgd;
 	pud_t *pud;
 	pmd_t *pmd = NULL;
 	pte_t *pte = NULL;
 
+	mm = current->mm;
+
 	page=virt_to_page(addr);
 	pgd = pgd_offset(mm, addr);
 	if (pgd_present(*pgd)) {
-		pud = pud_offset(pgd, addr);
+		p4d_t *p4d = p4d_offset(pgd, addr);
+		pud = pud_offset(p4d, addr);
 		if (pud_present(*pud)) {
 			if (pud_large(*pud))
 				return (pte_t *)pud;

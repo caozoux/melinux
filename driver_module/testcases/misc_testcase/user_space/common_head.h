@@ -2,7 +2,7 @@
 #define __COMMON_HEAD_H__
 
 
-int ruc_test(int fd, struct ioctl_data *data);
+int ruc_test(int fd);
 
 #endif
 
