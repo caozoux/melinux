@@ -42,7 +42,6 @@ static int rcuread_thread(void *arg)
 	u64 * addr;
 	while (!kthread_should_stop()) {
 		//rcu_read_lock();
-#if 0	
 		addr = rcu_dereference(rcu_pointer);
 		if (!addr) {
 			//schedule();
@@ -54,9 +53,9 @@ static int rcuread_thread(void *arg)
 				}
 			}
 		}
-#endif
 		//rcu_read_unlock();
 	}
+	return 0;
 }
 
 static int rcuassigned_thread(void *arg)
@@ -74,6 +73,7 @@ static int rcuassigned_thread(void *arg)
 		addr = NULL;
 #endif
 	}
+	return 0;
 }
 
 static void rcu_readlock_test_stop(void)
@@ -88,14 +88,14 @@ static void rcu_readlock_test_start(void)
 
 	void *addr;	
 	addr = kmalloc(4096, GFP_KERNEL);
-	printk("zz %s addr:%lx \n",__func__, addr);
+	printk("zz %s addr:%p \n",__func__, addr);
 	rcu_assign_pointer(rcu_pointer, addr);
-	return ;
 
-	rcutest_thread_read = kthread_create(rcuread_thread, (void *)NULL, 1, "rcuread_thread");
-	rcutest_thread_assigned = kthread_create(rcuassigned_thread, (void *)NULL,2, "rcuassigned_thread");
+	//rcutest_thread_read = kthread_create(rcuread_thread, (void *)NULL, 1, "rcuread_thread");
+	//rcutest_thread_assigned = kthread_create(rcuassigned_thread, (void *)NULL,2, "rcuassigned_thread");
 	//wake_up_process(rcutest_thread_read);
 	//wake_up_process(rcutest_thread_assigned);
+	return;
 
 }
 
@@ -130,8 +130,9 @@ OUT:
 	return 0;
 }
 
-void rcutest_init(void)
+int rcutest_init(void)
 {
 	RCU_INIT_POINTER(rcu_pointer, NULL);
+	return 0;
 }
 

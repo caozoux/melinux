@@ -14,6 +14,7 @@
 #include <linux/syscore_ops.h>
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
+#include "debug_ctrl.h"
 
 #define ARRT_MARCO(name) DEVICE_ATTR(name, S_IWUSR | S_IRUGO, read_##name, write_##name);
 
@@ -50,7 +51,12 @@ static struct misc_private_data *misc_data;
 static int misc_template_open(struct inode *inode, struct file * file)
 {
 
-	file->private_data = (void *) misc_data;
+	static struct misc_private_data *data;
+	data = kzalloc(sizeof(struct misc_private_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	file->private_data = (void *) data;
 	return 0;
 }
 
@@ -66,6 +72,12 @@ static ssize_t misc_template_write(struct file *file, const char __user * buf, s
 
 static int misc_template_release (struct inode *inode, struct file *file)
 {
+	static struct misc_private_data *data;
+
+	data = (struct misc_private_data *)file->private_data;
+	if (data)
+		kfree(data);
+
 	return 0;
 }
 
@@ -83,7 +95,7 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 		goto OUT;
 	}
 
-	dev_dbg(dev_data->dev, "ioctl cmd:%d\n", data.normal);
+	DEBUG("ioctl cmd:%d\n", data.type);
 
 	switch (data.type) {
 
@@ -97,6 +109,10 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 
 		case  IOCTL_USERCU:
 			rcu_ioctl_func(cmd, arg, &data);
+			break;
+
+		case  IOCTL_USEKPROBE:
+			kprobe_ioctl_func(cmd, arg, &data);
 			break;
 
 		default:
@@ -142,6 +158,21 @@ static int __init miscdriver_init(void)
 {
 	int ret;
 
+	if(rcutest_init()) {
+		pr_err("rcutest_init failed\n");
+		goto out0;
+	}
+
+	if(kprobe_init()) {
+		pr_err("kprobe_init failed\n");
+		goto out0;
+	}
+
+	if(showstack_init()) {
+		pr_err("showstack_init failed\n");
+		goto out0;
+	}
+
 	misc_data = kzalloc(sizeof(struct misc_private_data), GFP_KERNEL);
 	if (!misc_data) {
 		return -ENOMEM;
@@ -164,7 +195,6 @@ static int __init miscdriver_init(void)
 		goto out3;
 	}
 
-	rcutest_init();
 
 	printk("miscdriver load \n");
 
@@ -175,7 +205,9 @@ out2:
 	misc_deregister(&misc_dev);
 out1:
 	kfree(misc_data);
-
+	return ret;
+out0:
+	ret = -EINVAL;
 	return ret;
 }
 
@@ -193,3 +225,4 @@ module_exit(miscdriver_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Zou Cao<zoucaox@outlook.com>");
+

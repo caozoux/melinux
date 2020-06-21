@@ -6,5 +6,9 @@ int page_ioctl_func(unsigned int  cmd, unsigned long arg);
 
 int mem_ioctl_func(unsigned int  cmd, struct ioctl_data *data);
 int rcu_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
-void rcutest_init(void);
+int kprobe_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
+int rcutest_init(void);
+int kprobe_init(void);
+void misc_show_stack(const char *log_buf, struct task_struct *task, unsigned long *sp);
+int showstack_init(void);
 #endif

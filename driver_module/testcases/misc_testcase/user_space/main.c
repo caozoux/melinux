@@ -21,10 +21,16 @@ void usage_help()
 	printf("       -w hwlock:   hw lock \n");
 	printf("       -r rcu:      hw lock \n");
 	printf("       -m mem:      test mem\n");
+	printf("       -k funcname  dumpstack of kernel function \n");
 	printf("       mem:         -o  dump    show the page pgd pud pmd pte info\n");
 	printf("       mem:         -o  vmmax   test the max vmlloc support \n");
 }
 
+
+static int kprobe_test(int fd ,struct ioctl_data *data)
+{
+	return ioctl(fd, sizeof(struct ioctl_data), data);
+}
 
 int main(int argc, char *argv[])
 {
@@ -32,6 +38,7 @@ int main(int argc, char *argv[])
 	char ch;
 	int fd;	
 	int ret;
+	char name[128];
 
 	if (argc == 1) {
 		usage_help();
@@ -44,7 +51,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-    while((ch=getopt(argc,argv,"hswrm:"))!=-1)
+    while((ch=getopt(argc,argv,"hswrm:k:"))!=-1)
   	{
 		switch (ch) {
 			case 'h':
@@ -63,14 +70,31 @@ int main(int argc, char *argv[])
 				data.type = IOCTL_MEM;
 				data.cmdcode = IOCTL_TYPE_VMALLOC_MAX;
 				break;
+
+			case 'k':
+				data.type = IOCTL_USEKPROBE;
+				data.cmdcode = IOCTL_USEKRPOBE_FUNC_DUMP;
+				printf("%s\n", optarg);
+				strcpy(name, optarg);
+				data.kp_data.name = name;
+				data.kp_data.len = strlen(name);
+				data.kp_data.dump_buf= malloc(4096);
+				data.kp_data.dump_len= 4096;
+				ret = kprobe_test(fd, &data);
+				if (ret) {
+					printf("kprobe failed\n");
+					return 0;
+				}
+
+				printf("%s\n", data.kp_data.dump_buf);
+
+				break;
 			default:
 				usage_help();
 				return 0;
 		}
 	}
 
-
-	ret = ioctl(fd, 1, &data);
 
 out:
 	close(fd);
