@@ -115,6 +115,10 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 			kprobe_ioctl_func(cmd, arg, &data);
 			break;
 
+		case  IOCTL_USEWORKQUEUE:
+			workqueue_ioctl_func(cmd, arg, &data);
+			break;
+
 		default:
 			goto OUT;
 
@@ -173,6 +177,11 @@ static int __init miscdriver_init(void)
 		goto out0;
 	}
 
+	if(workqueue_test_init()) {
+		pr_err("showstack_init failed\n");
+		goto out0;
+	}
+
 	misc_data = kzalloc(sizeof(struct misc_private_data), GFP_KERNEL);
 	if (!misc_data) {
 		return -ENOMEM;
@@ -213,6 +222,9 @@ out0:
 
 static void __exit miscdriver_exit(void)
 {
+
+	workqueue_test_exit();
+
 	misctest_workquere_exit();
 	device_remove_file(misc_dev.this_device, &dev_attr_enable);
 	misc_deregister(&misc_dev);

@@ -9,6 +9,7 @@ enum ioctl_cmdtype {
 	IOCTL_USERMAP,
 	IOCTL_USERCU,
 	IOCTL_USEKPROBE,
+	IOCTL_USEWORKQUEUE,
 };
 
 enum IOCTL_TYPE {
@@ -27,6 +28,13 @@ enum IOCTL_USEKRPOBE_SUB {
 	IOCTL_USEKRPOBE_FUNC_DUMP,
 };
 
+enum IOCTL_USEWORKQUEUE_SUB{
+	IOCTL_USEWORKQUEUE_NONE = 0,
+	//dumpstack of function
+	IOCTL_USEWORKQUEUE_SIG = 0,
+	IOCTL_USEWORKQUEUE_PERCPU = 0,
+};
+
 struct ioctl_data {
 	enum ioctl_cmdtype type;
 	union {
@@ -37,6 +45,9 @@ struct ioctl_data {
 			char *dump_buf;
 			int dump_len;
 		} kp_data;
+		struct workqueue_ioctl {
+			int runtime;
+		} wq_data;
 	};
 	int  cmdcode;
 	unsigned long args[5];

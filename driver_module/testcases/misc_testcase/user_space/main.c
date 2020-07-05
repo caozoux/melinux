@@ -16,16 +16,24 @@ struct ping_data {
 
 void usage_help()
 {
-	printf("help: -t [optcode:softlock/hwlock/mem/rcu] -o optcode\n");
+	printf("help:  -t [optcode:softlock/hwlock/mem/rcu] -o optcode\n");
 	printf("       -s softlock: test softlock \n");
 	printf("       -w hwlock:   hw lock \n");
 	printf("       -r rcu:      hw lock \n");
 	printf("       -m mem:      test mem\n");
+	printf("       -q workqueue:      test workqueue\n");
 	printf("       -k funcname  dumpstack of kernel function \n");
 	printf("       mem:         -o  dump    show the page pgd pud pmd pte info\n");
 	printf("       mem:         -o  vmmax   test the max vmlloc support \n");
 }
 
+static int workqueue_test(int fd ,struct ioctl_data *data)
+{
+		data->type =  IOCTL_USEWORKQUEUE;
+		data->cmdcode = IOCTL_USEWORKQUEUE_SIG;
+		printf("%s\n", optarg);
+		return ioctl(fd, sizeof(struct ioctl_data), data);
+}
 
 static int kprobe_test(int fd ,struct ioctl_data *data)
 {
@@ -51,7 +59,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-    while((ch=getopt(argc,argv,"hswrm:k:"))!=-1)
+    while((ch=getopt(argc,argv,"hswrm:k:q:"))!=-1)
   	{
 		switch (ch) {
 			case 'h':
@@ -66,9 +74,14 @@ int main(int argc, char *argv[])
 			case 'r':
 				ruc_test(fd);
 				goto out;
+
 			case 'm':
 				data.type = IOCTL_MEM;
 				data.cmdcode = IOCTL_TYPE_VMALLOC_MAX;
+				break;
+
+			case 'q':
+				ret = workqueue_test(fd, &data);
 				break;
 
 			case 'k':
