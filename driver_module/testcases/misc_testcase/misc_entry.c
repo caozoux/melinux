@@ -119,6 +119,10 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 			workqueue_ioctl_func(cmd, arg, &data);
 			break;
 
+		case  IOCTL_HARDLOCK:
+			locktest_ioctl_func(cmd, arg, &data);
+			break;
+
 		default:
 			goto OUT;
 

@@ -35,6 +35,14 @@ static int workqueue_test(int fd ,struct ioctl_data *data)
 		return ioctl(fd, sizeof(struct ioctl_data), data);
 }
 
+static int hardlock_test(int fd, struct ioctl_data *data)
+{
+		data->type = IOCTL_HARDLOCK;
+		data->cmdcode = IOCTL_HARDLOCK;
+		printf("%s\n", optarg);
+		return ioctl(fd, sizeof(struct ioctl_data), data);
+}
+
 static int kprobe_test(int fd ,struct ioctl_data *data)
 {
 	return ioctl(fd, sizeof(struct ioctl_data), data);
@@ -59,7 +67,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-    while((ch=getopt(argc,argv,"hswrm:k:q:"))!=-1)
+    while((ch=getopt(argc,argv,"hsw:rm:k:q:"))!=-1)
   	{
 		switch (ch) {
 			case 'h':
@@ -68,9 +76,26 @@ int main(int argc, char *argv[])
 			case 's':
 				data.type = IOCTL_SOFTLOCK;
 				break;
+
 			case 'w':
+				ch = optarg[0];
 				data.type = IOCTL_HARDLOCK;
-				break;
+				switch (ch) {
+					case '1':
+						data.cmdcode = IOCTL_HARDLOCK_LOCK;
+						break;
+					case '2':
+						data.cmdcode = IOCTL_HARDLOCK_UNLOCK;
+						break;
+					case '3':
+						data.cmdcode = IOCTL_HARDLOCK_TRYLOCK;
+						break;
+					default:
+						printf("hardlock operation not support\n");
+						return -1;
+				}
+				return ioctl(fd, sizeof(struct ioctl_data), &data);
+
 			case 'r':
 				ruc_test(fd);
 				goto out;
