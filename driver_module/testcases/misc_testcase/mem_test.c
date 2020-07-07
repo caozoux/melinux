@@ -14,6 +14,7 @@
 #include <linux/uaccess.h>
 #include <linux/notifier.h>
 #include <linux/interrupt.h>
+#include <linux/vmalloc.h>
 
 #include "template_iocmd.h"
 #include "misc_ioctl.h"

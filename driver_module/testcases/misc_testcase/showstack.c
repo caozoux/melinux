@@ -15,9 +15,12 @@
 #include <linux/sysfs.h>
 #include <linux/kasan.h>
 
+#ifndef CONFIG_ARM64
 #include <asm/cpu_entry_area.h>
-#include <asm/stacktrace.h>
 #include <asm/unwind.h> 
+#endif
+
+#include <asm/stacktrace.h>
 #include "template_iocmd.h"
 
 #define  LOOKUP_SYMBOLEX(name, sym) do {\
@@ -30,6 +33,7 @@
 
 #define  LOOKUP_SYMBOL(name) LOOKUP_SYMBOLEX(name,#name)
 
+#ifndef CONFIG_ARM64
 static unsigned long *(*orig_unwind_get_return_address_ptr)(struct unwind_state *state);
 static int (*orig___kernel_text_address)(unsigned long addr);
 static int (*orig_get_stack_info)(unsigned long *stack, struct task_struct *task, 
@@ -188,3 +192,11 @@ int showstack_init(void)
 	LOOKUP_SYMBOL(ftrace_graph_ret_addr);
 	return 0;
 }
+#else
+void misc_show_stack(char *log_buf, struct task_struct *task, unsigned long *sp)
+{
+}
+int showstack_init(void)
+{
+}
+#endif

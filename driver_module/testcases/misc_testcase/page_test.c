@@ -14,6 +14,7 @@
 #include <linux/uaccess.h>
 #include <linux/notifier.h>
 #include <linux/interrupt.h>
+#include <linux/hugetlb.h>
 
 #include "misc_ioctl.h"
 #include "template_iocmd.h"
@@ -36,11 +37,13 @@ static pte_t *pgd_pud_pnd_pte_dump(unsigned long addr)
 		p4d_t *p4d = p4d_offset(pgd, addr);
 		pud = pud_offset(p4d, addr);
 		if (pud_present(*pud)) {
-			if (pud_large(*pud))
-				return (pte_t *)pud;
+
 			pmd = pmd_offset(pud, addr);
 
 			if (pmd_present(*pmd)) {
+				if (pmd_huge(*pmd))
+					return (pte_t *)pmd;
+
 				pte = pte_offset_kernel(pmd, addr);
 				if (pte_present(*pte)) {
 					printk("addr:%lx page:%lx \n", addr, (unsigned long)page);
