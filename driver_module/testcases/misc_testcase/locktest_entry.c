@@ -23,6 +23,8 @@
 #include "debug_ctrl.h"
 
 static DEFINE_SPINLOCK(locktest_lock);
+static DEFINE_SPINLOCK(locktest_irqlock);
+static unsigned long locktest_irqlock_flags;
 
 int locktest_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
@@ -32,17 +34,27 @@ int locktest_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data 
 			DEBUG("spinlock lock\n");
 			//spin_lock_irqsave(&davinci_rtc_lock, flags);
 			spin_lock(&locktest_lock);
-			//rcu_readlock_test_start();
 			break;
 		case  IOCTL_HARDLOCK_UNLOCK:
 			DEBUG("spinlock unlock\n");
 			spin_unlock(&locktest_lock);
-			//rcu_readlock_test_stop();
 			break;
 		case  IOCTL_HARDLOCK_TRYLOCK:
 			DEBUG("spinlock trylock\n");
 			spin_trylock(&locktest_lock);
-			//rcu_readlock_test_stop();
+			break;
+		case  IOCTL_HARDLOCK_IRQLOCK:
+			DEBUG("spinlock irq lock\n");
+			//spin_lock_irqsave(&davinci_rtc_lock, flags);
+			spin_lock(&locktest_lock);
+			break;
+		case  IOCTL_HARDLOCK_IRQUNLOCK:
+			DEBUG("spinlock irq unlock\n");
+			spin_unlock(&locktest_lock);
+			break;
+		case  IOCTL_HARDLOCK_IRQTRYLOCK:
+			DEBUG("spinlock irq trylock\n");
+			spin_trylock(&locktest_lock);
 			break;
 		default:
 			goto OUT;

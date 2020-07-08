@@ -19,6 +19,12 @@ void usage_help()
 	printf("help:  -t [optcode:softlock/hwlock/mem/rcu] -o optcode\n");
 	printf("       -s softlock: test softlock \n");
 	printf("       -w hwlock:   hw lock \n");
+	printf("       -w 1:   hw lock \n");
+	printf("       -w 2:   hw unlock \n");
+	printf("       -w 3:   hw trylock \n");
+	printf("       -w 4:   hw irqlock \n");
+	printf("       -w 5:   hw irqunlock \n");
+	printf("       -w 6:   hw irqtrylock \n");
 	printf("       -r rcu:      hw lock \n");
 	printf("       -m mem:      test mem\n");
 	printf("       -q workqueue:      test workqueue\n");
