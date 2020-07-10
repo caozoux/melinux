@@ -96,6 +96,15 @@ int main(int argc, char *argv[])
 					case '3':
 						data.cmdcode = IOCTL_HARDLOCK_TRYLOCK;
 						break;
+					case '4':
+						data.cmdcode = IOCTL_HARDLOCK_IRQLOCK;
+						break;
+					case '5':
+						data.cmdcode = IOCTL_HARDLOCK_IRQUNLOCK;
+						break;
+					case '6':
+						data.cmdcode = IOCTL_HARDLOCK_IRQTRYLOCK;
+						break;
 					default:
 						printf("hardlock operation not support\n");
 						return -1;

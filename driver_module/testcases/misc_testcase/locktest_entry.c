@@ -46,15 +46,14 @@ int locktest_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data 
 		case  IOCTL_HARDLOCK_IRQLOCK:
 			DEBUG("spinlock irq lock\n");
 			//spin_lock_irqsave(&davinci_rtc_lock, flags);
-			spin_lock(&locktest_lock);
+			spin_lock_irqsave(&locktest_lock, locktest_irqlock_flags);
 			break;
 		case  IOCTL_HARDLOCK_IRQUNLOCK:
 			DEBUG("spinlock irq unlock\n");
-			spin_unlock(&locktest_lock);
+			spin_unlock_irqrestore(&locktest_lock, locktest_irqlock_flags);
 			break;
 		case  IOCTL_HARDLOCK_IRQTRYLOCK:
 			DEBUG("spinlock irq trylock\n");
-			spin_trylock(&locktest_lock);
 			break;
 		default:
 			goto OUT;

@@ -203,10 +203,12 @@ static int __init miscdriver_init(void)
 
 	misc_data->dev = misc_dev.this_device;
 
+#if 0
 	if (misctest_workquere_init()) {
 		ret = 1;
 		goto out3;
 	}
+#endif
 
 
 	printk("miscdriver load \n");
@@ -226,8 +228,9 @@ out0:
 
 static void __exit miscdriver_exit(void)
 {
-
+#if 0
 	workqueue_test_exit();
+#endif
 
 	misctest_workquere_exit();
 	device_remove_file(misc_dev.this_device, &dev_attr_enable);
