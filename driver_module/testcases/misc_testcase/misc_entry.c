@@ -186,6 +186,11 @@ static int __init miscdriver_init(void)
 		goto out0;
 	}
 
+	if(locktest_init()) {
+		pr_err("locktest_init failed\n");
+		goto out0;
+	}
+
 	misc_data = kzalloc(sizeof(struct misc_private_data), GFP_KERNEL);
 	if (!misc_data) {
 		return -ENOMEM;
@@ -228,11 +233,8 @@ out0:
 
 static void __exit miscdriver_exit(void)
 {
-#if 0
 	workqueue_test_exit();
-#endif
-
-	misctest_workquere_exit();
+	//misctest_workquere_exit();
 	device_remove_file(misc_dev.this_device, &dev_attr_enable);
 	misc_deregister(&misc_dev);
 	kfree(misc_data);
