@@ -17,4 +17,6 @@ void workqueue_test_exit(void);
 int workqueue_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
 
 int locktest_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
+int locktest_init(void);
+
 #endif

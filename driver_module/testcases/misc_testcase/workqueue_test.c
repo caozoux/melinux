@@ -27,8 +27,14 @@ struct wkq_data {
 	struct workqueue_struct *sigtestworkqueue;
 	struct workqueue_struct *workqueue;
 	struct work_struct wq_sigtestwq;
+	struct work_struct wq_sigtestwq_spinlock;
+	struct work_struct wq_sigtestwq_spinlockirq;
 	struct delayed_work wkq_delay_test;;
 } *wkq_dt;
+
+static DEFINE_SPINLOCK(locktest_lock);
+static DEFINE_SPINLOCK(locktest_irqlock);
+static unsigned long locktest_irqlock_flags;
 
 static void wkq_delay_test(struct work_struct *work)
 {
@@ -40,14 +46,37 @@ static void wkq_sig_test(struct work_struct *work)
 	me_mdelay(20000);
 }
 
+static void wkq_sig_spinlock_test(struct work_struct *work)
+{
+	spin_lock(&locktest_lock);
+	me_mdelay(20000);
+	spin_unlock(&locktest_lock);
+}
+
+static void wkq_sig_spinlockirq_test(struct work_struct *work)
+{
+	spin_lock_irqsave(&locktest_lock, locktest_irqlock_flags);
+	me_mdelay(20000);
+	spin_unlock_irqrestore(&locktest_lock, locktest_irqlock_flags);
+}
+
 int workqueue_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 
 	int ret = -1;
+
 	switch (data->cmdcode) {
 		case  IOCTL_USEWORKQUEUE_SIG :
 			queue_work(wkq_dt->sigtestworkqueue, &wkq_dt->wq_sigtestwq);
 			DEBUG("workqueue sig\n");
+			break;
+		case  IOCTL_USEWORKQUEUE_SIG_SPINLOCK:
+			queue_work(wkq_dt->sigtestworkqueue, &wkq_dt->wq_sigtestwq_spinlock);
+			DEBUG("workqueue sig spinlock\n");
+			break;
+		case  IOCTL_USEWORKQUEUE_SIG_SPINLOCKIRQ:
+			queue_work(wkq_dt->sigtestworkqueue, &wkq_dt->wq_sigtestwq_spinlockirq);
+			DEBUG("workqueue sig spinlock irq\n");
 			break;
 		default:
 			goto OUT;
@@ -86,6 +115,8 @@ int workqueue_test_init(void)
 	//num_online_cpus
 
 	INIT_WORK(&wkq_dt->wq_sigtestwq, wkq_sig_test);
+	INIT_WORK(&wkq_dt->wq_sigtestwq_spinlock, wkq_sig_spinlock_test);
+	INIT_WORK(&wkq_dt->wq_sigtestwq_spinlockirq, wkq_sig_spinlockirq_test);
 	INIT_DELAYED_WORK(&wkq_dt->wkq_delay_test, wkq_delay_test);
 
 	return 0;
