@@ -36,7 +36,6 @@ struct wkq_data {
 
 static DEFINE_SPINLOCK(locktest_lock);
 static DEFINE_SPINLOCK(locktest_irqlock);
-static unsigned long locktest_irqlock_flags;
 
 static void wkq_delay_test(struct work_struct *work)
 {
@@ -66,6 +65,7 @@ static void wkq_sig_spinlockirq_test(struct work_struct *work)
 {
 	struct wkq_data *wkq_d = container_of(work, struct wkq_data, wq_sigtestwq_spinlockirq);
 	unsigned long after_time = msecs_to_jiffies(wkq_d->runtime) + jiffies;
+	unsigned long locktest_irqlock_flags;
 
 	while(1) {
 		spin_lock_irqsave(&locktest_lock, locktest_irqlock_flags);
@@ -80,6 +80,7 @@ static void wkq_sig_spinlockirq_race_test(struct work_struct *work)
 {
 	struct wkq_data *wkq_d = container_of(work, struct wkq_data, wq_sigtestwq_spinlockirq);
 	unsigned long after_time = msecs_to_jiffies(wkq_d->runtime) + jiffies;
+	unsigned long locktest_irqlock_flags;
 
 	spin_lock_irqsave(&locktest_lock, locktest_irqlock_flags);
 	while(1) {
