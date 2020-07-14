@@ -29,6 +29,7 @@ struct wkq_data {
 	struct work_struct wq_sigtestwq;
 	struct work_struct wq_sigtestwq_spinlock;
 	struct work_struct wq_sigtestwq_spinlockirq;
+	struct work_struct wq_sigtestwq_spinlockirq_race;
 	struct delayed_work wkq_delay_test;
 	int runtime;
 } *wkq_dt;
@@ -75,6 +76,20 @@ static void wkq_sig_spinlockirq_test(struct work_struct *work)
 	}
 }
 
+static void wkq_sig_spinlockirq_race_test(struct work_struct *work)
+{
+	struct wkq_data *wkq_d = container_of(work, struct wkq_data, wq_sigtestwq_spinlockirq);
+	unsigned long after_time = msecs_to_jiffies(wkq_d->runtime) + jiffies;
+
+	spin_lock_irqsave(&locktest_lock, locktest_irqlock_flags);
+	while(1) {
+		me_mdelay(1);
+		if (time_after(jiffies, after_time))
+			break;
+	}
+	spin_unlock_irqrestore(&locktest_lock, locktest_irqlock_flags);
+}
+
 int workqueue_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 
@@ -91,6 +106,12 @@ int workqueue_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 			DEBUG("workqueue sig spinlock\n");
 			break;
 		case  IOCTL_USEWORKQUEUE_SIG_SPINLOCKIRQ:
+			queue_work(wkq_dt->sigtestworkqueue, &wkq_dt->wq_sigtestwq_spinlockirq);
+			DEBUG("workqueue sig spinlock irq\n");
+			break;
+	
+		case  IOCTL_USEWORKQUEUE_PERCPU_SPINLOCKIRQ_RACE:
+			queue_work(wkq_dt->workqueue, &wkq_dt->wq_sigtestwq_spinlockirq);
 			queue_work(wkq_dt->sigtestworkqueue, &wkq_dt->wq_sigtestwq_spinlockirq);
 			DEBUG("workqueue sig spinlock irq\n");
 			break;
@@ -122,6 +143,7 @@ int workqueue_test_init(void)
 	INIT_WORK(&wkq_dt->wq_sigtestwq, wkq_sig_test);
 	INIT_WORK(&wkq_dt->wq_sigtestwq_spinlock, wkq_sig_spinlock_test);
 	INIT_WORK(&wkq_dt->wq_sigtestwq_spinlockirq, wkq_sig_spinlockirq_test);
+	INIT_WORK(&wkq_dt->wq_sigtestwq_spinlockirq_race, wkq_sig_spinlockirq_race_test);
 	INIT_DELAYED_WORK(&wkq_dt->wkq_delay_test, wkq_delay_test);
 
 	return 0;

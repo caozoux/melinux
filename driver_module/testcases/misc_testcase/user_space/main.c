@@ -52,6 +52,9 @@ static int workqueue_test(int fd ,struct ioctl_data *data, char *ch1, char *ch2)
 			case '3':
 				data->cmdcode = IOCTL_USEWORKQUEUE_SIG_SPINLOCKIRQ;
 				break;
+			case '4':
+				data->cmdcode =  IOCTL_USEWORKQUEUE_PERCPU_SPINLOCKIRQ_RACE;
+				break;
 			default:
 				return 1;
 		}
