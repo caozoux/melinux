@@ -7,7 +7,6 @@
 void me_udelay(unsigned long var)
 {
         var = var*((CPU_FREQ)/1000000);
-        var = var*((CPU_FREQ)/2000);
 #ifdef CONFIG_ARM64
         asm (   "mov x1, %0\n"
                 "loop2: sub x1, x1, #1\n"

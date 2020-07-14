@@ -28,18 +28,20 @@ void usage_help()
 	printf("       -r rcu:      hw lock \n");
 	printf("       -m mem:      test mem\n");
 	printf("       -q workqueue:      test workqueue\n");
-	printf("       -q workqueue:      test workqueue\n");
-	printf("       -q workqueue:      test workqueue\n");
-	printf("       -q workqueue:      test workqueue\n");
-	printf("       -q workqueue:      test workqueue\n");
+	printf("       -q 1 timemisc:   run workqueue\n");
+	printf("       -q 2 timemisc:   run workqueue spinlock\n");
+	printf("       -q 3 timemisc:   test workqueue spinlockirq\n");
 	printf("       -k funcname  dumpstack of kernel function \n");
 	printf("       mem:         -o  dump    show the page pgd pud pmd pte info\n");
 	printf("       mem:         -o  vmmax   test the max vmlloc support \n");
 }
 
-static int workqueue_test(int fd ,struct ioctl_data *data, char ch)
+static int workqueue_test(int fd ,struct ioctl_data *data, char *ch1, char *ch2)
 {
+		char ch = *ch1;
+		int runtime = atoi(ch2);
 		data->type = IOCTL_USEWORKQUEUE;
+		data->wq_data.runtime = runtime;
 		switch (ch) {
 			case '1':
 				data->cmdcode = IOCTL_USEWORKQUEUE_SIG;
@@ -137,8 +139,7 @@ int main(int argc, char *argv[])
 				break;
 
 			case 'q':
-				ch = optarg[0];
-				ret = workqueue_test(fd, &data, ch);
+				ret = workqueue_test(fd, &data, argv[optind-1], argv[optind]);
 				break;
 
 			case 'k':

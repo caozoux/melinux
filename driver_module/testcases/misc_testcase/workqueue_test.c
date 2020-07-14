@@ -29,7 +29,8 @@ struct wkq_data {
 	struct work_struct wq_sigtestwq;
 	struct work_struct wq_sigtestwq_spinlock;
 	struct work_struct wq_sigtestwq_spinlockirq;
-	struct delayed_work wkq_delay_test;;
+	struct delayed_work wkq_delay_test;
+	int runtime;
 } *wkq_dt;
 
 static DEFINE_SPINLOCK(locktest_lock);
@@ -43,21 +44,35 @@ static void wkq_delay_test(struct work_struct *work)
 
 static void wkq_sig_test(struct work_struct *work)
 {
-	me_mdelay(20000);
+	me_mdelay(1);
 }
 
 static void wkq_sig_spinlock_test(struct work_struct *work)
 {
-	spin_lock(&locktest_lock);
-	me_mdelay(20000);
-	spin_unlock(&locktest_lock);
+	struct wkq_data *wkq_d = container_of(work, struct wkq_data, wq_sigtestwq_spinlock);
+	unsigned long after_time = msecs_to_jiffies(wkq_d->runtime) + jiffies;
+
+	while(1) {
+		spin_lock(&locktest_lock);
+		me_mdelay(1);
+		spin_unlock(&locktest_lock);
+		if (time_after(jiffies, after_time))
+			break;
+	}
 }
 
 static void wkq_sig_spinlockirq_test(struct work_struct *work)
 {
-	spin_lock_irqsave(&locktest_lock, locktest_irqlock_flags);
-	me_mdelay(20000);
-	spin_unlock_irqrestore(&locktest_lock, locktest_irqlock_flags);
+	struct wkq_data *wkq_d = container_of(work, struct wkq_data, wq_sigtestwq_spinlockirq);
+	unsigned long after_time = msecs_to_jiffies(wkq_d->runtime) + jiffies;
+
+	while(1) {
+		spin_lock_irqsave(&locktest_lock, locktest_irqlock_flags);
+		me_mdelay(1);
+		spin_unlock_irqrestore(&locktest_lock, locktest_irqlock_flags);
+		if (time_after(jiffies, after_time))
+			break;
+	}
 }
 
 int workqueue_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
@@ -65,6 +80,7 @@ int workqueue_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 
 	int ret = -1;
 
+	wkq_dt->runtime = data->wq_data.runtime;
 	switch (data->cmdcode) {
 		case  IOCTL_USEWORKQUEUE_SIG :
 			queue_work(wkq_dt->sigtestworkqueue, &wkq_dt->wq_sigtestwq);
@@ -83,17 +99,6 @@ int workqueue_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 	}
 OUT:
 	return ret;
-
-#if 0
-	data->args[0] = cnt_test  ;
-
-	if (copy_to_user((char __user *) addr, data, sizeof(struct ioctl_data))) {
-		printk("copy to user failed\n");
-		return -1;
-	}
-#endif
-
-	return 0;
 }
 
 int workqueue_test_init(void)

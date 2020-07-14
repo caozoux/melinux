@@ -41,8 +41,10 @@ static pte_t *pgd_pud_pnd_pte_dump(unsigned long addr)
 			pmd = pmd_offset(pud, addr);
 
 			if (pmd_present(*pmd)) {
+#if 0
 				if (pmd_huge(*pmd))
 					return (pte_t *)pmd;
+#endif
 
 				pte = pte_offset_kernel(pmd, addr);
 				if (pte_present(*pte)) {
