@@ -1,6 +1,6 @@
 cflags += -I../
 
-test:main.o rcu_test.o
+test: main.o rcu_test.o
 	@gcc -L/usr/lib64 -lm -lc -lpthread  $^ -o test
 
 %.o:%.c

@@ -166,6 +166,11 @@ static int __init miscdriver_init(void)
 {
 	int ret;
 
+	if(msr_init()) {
+		pr_err("msr_init failed\n");
+		goto out0;
+	}
+
 	if(rcutest_init()) {
 		pr_err("rcutest_init failed\n");
 		goto out0;
@@ -186,10 +191,13 @@ static int __init miscdriver_init(void)
 		goto out0;
 	}
 
+
+#if 0
 	if(locktest_init()) {
 		pr_err("locktest_init failed\n");
 		goto out0;
 	}
+#endif
 
 	misc_data = kzalloc(sizeof(struct misc_private_data), GFP_KERNEL);
 	if (!misc_data) {
@@ -236,6 +244,7 @@ static void __exit miscdriver_exit(void)
 	workqueue_test_exit();
 	//misctest_workquere_exit();
 	device_remove_file(misc_dev.this_device, &dev_attr_enable);
+	msr_exit();
 	misc_deregister(&misc_dev);
 	kfree(misc_data);
 	printk("miscdriver unload \n");

@@ -19,4 +19,7 @@ int workqueue_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 int locktest_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
 int locktest_init(void);
 
+
+int msr_init(void);
+void msr_exit(void);
 #endif

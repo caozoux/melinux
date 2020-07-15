@@ -1,0 +1,67 @@
+NOTE!!
+======
+
+Since the tools are going to access real hardware registers and may result in
+unexpected behaviors, it is absolutely not allowed to be used in production
+environment, but ONLY for TEST and DEBUG.
+
+sysreg-tools Build
+==================
+        0. install MSR-ARM module
+        1. make & make install sysreg-tools
+
+Introduction
+============
+
+Sysreg-tool is aiming to access the system registers for ARM platform. It was
+designed by SMC (self-modify code) method to read or write date to registers.
+We use this tool to replace x86 MSR-tools, and depends on MSR-ARM module on
+use.
+
+In addition, we make the usage of sysreg similar to MSR-tools. For engineers
+familiar with MSR-tools, they can quickly install and use this tool.
+
+
+Dependences
+-----------
+  0. glibc
+  1. MSR-ARM module
+
+HOW-TO
+------
+
+Firstly, the system should make sure have installed the MSR-ARM module, if not,
+to view:
+
+http://gitlab.alibaba-inc.com/rongwei.wrw/msr-arm
+
+Next, MSR-ARM module is already installed, install sysreg-tool as follows:
+
+			make && make install
+
+To run this program, like follows:
+
+			rsysreg -p0 -r MPIDR_EL1
+
+In addition, writing data likes:
+
+      wsysreg -p0 -r <register name> <writing data>
+
+Contribution
+============
+0. Read docs/coding_style.txt in docs/
+
+1. Do NOT use master/dev branch for development directly:
+
+   a. Checkout your branch from dev
+   b. Doing something...
+   c. Submit ONLY merge request to dev branch
+   d. After reviewed by maintainers, the patch(es) will be merged into dev
+   e. Only merge dev into master branch when releasing a formal version
+
+Contributors
+------------
+
+Rongwei Wang
+
+
