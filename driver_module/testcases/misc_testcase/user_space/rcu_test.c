@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <signal.h>
+#include <sys/ioctl.h>
 #include "template_iocmd.h"
 
 static int s_fd;

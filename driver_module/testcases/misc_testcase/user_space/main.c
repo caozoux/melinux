@@ -1,8 +1,11 @@
+#include <unistd.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include "template_iocmd.h"
 #include "common_head.h"
 
@@ -19,21 +22,58 @@ void usage_help()
 	printf("help:  -t [optcode:softlock/hwlock/mem/rcu] -o optcode\n");
 	printf("       -s softlock: test softlock \n");
 	printf("       -w hwlock:   hw lock \n");
-	printf("       -w 1:   hw lock \n");
-	printf("       -w 2:   hw unlock \n");
-	printf("       -w 3:   hw trylock \n");
-	printf("       -w 4:   hw irqlock \n");
-	printf("       -w 5:   hw irqunlock \n");
-	printf("       -w 6:   hw irqtrylock \n");
+	printf("          1:   hw lock \n");
+	printf("          2:   hw unlock \n");
+	printf("          3:   hw trylock \n");
+	printf("          4:   hw irqlock \n");
+	printf("          5:   hw irqunlock \n");
+	printf("          6:   hw irqtrylock \n");
 	printf("       -r rcu:      hw lock \n");
 	printf("       -m mem:      test mem\n");
+	printf("       -e tree      tree test\n");
+	printf("          radix add index  raidixtree add inode\n");
+	printf("          radix del index  raidixtree del inode\n");
+	printf("          radix get index  raidixtree get inode\n");
+	printf("          radix dump index raidixtree dump inode\n");
 	printf("       -q workqueue:      test workqueue\n");
-	printf("       -q 1 timemisc:   run workqueue\n");
-	printf("       -q 2 timemisc:   run workqueue spinlock\n");
-	printf("       -q 3 timemisc:   test workqueue spinlockirq\n");
+	printf("          1 timemisc:   run workqueue\n");
+	printf("          2 timemisc:   run workqueue spinlock\n");
+	printf("          3 timemisc:   test workqueue spinlockirq\n");
 	printf("       -k funcname  dumpstack of kernel function \n");
 	printf("       mem:         -o  dump    show the page pgd pud pmd pte info\n");
 	printf("       mem:         -o  vmmax   test the max vmlloc support \n");
+}
+
+static int raidix_test(int fd ,struct ioctl_data *data, char *ch1, char *ch2, char *ch3)
+{
+		int index;
+
+		data->type = IOCTL_USERAIDIXTREE;
+
+		if (ch1 == NULL || ch2 == NULL
+				||ch3 == NULL)
+			return 1;
+
+		index = atoi(ch3);
+		data->raidix_data.index = index;
+
+		if (!strcmp(ch1,"radix")) {
+			if (!strcmp(ch2,"add")) {
+				data->cmdcode = IOCTL_USERAIDIXTREE_ADD;
+			} else if (!strcmp(ch1,"del")) {
+				data->cmdcode = IOCTL_USERAIDIXTREE_DEL;
+			} else if (!strcmp(ch1,"get")) {
+				data->cmdcode = IOCTL_USERAIDIXTREE_GET;
+			} else if (!strcmp(ch1,"dump")) {
+				data->cmdcode = IOCTL_USERAIDIXTREE_DUMP;
+			} else {
+				return 1;
+			}
+		} else if (!strcmp(ch1,"rbtree")) {
+		} else {
+			return 1;
+		}
+		return ioctl(fd, sizeof(struct ioctl_data), data);
 }
 
 static int workqueue_test(int fd ,struct ioctl_data *data, char *ch1, char *ch2)
@@ -58,7 +98,6 @@ static int workqueue_test(int fd ,struct ioctl_data *data, char *ch1, char *ch2)
 			default:
 				return 1;
 		}
-		printf("%s\n", optarg);
 		return ioctl(fd, sizeof(struct ioctl_data), data);
 }
 
@@ -131,6 +170,10 @@ int main(int argc, char *argv[])
 						return -1;
 				}
 				return ioctl(fd, sizeof(struct ioctl_data), &data);
+
+			case 'e':
+				ruc_test(fd);
+				goto out;
 
 			case 'r':
 				ruc_test(fd);
