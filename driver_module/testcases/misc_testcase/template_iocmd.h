@@ -10,10 +10,19 @@ enum ioctl_cmdtype {
 	IOCTL_USERCU,
 	IOCTL_USEKPROBE,
 	IOCTL_USEWORKQUEUE,
+	IOCTL_USERAIDIXTREE,
 };
 
 enum IOCTL_TYPE {
 	IOCTL_TYPE_VMALLOC_MAX=1,
+};
+
+enum IOCTL_USERAIDIXTREE_SUB {
+	IOCTL_USERAIDIXTREE_NONE = 0,
+	IOCTL_USERAIDIXTREE_ADD,
+	IOCTL_USERAIDIXTREE_DEL,
+	IOCTL_USERAIDIXTREE_GET,
+	IOCTL_USERAIDIXTREE_DUMP,
 };
 
 enum IOCTL_USERCU_SUB {
@@ -61,6 +70,12 @@ struct ioctl_data {
 		struct workqueue_ioctl {
 			int runtime;
 		} wq_data;
+		struct raidixtree_ioctl {
+			// radixtree index
+			int index; 
+			void *buf; 
+			int buf_len; 
+		} raidix_data;
 	};
 	int  cmdcode;
 	unsigned long args[5];

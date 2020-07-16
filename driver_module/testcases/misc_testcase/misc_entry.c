@@ -199,6 +199,11 @@ static int __init miscdriver_init(void)
 	}
 #endif
 
+	if(raidtree_init()) {
+		pr_err("locktest_init failed\n");
+		goto out0;
+	}
+
 	misc_data = kzalloc(sizeof(struct misc_private_data), GFP_KERNEL);
 	if (!misc_data) {
 		return -ENOMEM;
@@ -227,8 +232,12 @@ static int __init miscdriver_init(void)
 	printk("miscdriver load \n");
 
 	return 0;
+
+#if 0
 out3:
 	device_remove_file(misc_dev.this_device, &dev_attr_enable);
+#endif
+
 out2:
 	misc_deregister(&misc_dev);
 out1:
@@ -241,6 +250,7 @@ out0:
 
 static void __exit miscdriver_exit(void)
 {
+	raidtree_exit();
 	workqueue_test_exit();
 	//misctest_workquere_exit();
 	device_remove_file(misc_dev.this_device, &dev_attr_enable);
