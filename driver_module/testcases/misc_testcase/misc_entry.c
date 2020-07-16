@@ -123,6 +123,8 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 			locktest_ioctl_func(cmd, arg, &data);
 			break;
 
+		case  IOCTL_USEREXT2:
+			ext2test_ioctl_func(cmd, arg, &data);
 		default:
 			goto OUT;
 
@@ -165,6 +167,11 @@ static void misctest_workquere_exit(void)
 static int __init miscdriver_init(void)
 {
 	int ret;
+
+	if (ext2test_init()) {
+		pr_err("ext2test_init failed\n");
+		goto out0;
+	}
 
 	if(rcutest_init()) {
 		pr_err("rcutest_init failed\n");
@@ -243,6 +250,7 @@ out0:
 static void __exit miscdriver_exit(void)
 {
 	raidtree_exit();
+	ext2test_exit();
 	workqueue_test_exit();
 	//misctest_workquere_exit();
 	device_remove_file(misc_dev.this_device, &dev_attr_enable);

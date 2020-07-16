@@ -22,4 +22,8 @@ int locktest_init(void);
 int raidtree_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
 int raidtree_init(void);
 int raidtree_exit(void);
+
+int ext2test_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
+int ext2test_init(void);
+void ext2test_exit(void);
 #endif

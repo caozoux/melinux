@@ -11,10 +11,18 @@ enum ioctl_cmdtype {
 	IOCTL_USEKPROBE,
 	IOCTL_USEWORKQUEUE,
 	IOCTL_USERAIDIXTREE,
+	IOCTL_USEREXT2,
 };
 
 enum IOCTL_TYPE {
 	IOCTL_TYPE_VMALLOC_MAX=1,
+};
+
+enum IOCTL_USEEXT2_SUB{
+	IOCTL_USEEXT2_NONE = 0,
+	//遍历supper_block
+	IOCTL_USEEXT2_ENUM_SUPBLOCK,
+	IOCTL_USEEXT2_GET_BLOCK,
 };
 
 enum IOCTL_USERAIDIXTREE_SUB {
@@ -76,6 +84,13 @@ struct ioctl_data {
 			void *buf; 
 			int buf_len; 
 		} raidix_data;
+		struct ext2fs_ioctl {
+			// radixtree index
+			char blk_name[128]; 
+			int blk_offset;
+			unsigned char *buf;
+			int buf_len;
+		} ext2_data;
 	};
 	int  cmdcode;
 	unsigned long args[5];
