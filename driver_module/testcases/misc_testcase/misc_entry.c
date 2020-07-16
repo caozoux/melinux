@@ -170,6 +170,9 @@ static int __init miscdriver_init(void)
 
 	if (ext2test_init()) {
 		pr_err("ext2test_init failed\n");
+
+	if(msr_init()) {
+		pr_err("msr_init failed\n");
 		goto out0;
 	}
 
@@ -193,10 +196,13 @@ static int __init miscdriver_init(void)
 		goto out0;
 	}
 
+
+#if 0
 	if(locktest_init()) {
 		pr_err("locktest_init failed\n");
 		goto out0;
 	}
+#endif
 
 	if(raidtree_init()) {
 		pr_err("locktest_init failed\n");
@@ -254,6 +260,7 @@ static void __exit miscdriver_exit(void)
 	workqueue_test_exit();
 	//misctest_workquere_exit();
 	device_remove_file(misc_dev.this_device, &dev_attr_enable);
+	msr_exit();
 	misc_deregister(&misc_dev);
 	kfree(misc_data);
 	printk("miscdriver unload \n");
