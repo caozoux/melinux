@@ -29,6 +29,37 @@ struct nvme_pdev {
 	struct nvme_ctrl ctrl;
 };
 
+static unsigned long check_vendor_combination_bug(struct pci_dev *pdev)
+{
+	if (pdev->vendor == 0x144d && pdev->device == 0xa802) {
+		/*
+		 * Several Samsung devices seem to drop off the PCIe bus
+		 * randomly when APST is on and uses the deepest sleep state.
+		 * This has been observed on a Samsung "SM951 NVMe SAMSUNG
+		 * 256GB", a "PM951 NVMe SAMSUNG 512GB", and a "Samsung SSD
+		 * 950 PRO 256GB", but it seems to be restricted to two Dell
+		 * laptops.
+		 */
+		if (dmi_match(DMI_SYS_VENDOR, "Dell Inc.") &&
+		    (dmi_match(DMI_PRODUCT_NAME, "XPS 15 9550") ||
+		     dmi_match(DMI_PRODUCT_NAME, "Precision 5510")))
+			return NVME_QUIRK_NO_DEEPEST_PS;
+	} else if (pdev->vendor == 0x144d && pdev->device == 0xa804) {
+		/*
+		 * Samsung SSD 960 EVO drops off the PCIe bus after system
+		 * suspend on a Ryzen board, ASUS PRIME B350M-A, as well as
+		 * within few minutes after bootup on a Coffee Lake board -
+		 * ASUS PRIME Z370-A
+		 */
+		if (dmi_match(DMI_BOARD_VENDOR, "ASUSTeK COMPUTER INC.") &&
+		    (dmi_match(DMI_BOARD_NAME, "PRIME B350M-A") ||
+		     dmi_match(DMI_BOARD_NAME, "PRIME Z370-A")))
+			return NVME_QUIRK_NO_APST;
+	}
+
+	return 0;
+}
+
 static inline struct nvme_pdev *to_nvme_dev(struct nvme_ctrl *ctrl)
 {
 	return container_of(ctrl, struct nvme_pdev, ctrl);
@@ -36,6 +67,7 @@ static inline struct nvme_pdev *to_nvme_dev(struct nvme_ctrl *ctrl)
 
 static void nvme_pci_submit_async_event(struct nvme_ctrl *ctrl)
 {
+	printk("zz %s %d \n", __func__, __LINE__);
 #if 0
 	struct nvme_dev *dev = to_nvme_dev(ctrl);
 	struct nvme_queue *nvmeq = &dev->queues[0];
@@ -68,18 +100,21 @@ static void nvme_pci_free_ctrl(struct nvme_ctrl *ctrl)
 
 static int nvme_pci_reg_read32(struct nvme_ctrl *ctrl, u32 off, u32 *val)
 {
+	printk("zz %s %d \n", __func__, __LINE__);
 	*val = readl(to_nvme_dev(ctrl)->iomem+ off);
 	return 0;
 }
 
 static int nvme_pci_reg_write32(struct nvme_ctrl *ctrl, u32 off, u32 val)
 {
+	printk("zz %s %d \n", __func__, __LINE__);
 	writel(val, to_nvme_dev(ctrl)->iomem  + off);
 	return 0;
 }
 
 static int nvme_pci_reg_read64(struct nvme_ctrl *ctrl, u32 off, u64 *val)
 {
+	printk("zz %s %d \n", __func__, __LINE__);
 	*val = readq(to_nvme_dev(ctrl)->iomem  + off);
 	return 0;
 }
@@ -88,6 +123,7 @@ static int nvme_pci_get_address(struct nvme_ctrl *ctrl, char *buf, int size)
 {
 	struct pci_dev *pdev = to_pci_dev(to_nvme_dev(ctrl)->dev);
 
+	printk("zz %s %d \n", __func__, __LINE__);
 	return snprintf(buf, size, "%s", dev_name(&pdev->dev));
 }
 static const struct nvme_ctrl_ops nvme_pci_ctrl_ops = {
@@ -104,7 +140,22 @@ static const struct nvme_ctrl_ops nvme_pci_ctrl_ops = {
 
 static void nvme_reset_work(struct work_struct *work)
 {
-	printk("zz %s %d \n", __func__, __LINE__);
+	struct nvme_pdev *nvme_pdev =
+		container_of(work, struct nvme_pdev, ctrl.reset_work);
+	int result = -ENODEV;
+
+	result = nvme_pci_enable(dev);
+	if (result)
+		goto out;
+
+	result = nvme_pci_configure_admin_queue(dev);
+	if (result)
+		goto out;
+
+	printk("nvme reset ctrl complete\n");
+	return;
+out:
+	printk("nvme reset ctrl failed\n");
 }
 
 static void nvme_reset_prepare(struct pci_dev *pdev)
@@ -130,25 +181,51 @@ static void nvme_error_resume(struct pci_dev *pdev)
 {
 }
 
+static int nvme_dev_open(struct inode *inode, struct file *file)
+{
+	return 0;
+}
+
+static long nvme_dev_ioctl(struct file *file, unsigned int cmd,
+		unsigned long arg)
+{
+	return 0;
+}
+
+static const struct file_operations nvme_dev_fops = {
+	.owner		= THIS_MODULE,
+	.open		= nvme_dev_open,
+	.unlocked_ioctl	= nvme_dev_ioctl,
+	.compat_ioctl	= nvme_dev_ioctl,
+};
+
+static void nvme_async_probe(void *data, async_cookie_t cookie)
+{
+	struct nvme_pdev *nvme_pdev = data;
+
+	//queue work reset_work
+	nvme_reset_ctrl_sync(&nvme_pdev->ctrl);
+	printk("zz %s \n", __func__);
+}
+
 static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 {
-
-	struct nvme_pdev *nvme_pdev;
 	int node;
 	int ret = 0;
 	int size = NVME_REG_DBS + 4096;
+	unsigned long quirks = id->driver_data;
+	struct nvme_pdev *nvme_pdev;
 
 	printk("zz %s pdev:%lx \n",__func__, (unsigned long)pdev);
 	node = dev_to_node(&pdev->dev);
 	if (node == NUMA_NO_NODE)
 		set_dev_node(&pdev->dev, first_memory_node);
 
-	nvme_pdev = kzalloc_node(sizeof(nvme_pdev), GFP_KERNEL, node);
+	nvme_pdev = kzalloc_node(sizeof(struct nvme_pdev), GFP_KERNEL, node);
 
 	if (!nvme_pdev)
 		return -EINVAL;
 
-	nvme_pdev->pdev = pdev;
 	nvme_pdev->dev = get_device(&pdev->dev);
 
 	pci_set_drvdata(pdev, nvme_pdev);
@@ -171,18 +248,23 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	//nvme_reset_work will be callback by nvme_init_ctrl
 	INIT_WORK(&nvme_pdev->ctrl.reset_work, nvme_reset_work);
 
-#if 0
-	if (nvme_remap_bar(dev, NVME_REG_DBS + 4096))
+	quirks |= check_vendor_combination_bug(pdev);
+
+	ret = nvme_init_ctrl(&nvme_pdev->ctrl, &pdev->dev, &nvme_pci_ctrl_ops,
+			quirks);
+
+	if (ret)
 		goto release;
-#else
-	printk("zz %s size:%lx addr:%lx\n",__func__, (unsigned long)pci_resource_len(pdev, 0), pci_resource_start(pdev, 0));
-	printk("zz %s iomem:%lx iomem_dbs:%lx \n",__func__, (unsigned long)nvme_pdev->iomem, (unsigned long)nvme_pdev->iomem_dbs);
-#endif
+
+	nvme_get_ctrl(&nvme_pdev->ctrl);
+	async_schedule(nvme_async_probe, nvme_pdev);
 
 	return 0;
 
 release:
+	iounmap(nvme_pdev->iomem);
 	pci_release_mem_regions(pdev);
+	kfree(nvme_pdev);
 	return -ENODEV;
 }
 
@@ -190,12 +272,19 @@ static void nvme_remove(struct pci_dev *pdev)
 {
 	struct nvme_pdev *nvme_pdev = pci_get_drvdata(pdev);
 
+	pci_disable_device(pdev);
+
 	pci_set_drvdata(pdev, NULL);
 
+	nvme_uninit_ctrl(&nvme_pdev->ctrl);
+	put_device(nvme_pdev->dev);
+
+	//cdev_device_del(&nvme_pdev->ctrl->cdev, nvme_pdev->ctrl->device);
 	if (nvme_pdev->iomem)
 		iounmap(nvme_pdev->iomem);
 
 	pci_release_mem_regions(to_pci_dev(nvme_pdev->dev));
+
 	kfree(nvme_pdev);
 }
 
@@ -257,7 +346,7 @@ static const struct pci_device_id nvme_id_table[] = {
 MODULE_DEVICE_TABLE(pci, nvme_id_table);
 
 static struct pci_driver nvme_driver = {
-	.name		= "nvme_retest",
+	.name		= "nvme",
 	.id_table	= nvme_id_table,
 	.probe		= nvme_probe,
 	.remove		= nvme_remove,
