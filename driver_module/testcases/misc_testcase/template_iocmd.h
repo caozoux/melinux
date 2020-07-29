@@ -63,6 +63,7 @@ enum IOCTL_USEWORKQUEUE_SUB{
 	IOCTL_USEWORKQUEUE_SIG_SPINLOCKIRQ,
 	IOCTL_USEWORKQUEUE_PERCPU,
 	IOCTL_USEWORKQUEUE_PERCPU_SPINLOCKIRQ_RACE,
+	IOCTL_USEWORKQUEUE_PEFORMANCE_DELAY,
 };
 
 struct ioctl_data {
@@ -77,6 +78,7 @@ struct ioctl_data {
 		} kp_data;
 		struct workqueue_ioctl {
 			int runtime;
+			unsigned long *workqueue_performance;
 		} wq_data;
 		struct raidixtree_ioctl {
 			// radixtree index

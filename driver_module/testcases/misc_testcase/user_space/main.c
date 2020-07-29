@@ -39,6 +39,8 @@ void usage_help()
 	printf("          1 timemisc:   run workqueue\n");
 	printf("          2 timemisc:   run workqueue spinlock\n");
 	printf("          3 timemisc:   test workqueue spinlockirq\n");
+	printf("          4 timemisc:   test workqueue  percpu spinlockirq\n");
+	printf("          5 timemisc:   caculte the workqueue time from queue to run\n");
 	printf("       -k funcname  dumpstack of kernel function \n");
 	printf("       mem:         -o  dump    show the page pgd pud pmd pte info\n");
 	printf("       mem:         -o  vmmax   test the max vmlloc support \n");
@@ -79,9 +81,13 @@ static int raidix_test(int fd ,struct ioctl_data *data, char *ch1, char *ch2, ch
 static int workqueue_test(int fd ,struct ioctl_data *data, char *ch1, char *ch2)
 {
 		char ch = *ch1;
+		unsigned long workqueue_wakeup_time;
+		int ret;
 		int runtime = atoi(ch2);
 		data->type = IOCTL_USEWORKQUEUE;
 		data->wq_data.runtime = runtime;
+		data->wq_data.workqueue_performance = &workqueue_wakeup_time;
+		*data->wq_data.workqueue_performance = 0;
 		switch (ch) {
 			case '1':
 				data->cmdcode = IOCTL_USEWORKQUEUE_SIG;
@@ -95,10 +101,16 @@ static int workqueue_test(int fd ,struct ioctl_data *data, char *ch1, char *ch2)
 			case '4':
 				data->cmdcode =  IOCTL_USEWORKQUEUE_PERCPU_SPINLOCKIRQ_RACE;
 				break;
+			case '5':
+				data->cmdcode =  IOCTL_USEWORKQUEUE_PEFORMANCE_DELAY;
+				break;
 			default:
 				return 1;
 		}
-		return ioctl(fd, sizeof(struct ioctl_data), data);
+
+		ret = ioctl(fd, sizeof(struct ioctl_data), data);
+		if (data->cmdcode ==  IOCTL_USEWORKQUEUE_PEFORMANCE_DELAY)
+			printf("the workqueue wakeup time:%ld \n", *(data->wq_data.workqueue_performance));
 }
 
 static int hardlock_test(int fd, struct ioctl_data *data)

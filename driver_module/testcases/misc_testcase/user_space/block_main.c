@@ -42,11 +42,11 @@ int main(int argc, char *argv[])
 				cmd_pass = 1;
 				break;
 			case 'b':
+				data.cmdcode = IOCTL_USEEXT2_GET_BLOCK;
 				strcpy(data.ext2_data.blk_name,optarg);
 				cmd_pass = 1;
 				break;
 			case 'r':
-				data.cmdcode = IOCTL_USEEXT2_GET_BLOCK;
 				cmd_pass = 1;
 				break;
 			default:

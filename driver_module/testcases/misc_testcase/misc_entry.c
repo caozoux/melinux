@@ -170,6 +170,8 @@ static int __init miscdriver_init(void)
 
 	if (ext2test_init()) {
 		pr_err("ext2test_init failed\n");
+		goto out0;
+	}
 
 	if(msr_init()) {
 		pr_err("msr_init failed\n");
