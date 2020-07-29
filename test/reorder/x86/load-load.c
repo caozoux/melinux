@@ -7,8 +7,8 @@ sem_t beginSema1;
 sem_t beginSema2;
 sem_t endSema;
 
-unsigned long X, Y;
-unsigned long r1, r2;
+int data_a, data_b;
+int data_c, data_d;
 
 void *thread2Func(void *param)
 {
@@ -17,28 +17,13 @@ void *thread2Func(void *param)
     {
         sem_wait(&beginSema1);                // Wait for signal from main thread
         //while (rand() % 8 != 0) {}  // Add a short, random delay
-#if 1
+
         // ----- THE TRANSACTION! -----
-        X = 1;
-        asm volatile("dsb sy" ::: "memory");        // Prevent compiler reordering
-	//asm volatile("mfence" ::: "memory");  // Prevent memory reordering
-        r1 = Y;
+        data_a = 1;
+        //asm volatile("dsb sy" ::: "memory");        // Prevent compiler reordering
         asm volatile("" ::: "memory");        // Prevent compiler reordering
-#else
-	asm (
-	   	"mov	x3, #1\n"
-	   	"ldr	x0, =X\n"
-	   	"ldr	x1, =r1\n"
-	   	"ldr	x2, =Y\n"
-	   	"str	x3, [x0]\n"
-		"dsb    sy\n"
-	   	"ldr	x0, [x2]\n"
-	   	"str	x0, [x1]\n"
-	  :
-	  :
-	  : "x0","x1","x2","x3"
-	);
-#endif
+        data_b = 4;
+
         sem_post(&endSema);                   // Notify transaction complete
     }
     return NULL;  // Never returns
@@ -51,44 +36,10 @@ void *thread1Func(void *param)
     {
         sem_wait(&beginSema2);                // Wait for signal from main thread
         //while (rand()% 8 != 0) {}  // Add a short, random delay
-#if 0
+
         // ----- THE TRANSACTION! -----
-        Y = 1;
-        //asm volatile("dsb sy" ::: "memory");        // Prevent compiler reordering
-        //asm volatile("" ::: "memory");        // Prevent compiler reordering
-	//asm volatile("mfence" ::: "memory");  // Prevent memory reordering
-        r2 = X;
-        asm volatile("" ::: "memory");        // Prevent compiler reordering
-#else
-#if 0
-	asm (
-	   	"mov	x3, #1\n"
-	   	"ldr	x0, =Y\n"
-	   	"ldr	x1, =X\n"
-	   	"ldr	x2, =r2\n"
-	   	"str	x3, [x0]\n"
-        	"dsb 	sy\n"
-	   	"ldr	x0, [x1]\n"
-	   	"str	x0, [x2]\n"
-	  :
-	  :
-	  : "x0","x1","x2","x3"
-	);
-#else
-	asm (
-	   	"mov	x3, #1\n"
-	   	"ldr	x0, =Y\n"
-	   	"ldr	x1, =X\n"
-	   	"ldr	x2, =r2\n"
-	   	"stlr	x3, [x0]\n"
-	   	"ldlar	x0, [x1]\n"
-	   	"stlr	x0, [x2]\n"
-	  :
-	  :
-	  : "x0","x1","x2","x3"
-	);
-#endif
-#endif
+	data_c = data_a + data_b;
+
         sem_post(&endSema);                   // Notify transaction complete
     }
     return NULL;  // Never returns
@@ -96,6 +47,8 @@ void *thread1Func(void *param)
 
 int main()
 {
+
+	printf("start\n");
     // Initialize the semaphores
     sem_init(&beginSema1, 0, 0);
     sem_init(&beginSema2, 0, 0);
@@ -111,15 +64,16 @@ int main()
     for (int iterations = 1; ; iterations++)
     {
         // Reset X and Y
-        X = 0;
-        Y = 0;
+        data_a = 0;
+        data_b = 0;
+        data_c = 0;
         // Signal both threads
         sem_post(&beginSema1);
         sem_post(&beginSema2);
         sem_wait(&endSema);
         sem_wait(&endSema);
         // Check if there was a simultaneous reorder
-        if (r1 == 0 && r2 == 0)
+        if (data_c == 4)
         {
             detected++;
             printf("%d reorders detected after %d iterations\n", detected, iterations);

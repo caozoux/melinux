@@ -20,8 +20,8 @@ void *thread2Func(void *param)
 
         // ----- THE TRANSACTION! -----
         X = 1;
-        //asm volatile("" ::: "memory");        // Prevent compiler reordering
-		asm volatile("mfence" ::: "memory");  // Prevent memory reordering
+        asm volatile("dsb sy" ::: "memory");        // Prevent compiler reordering
+	//asm volatile("mfence" ::: "memory");  // Prevent memory reordering
         r1 = Y;
         asm volatile("" ::: "memory");        // Prevent compiler reordering
 
@@ -40,8 +40,9 @@ void *thread1Func(void *param)
 
         // ----- THE TRANSACTION! -----
         Y = 1;
+        asm volatile("dsb sy" ::: "memory");        // Prevent compiler reordering
         //asm volatile("" ::: "memory");        // Prevent compiler reordering
-		asm volatile("mfence" ::: "memory");  // Prevent memory reordering
+	//asm volatile("mfence" ::: "memory");  // Prevent memory reordering
         r2 = X;
         asm volatile("" ::: "memory");        // Prevent compiler reordering
 

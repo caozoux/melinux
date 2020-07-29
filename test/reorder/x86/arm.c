@@ -60,7 +60,6 @@ void *thread1Func(void *param)
         r2 = X;
         asm volatile("" ::: "memory");        // Prevent compiler reordering
 #else
-#if 0
 	asm (
 	   	"mov	x3, #1\n"
 	   	"ldr	x0, =Y\n"
@@ -74,20 +73,6 @@ void *thread1Func(void *param)
 	  :
 	  : "x0","x1","x2","x3"
 	);
-#else
-	asm (
-	   	"mov	x3, #1\n"
-	   	"ldr	x0, =Y\n"
-	   	"ldr	x1, =X\n"
-	   	"ldr	x2, =r2\n"
-	   	"stlr	x3, [x0]\n"
-	   	"ldlar	x0, [x1]\n"
-	   	"stlr	x0, [x2]\n"
-	  :
-	  :
-	  : "x0","x1","x2","x3"
-	);
-#endif
 #endif
         sem_post(&endSema);                   // Notify transaction complete
     }
