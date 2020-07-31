@@ -29,4 +29,9 @@ int raidtree_exit(void);
 int ext2test_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
 int ext2test_init(void);
 void ext2test_exit(void);
+
+int atomic_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
+int atomic_init(void);
+int atomic_exit(void);
+
 #endif
