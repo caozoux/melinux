@@ -31,7 +31,6 @@
 #include <linux/kernel.h>
 #include <asm/cpufeature.h>
 #include <asm/cpu.h>
-#include <asm/sysreg.h>
 #include <asm/insn.h>
 #include <asm/traps.h>
 #include <asm/mmu.h>
@@ -39,9 +38,11 @@
 #include <asm-generic/fixmap.h>
 #include <linux/printk.h>
 #include <linux/kallsyms.h>
-#include "msr_arm.h"
 #include "misc_ioctl.h"
 
+#ifndef CONFIG_X86
+#include <asm/sysreg.h>
+#include "msr_arm.h"
 #define AARCH64_INSN_SF_BIT	BIT(31)
 #define AARCH64_INSN_N_BIT	BIT(22)
 #define AARCH64_INSN_LSL_12	BIT(22)
@@ -645,3 +646,18 @@ void msr_exit(void)
 	class_destroy(msr_class);
 	__unregister_chrdev(MSR_MAJOR, 0, NR_CPUS, "cpu/msr");
 }
+#else
+static long msr_ioctl(struct file *file, unsigned int ioc,
+	unsigned long arg)
+{
+	return 0;
+}
+
+int msr_init(void)
+{
+}
+
+void msr_exit(void)
+{
+}
+#endif

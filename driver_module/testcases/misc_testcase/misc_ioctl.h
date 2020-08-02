@@ -34,4 +34,7 @@ int atomic_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *d
 int atomic_init(void);
 int atomic_exit(void);
 
+int kmemt_unit_init(void);
+int kmem_unit_exit(void);
+int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
 #endif

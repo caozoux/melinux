@@ -13,10 +13,66 @@ enum ioctl_cmdtype {
 	IOCTL_USERAIDIXTREE,
 	IOCTL_USEREXT2,
 	IOCTL_USEATOMIC,
+	IOCTL_USEMEM,
 };
 
 enum IOCTL_TYPE {
 	IOCTL_TYPE_VMALLOC_MAX=1,
+};
+
+/*
+MemTotal:       20555040 kB
+MemFree:        19906432 kB
+MemAvailable:   19961804 kB
+Buffers:            2076 kB
+Cached:           325324 kB
+SwapCached:            0 kB
+Active:           195380 kB
+Inactive:         281648 kB
+Active(anon):     144536 kB
+Inactive(anon):     8484 kB
+Active(file):      50844 kB
+Inactive(file):   273164 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+Dirty:                 0 kB
+Writeback:             0 kB
+AnonPages:        149656 kB
+Mapped:           103416 kB
+Shmem:              8680 kB
+Slab:              56960 kB
+SReclaimable:      23708 kB
+SUnreclaim:        33252 kB
+KernelStack:        3712 kB
+PageTables:         4972 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:    10277520 kB
+Committed_AS:     824584 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:           0 kB
+VmallocChunk:          0 kB
+Percpu:             5328 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:     40960 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+CmaTotal:          65536 kB
+*/
+
+enum IOCTL_USEMEM_SUB{
+	IOCTL_USEMEM_NONE = 0,
+	//list all date of /proc/meminfo
+	IOCTL_USEMEM_SHOW,
+	IOCTL_USEMEM_CACHE,
+	IOCTL_USEMEM_SWAPCACHE,
+	IOCTL_USEMEM_ACTIVE_ANON_PAGE,
+	IOCTL_USEMEM_INACTIVE_ANON_PAGE,
+	IOCTL_USEMEM_ACTIVE_PAGE,
+	IOCTL_USEMEM_INACTIVE_PAGE,
 };
 
 enum IOCTL_USEEXT2_SUB{
