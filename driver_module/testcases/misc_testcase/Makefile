@@ -5,7 +5,7 @@ TARGET := misc
 KERVER =$(shell uname -r)
 KERSRC ?= /lib/modules/$(KERVER)/build
 obj-m := $(TARGET).o  
-$(TARGET)-objs := misc_entry.o page_test.o kmem_unit.o rcu_test.o kprobe_entry.o showstack.o workqueue_test.o delay.o locktest_entry.o msr_arm.o raidtree_test.o block/ext2_test.o atomic_entry.o
+$(TARGET)-objs := misc_entry.o page_test.o kmem_unit.o rcu_test.o kprobe_entry.o showstack.o workqueue_test.o delay.o locktest_entry.o msr_arm.o raidtree_test.o block/ext2_test.o atomic_entry.o devbusdrv_unit.o
 all:
 	make -C user_space
 	$(MAKE) -C $(KERSRC) O=$(KEROUT) M=$(PWD) modules

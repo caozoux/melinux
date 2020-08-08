@@ -37,4 +37,9 @@ int atomic_exit(void);
 int kmemt_unit_init(void);
 int kmem_unit_exit(void);
 int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
+
+
+int devbusdrvtest_exit(void);
+int devbusdrvtest_init(void);
+int devbusdrv_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
 #endif

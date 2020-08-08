@@ -26,25 +26,101 @@
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
 #include "debug_ctrl.h"
+#include "medelay.h"
+
+
+#define LOOP_CNT 		(10000000)
+#define THREAD_CNT  	(12)
+
+static atomic_t atomic_test_val1 __attribute__((aligned (128)));
 
 struct atomic_test_data {
 	struct workqueue_struct *sigtestworkqueue;
 	struct workqueue_struct *workqueue;
 	struct work_struct wq_sigtestwq;
+	struct work_struct per_cpu_atomic_wq;
 	struct delayed_work wkq_delay_test;;
+	unsigned long time[NR_CPUS];
+	int mode;
 } *atm_dt;
 
+static DEFINE_SPINLOCK(locktest_lock);
 static void atm_sig_test(struct work_struct *work)
 {
-		
+	unsigned long k;
+	unsigned long count, flags;
+	unsigned long long time_cnt_old = 0, time_cnt_new = 0;
+
+	time_cnt_old = get_time_tick();
+
+	printk("singal thread atomic set:");
+	spin_lock_irqsave(&locktest_lock, flags);
+
+	for(k = 0; k < LOOP_CNT; k++)
+	{
+		count= (unsigned long)atomic_test_val1.counter;
+		count++;
+		if (atm_dt->mode == 1) {
+			atomic_set(&atomic_test_val1, count);
+		}
+  	}
+	spin_unlock_irqrestore(&locktest_lock, flags);
+
+  	time_cnt_new = get_time_tick() - time_cnt_old;
+  	printk("time:%ld\n", time_cnt_new);
+
+}
+
+//mutilpe thread test
+static void atm_per_cpu_test(struct work_struct *work)
+{
+	unsigned long k;
+	unsigned long count, flags;
+	unsigned long long time_cnt_old = 0, time_cnt_new = 0;
+	int cpu = smp_processor_id();
+	spinlock_t locktest_lock;
+
+	time_cnt_old = get_time_tick();
+
+	printk("singal thread atomic set:");
+
+	spin_lock_irqsave(&locktest_lock, flags);
+	for(k = 0; k < LOOP_CNT; k++)
+	{
+		count= (unsigned long)atomic_test_val1.counter;
+		count++;
+		if (atm_dt->mode == 1) {
+			atomic_set(&atomic_test_val1, count);
+		}
+  	}
+	spin_unlock_irqrestore(&locktest_lock, flags);
+
+	time_cnt_new = get_time_tick() - time_cnt_old;
+	atm_dt->time[cpu] = time_cnt_new;
+	printk("time:%ld\n", time_cnt_new);
+	return time_cnt_new;
 }
 
 int atomic_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
 	int ret = -1;
+	int i;
+	int cpu = smp_processor_id();
+
 	switch (data->cmdcode) {
 		case  IOCTL_USEATOMIC_PERFORMANCE:
+			atm_dt->mode = 1;
 			queue_work(atm_dt->sigtestworkqueue, &atm_dt->wq_sigtestwq);
+			flush_work(&atm_dt->wq_sigtestwq);
+#if 0
+			for (i=0; i<THREAD_CNT;i++) {
+				if (i == cpu)
+					queue_work_on(THREAD_CNT+1, atm_dt->sigtestworkqueue, &atm_dt->wq_sigtestwq);
+				else
+					queue_work_on(i, atm_dt->sigtestworkqueue, &atm_dt->wq_sigtestwq);
+			}
+			queue_work_on(i,atm_dt->sigtestworkqueue, &atm_dt->wq_sigtestwq);
+#endif
 			DEBUG("atomic test\n");
 			break;
 		default:
@@ -62,19 +138,34 @@ int atomic_init(void)
 	if (!atm_dt)
 		return -EINVAL;
 
-	atm_dt->sigtestworkqueue = create_singlethread_workqueue("atomicworkqt");
+	atm_dt->sigtestworkqueue = create_singlethread_workqueue("s_atomic_work");
 	if (!atm_dt->sigtestworkqueue) {
 		kfree(atm_dt);
 		return -EINVAL;
 	}
 
+	atm_dt->workqueue = create_workqueue("atomic_work");
+	if (!atm_dt->workqueue) {
+		goto OUT;
+	}
+
 	INIT_WORK(&atm_dt->wq_sigtestwq, atm_sig_test);
+	INIT_WORK(&atm_dt->per_cpu_atomic_wq, atm_sig_test);
+	//kthread_create(speakup_thread, NULL, "atomic_test");
+
 	return 0;
+
+OUT:
+	destroy_workqueue(atm_dt->sigtestworkqueue);
+	kfree(atm_dt);
+	return -EINVAL;
+
 }
 
 int atomic_exit(void)
 {
 	destroy_workqueue(atm_dt->sigtestworkqueue);
+	destroy_workqueue(atm_dt->workqueue);
 	kfree(atm_dt);
 }
 

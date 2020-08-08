@@ -42,6 +42,7 @@ void usage_help()
 	printf("          4 timemisc:   test workqueue  percpu spinlockirq\n");
 	printf("          5 timemisc:   caculte the workqueue time from queue to run\n");
 	printf("       -k funcname  dumpstack of kernel function \n");
+	printf("       -a atomic    atomic performance\n");
 	printf("       mem:         -o  dump    show the page pgd pud pmd pte info\n");
 	printf("       mem:         -o  vmmax   test the max vmlloc support \n");
 }
@@ -126,6 +127,11 @@ static int kprobe_test(int fd ,struct ioctl_data *data)
 	return ioctl(fd, sizeof(struct ioctl_data), data);
 }
 
+static int atomic_test(int fd ,struct ioctl_data *data)
+{
+	return ioctl(fd, sizeof(struct ioctl_data), data);
+}
+
 int main(int argc, char *argv[])
 {
 	struct ioctl_data data;
@@ -145,12 +151,19 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-    while((ch=getopt(argc,argv,"hsw:rm:k:q:"))!=-1)
+    while((ch=getopt(argc,argv,"hsw:rm:k:q:a"))!=-1)
   	{
 		switch (ch) {
 			case 'h':
 				usage_help();
 				break;
+
+			case 'a':
+				data.type = IOCTL_USEATOMIC ;
+				data.cmdcode = IOCTL_USEATOMIC_PERFORMANCE;
+				atomic_test(fd, &data);
+				break;
+
 			case 's':
 				data.type = IOCTL_SOFTLOCK;
 				break;

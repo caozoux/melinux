@@ -103,10 +103,6 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 			page_ioctl_func(cmd, arg);
 			break;
 
-		case  IOCTL_MEM:
-			mem_ioctl_func(cmd, &data);
-			break;
-
 		case  IOCTL_USERCU:
 			rcu_ioctl_func(cmd, arg, &data);
 			break;
@@ -125,6 +121,10 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 
 		case  IOCTL_USEREXT2:
 			ext2test_ioctl_func(cmd, arg, &data);
+
+		case  IOCTL_USEATOMIC:
+			atomic_ioctl_func(cmd, arg, &data);
+
 		default:
 			goto OUT;
 
@@ -158,15 +158,19 @@ static int misctest_workquere_init(void)
 	return 0;
 }
 
-static void misctest_workquere_exit(void)
-{
-	if (!misc_data->thread_wq)
-		destroy_workqueue(misc_data->thread_wq);
-}
-
 static int __init miscdriver_init(void)
 {
 	int ret;
+
+	if (atomic_init()) {
+		pr_err("atomic init failed\n");
+		goto out0;
+	}
+
+	if (devbusdrvtest_init()) {
+		pr_err("devbusdrvtest_init failed\n");
+		goto out0;
+	}
 
 	if (ext2test_init()) {
 		pr_err("ext2test_init failed\n");
@@ -228,14 +232,6 @@ static int __init miscdriver_init(void)
 
 	misc_data->dev = misc_dev.this_device;
 
-#if 0
-	if (misctest_workquere_init()) {
-		ret = 1;
-		goto out3;
-	}
-#endif
-
-
 	printk("miscdriver load \n");
 
 	return 0;
@@ -257,6 +253,8 @@ out0:
 
 static void __exit miscdriver_exit(void)
 {
+	atomic_exit();
+	devbusdrvtest_exit();
 	raidtree_exit();
 	ext2test_exit();
 	workqueue_test_exit();

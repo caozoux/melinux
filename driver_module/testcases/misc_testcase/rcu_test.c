@@ -91,10 +91,10 @@ static void rcu_readlock_test_start(void)
 	printk("zz %s addr:%p \n",__func__, addr);
 	rcu_assign_pointer(rcu_pointer, addr);
 
-	//rcutest_thread_read = kthread_create(rcuread_thread, (void *)NULL, 1, "rcuread_thread");
-	//rcutest_thread_assigned = kthread_create(rcuassigned_thread, (void *)NULL,2, "rcuassigned_thread");
-	//wake_up_process(rcutest_thread_read);
-	//wake_up_process(rcutest_thread_assigned);
+	rcutest_thread_read = kthread_create(rcuread_thread, (void *)NULL, 1, "rcuread_thread");
+	rcutest_thread_assigned = kthread_create(rcuassigned_thread, (void *)NULL,2, "rcuassigned_thread");
+	wake_up_process(rcutest_thread_read);
+	wake_up_process(rcutest_thread_assigned);
 	return;
 
 }
@@ -110,7 +110,7 @@ int rcu_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *dat
 			break;
 		case  IOCTL_USERCU_READTEST_END:
 			DEBUG("rcu_readlock_test_stop\n")
-			//rcu_readlock_test_stop();
+			rcu_readlock_test_stop();
 			break;
 		default:
 			goto OUT;

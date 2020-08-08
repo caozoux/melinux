@@ -1,6 +1,9 @@
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
 #include "debug_ctrl.h"
+#ifdef CONFIG_X86
+#include <asm/tsc.h>
+#endif
 
 #define CPU_FREQ (2600000000)
 
@@ -64,5 +67,10 @@ void me_mdelay(unsigned long var)
 		:"a" (var)
 	);
 #endif
+}
+
+unsigned long get_time_tick(void)
+{
+	return rdtsc();
 }
 

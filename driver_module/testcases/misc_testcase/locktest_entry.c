@@ -28,7 +28,6 @@ static unsigned long locktest_irqlock_flags;
 
 int locktest_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
-	int ret = -1;
 	switch (data->cmdcode) {
 		case  IOCTL_HARDLOCK_LOCK:
 			DEBUG("spinlock lock\n");
@@ -65,10 +64,11 @@ OUT:
 
 int locktest_init(void)
 {
+	return 0;
 }
 
 int locktest_exit(void)
 {
-
+	return 0;
 }
 
