@@ -150,17 +150,14 @@ ARRT_MARCO_READ(enable);
 ARRT_MARCO_WRITE(enable);
 ARRT_MARCO(enable);
 
-static int misctest_workquere_init(void)
-{
-	misc_data->thread_wq = create_workqueue("misc_workquere");
-	if (!misc_data->thread_wq)
-		return 1;
-	return 0;
-}
-
 static int __init miscdriver_init(void)
 {
 	int ret;
+
+	if (kmemt_unit_init()) {
+		pr_err("atomic init failed\n");
+		goto out0;
+	}
 
 	if (atomic_init()) {
 		pr_err("atomic init failed\n");
@@ -253,6 +250,7 @@ out0:
 
 static void __exit miscdriver_exit(void)
 {
+	kmem_unit_exit();
 	atomic_exit();
 	devbusdrvtest_exit();
 	raidtree_exit();

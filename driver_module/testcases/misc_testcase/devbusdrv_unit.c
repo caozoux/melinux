@@ -82,10 +82,10 @@ dev_set_name(ctrl->device, "nvme%d", ctrl->instance);
 #endif
 }
 
-static struct idr dca_idr;
 int devbusdrvtest_init(void)
 {
 #if 0
+static struct idr dca_idr;
 	92     idr_init(&dca_idr);
 	ret = idr_alloc(&dca_idr, dca, 0, 0, GFP_NOWAIT);
 	struct 
@@ -125,5 +125,6 @@ int devbusdrvtest_exit(void)
     bus_unregister(&virme_bus_type);
     kfree(dbd_dt);
 }
+
 
 

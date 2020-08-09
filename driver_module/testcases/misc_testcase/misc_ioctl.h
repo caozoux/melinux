@@ -1,6 +1,15 @@
 #ifndef __MISC_IOCTL_H__
 #define __MISC_IOCTL_H__
 #include "template_iocmd.h"
+#include <linux/kallsyms.h>
+
+#define LOOKUP_SYMS(name) do {							\
+		orig_##name = (void *)kallsyms_lookup_name(#name);		\
+		if (!orig_##name) {						\
+			pr_err("kallsyms_lookup_name: %s\n", #name);		\
+			return -EINVAL;						\
+		}								\
+	} while (0)
 
 int page_ioctl_func(unsigned int  cmd, unsigned long arg);
 
