@@ -45,7 +45,7 @@ static void kmem_dump_numa_item(void)
 }
 #endif
 
-static void kmem_dump_node_item(void)
+static void kmem_dump_node_item(atomic_long_t *vm_stat)
 {
 	printk("NR_LRU_BASE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_LRU_BASE]));
 	printk("NR_INACTIVE_ANON = NR_LRU_BASE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_INACTIVE_ANON]));
@@ -80,33 +80,35 @@ static void kmem_dump_node_item(void)
 	printk("NR_VM_NODE_STAT_ITEMS: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_VM_NODE_STAT_ITEMS]));
 }
 
-static void kmem_dump_zone_item(struct zone *zone)
+static void kmem_dump_zone_item(atomic_long_t *vm_stat)
 {
 	//struct zone *zone;
 	//for_each_populated_zone(zone)
-	printk("NR_FREE_PAGES: %ld\n", atomic_long_read(&zone[NR_FREE_PAGES]));
-	printk("NR_ZONE_LRU_BASE: %ld\n", atomic_long_read(&zone[NR_ZONE_LRU_BASE]));
-	printk("NR_ZONE_INACTIVE_ANON: %ld\n", atomic_long_read(&zone[NR_ZONE_INACTIVE_ANON]));
-	printk("NR_ZONE_ACTIVE_ANON: %ld\n", atomic_long_read(&zone[NR_ZONE_ACTIVE_ANON]));
-	printk("NR_ZONE_INACTIVE_FILE: %ld\n", atomic_long_read(&zone[NR_ZONE_INACTIVE_FILE]));
-	printk("NR_ZONE_ACTIVE_FILE: %ld\n", atomic_long_read(&zone[NR_ZONE_ACTIVE_FILE]));
-	printk("NR_ZONE_UNEVICTABLE: %ld\n", atomic_long_read(&zone[NR_ZONE_UNEVICTABLE]));
-	printk("NR_ZONE_WRITE_PENDING: %ld\n", atomic_long_read(&zone[NR_ZONE_WRITE_PENDING]));
-	printk("NR_MLOCK: %ld\n", atomic_long_read(&zone[NR_MLOCK]));
-	printk("NR_PAGETABLE: %ld\n", atomic_long_read(&zone[NR_PAGETABLE]));
-	printk("NR_KERNEL_STACK_KB: %ld\n", atomic_long_read(&zone[NR_KERNEL_STACK_KB]));
-	printk("NR_BOUNCE: %ld\n", atomic_long_read(&zone[NR_BOUNCE]));
-	printk("NR_ZSPAGES: %ld\n", atomic_long_read(&zone[NR_ZSPAGES]));
-	printk("NR_FREE_CMA_PAGES: %ld\n", atomic_long_read(&zone[NR_FREE_CMA_PAGES]));
-	printk("NR_VM_ZONE_STAT_ITEMS: %ld\n", atomic_long_read(&zone[NR_VM_ZONE_STAT_ITEMS]));
+	printk("NR_FREE_PAGES: %ld\n", atomic_long_read(&vm_stat[NR_FREE_PAGES]));
+	printk("NR_vm_stat_LRU_BASE: %ld\n", atomic_long_read(&vm_stat[NR_ZONE_LRU_BASE]));
+	printk("NR_vm_stat_INACTIVE_ANON: %ld\n", atomic_long_read(&vm_stat[NR_ZONE_INACTIVE_ANON]));
+	printk("NR_vm_stat_ACTIVE_ANON: %ld\n", atomic_long_read(&vm_stat[NR_ZONE_ACTIVE_ANON]));
+	printk("NR_vm_stat_INACTIVE_FILE: %ld\n", atomic_long_read(&vm_stat[NR_ZONE_INACTIVE_FILE]));
+	printk("NR_vm_stat_ACTIVE_FILE: %ld\n", atomic_long_read(&vm_stat[NR_ZONE_ACTIVE_FILE]));
+	printk("NR_vm_stat_UNEVICTABLE: %ld\n", atomic_long_read(&vm_stat[NR_ZONE_UNEVICTABLE]));
+	printk("NR_vm_stat_WRITE_PENDING: %ld\n", atomic_long_read(&vm_stat[NR_ZONE_WRITE_PENDING]));
+	printk("NR_MLOCK: %ld\n", atomic_long_read(&vm_stat[NR_MLOCK]));
+	printk("NR_PAGETABLE: %ld\n", atomic_long_read(&vm_stat[NR_PAGETABLE]));
+	printk("NR_KERNEL_STACK_KB: %ld\n", atomic_long_read(&vm_stat[NR_KERNEL_STACK_KB]));
+	printk("NR_BOUNCE: %ld\n", atomic_long_read(&vm_stat[NR_BOUNCE]));
+	printk("NR_ZSPAGES: %ld\n", atomic_long_read(&vm_stat[NR_ZSPAGES]));
+	printk("NR_FREE_CMA_PAGES: %ld\n", atomic_long_read(&vm_stat[NR_FREE_CMA_PAGES]));
+	printk("NR_VM_vm_stat_STAT_ITEMS: %ld\n", atomic_long_read(&vm_stat[NR_VM_ZONE_STAT_ITEMS]));
 }
 
 static void kmem_dump_state(void)
 {
+	//struct zone zone; 
+	//zone.vm_stat = orig_vm_zone_stat;
 	//struct zone *zone;
 	//for_each_populated_zone(zone)
 	kmem_dump_zone_item(orig_vm_zone_stat);
-	kmem_dump_node_item();
+	kmem_dump_node_item(orig_vm_node_stat);
 #ifdef CONFIG_NUMA
 	kmem_dump_numa_item();
 #endif
@@ -130,7 +132,7 @@ OUT:
 	return ret;
 }
 
-int kmemt_unit_init(void)
+int kmem_unit_init(void)
 {
 	LOOKUP_SYMS(vm_zone_stat);
 	LOOKUP_SYMS(vm_numa_stat);

@@ -85,7 +85,7 @@ static void test_user_page(u64 addr)
 	printk("zz %s val:%lx \n",__func__, (unsigned long)p[0]);
 }
 
-int page_ioctl_func(unsigned int  cmd, unsigned long arg)
+int page_unit_ioctl_func(unsigned int  cmd, unsigned long arg)
 {
 	int ret = -1;
 	switch (cmd) {

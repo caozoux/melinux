@@ -37,7 +37,7 @@ struct super_block *get_block_by_name(char *name)
 
 	return NULL;	
 }
-int ext2test_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
+int ext2test_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
 	struct super_block *sb, *p = NULL;
 	struct buffer_head *bh;
@@ -73,7 +73,7 @@ out:
 	return ret;
 }
 
-int ext2test_init(void)
+int ext2test_unit_init(void)
 {
 	orig_supper_blocks = (void*)kallsyms_lookup_name("super_blocks"); 
 	if (!orig_supper_blocks)
@@ -82,8 +82,9 @@ int ext2test_init(void)
 	return 0;
 }
 
-void ext2test_exit(void)
+int ext2test_unit_exit(void)
 {
 	//sb_bread(sb, logic_sb_block);	
+	return 0;
 }
 

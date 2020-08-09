@@ -36,6 +36,15 @@
 		return count; \
 	}
 
+//#define MISC_UNIT(name)  struct misc_unit_item_##name = { 
+#define MISC_UNIT(name, utype)  { \
+		.u_name =	#name, \
+		.type =	utype, \
+		.ioctl = name##_unit_ioctl_func,	 \
+		.init =	 name##_unit_init, \
+		.exit =	 name##_unit_exit, \
+	}
+
 #define MISC_NAME "misc_template"
 
 static int enable;
@@ -44,6 +53,19 @@ struct misc_private_data {
 	int flag;		
 	const struct device *dev;
 	struct workqueue_struct  *thread_wq;
+};
+
+struct misc_uint_item unit_list[] =
+{
+	MISC_UNIT(kmem, IOCTL_USEKMEM),
+	MISC_UNIT(atomic, IOCTL_USEATOMIC),
+	MISC_UNIT(devbusdrvtest, IOCTL_USEDEVBUSDRV),
+	MISC_UNIT(ext2test, IOCTL_USEEXT2),
+	MISC_UNIT(msr, IOCTL_USEMSR),
+	MISC_UNIT(rcutest, IOCTL_USERCU),
+	MISC_UNIT(kprobe, IOCTL_USEKPROBE),
+	MISC_UNIT(workqueue, IOCTL_USEWORKQUEUE),
+	{}
 };
 
 static struct misc_private_data *misc_data;
@@ -87,6 +109,7 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 	int ret = 0;
 	struct ioctl_data data;
 	struct misc_private_data  *dev_data;
+	int i;
 
 	dev_data = (struct misc_private_data *) file->private_data;
 	if (copy_from_user(&data, (char __user *) arg, sizeof(struct ioctl_data))) {
@@ -96,39 +119,50 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 	}
 
 	DEBUG("ioctl cmd:%d\n", data.type);
+#if 0
 
 	switch (data.type) {
 
 		case  IOCTL_USERMAP:
-			page_ioctl_func(cmd, arg);
+			page_unit_ioctl_func(cmd, arg);
 			break;
 
 		case  IOCTL_USERCU:
-			rcu_ioctl_func(cmd, arg, &data);
+			rcutest_unit_ioctl_func(cmd, arg, &data);
 			break;
 
 		case  IOCTL_USEKPROBE:
-			kprobe_ioctl_func(cmd, arg, &data);
+			kprobe_unit_ioctl_func(cmd, arg, &data);
 			break;
 
 		case  IOCTL_USEWORKQUEUE:
-			workqueue_ioctl_func(cmd, arg, &data);
+			workqueue_unit_ioctl_func(cmd, arg, &data);
 			break;
 
 		case  IOCTL_HARDLOCK:
-			locktest_ioctl_func(cmd, arg, &data);
+			locktest_unit_ioctl_func(cmd, arg, &data);
 			break;
 
-		case  IOCTL_USEREXT2:
-			ext2test_ioctl_func(cmd, arg, &data);
+		case  IOCTL_USEEXT2:
+			ext2test_unit_ioctl_func(cmd, arg, &data);
 
 		case  IOCTL_USEATOMIC:
-			atomic_ioctl_func(cmd, arg, &data);
+			atomic_unit_ioctl_func(cmd, arg, &data);
 
 		default:
 			goto OUT;
 
 	}
+#else
+
+	for(i=0; unit_list[i].type; i++) {
+		if (unit_list[i].type == data.type) {
+			unit_list[i].ioctl(cmd, arg, &data);
+			break;
+		}
+	}
+		unit_list[i].exit();
+#endif
 OUT:
 	return ret;
 }
@@ -153,64 +187,73 @@ ARRT_MARCO(enable);
 static int __init miscdriver_init(void)
 {
 	int ret;
+	int i=0;
 
-	if (kmemt_unit_init()) {
+#if 0
+	if (kmem_unit_init()) {
 		pr_err("atomic init failed\n");
 		goto out0;
 	}
 
-	if (atomic_init()) {
+	if (atomic_unit_init()) {
 		pr_err("atomic init failed\n");
 		goto out0;
 	}
 
-	if (devbusdrvtest_init()) {
+	if (devbusdrvtest_unit_init()) {
 		pr_err("devbusdrvtest_init failed\n");
 		goto out0;
 	}
 
-	if (ext2test_init()) {
-		pr_err("ext2test_init failed\n");
+	if (ext2test_unit_init()) {
+		pr_err("ext2test_unit_init failed\n");
 		goto out0;
 	}
 
-	if(msr_init()) {
-		pr_err("msr_init failed\n");
+	if(msr_unit_init()) {
+		pr_err("msr_unit_init failed\n");
 		goto out0;
 	}
 
-	if(rcutest_init()) {
-		pr_err("rcutest_init failed\n");
+	if(rcutest_unit_init()) {
+		pr_err("rcutest_unit_init failed\n");
 		goto out0;
 	}
 
-	if(kprobe_init()) {
-		pr_err("kprobe_init failed\n");
+	if(kprobe_unit_init()) {
+		pr_err("kprobe_unit_init failed\n");
 		goto out0;
 	}
 
-	if(showstack_init()) {
-		pr_err("showstack_init failed\n");
+	if(showstack_unit_init()) {
+		pr_err("showstack_unit_init failed\n");
 		goto out0;
 	}
 
-	if(workqueue_test_init()) {
-		pr_err("showstack_init failed\n");
+	if(workqueue_unit_init()) {
+		pr_err("showstack_unit_init failed\n");
 		goto out0;
 	}
 
-
-#if 0
 	if(locktest_init()) {
 		pr_err("locktest_init failed\n");
 		goto out0;
 	}
-#endif
 
-	if(raidtree_init()) {
+	if(raidtree_unit_init()) {
 		pr_err("locktest_init failed\n");
 		goto out0;
 	}
+#else
+	for(i=0; unit_list[i].type; i++) {
+		if (unit_list[i].init()) {
+			printk("%s init failed\n", unit_list[i].u_name);
+			ret = -EINVAL;
+			goto out0;
+		}
+
+	}
+#endif
 
 	misc_data = kzalloc(sizeof(struct misc_private_data), GFP_KERNEL);
 	if (!misc_data) {
@@ -250,15 +293,23 @@ out0:
 
 static void __exit miscdriver_exit(void)
 {
+	int i;
+#if 1
+	for(i=0; unit_list[i].type; i++)
+		unit_list[i].exit();
+
+#else
+
 	kmem_unit_exit();
-	atomic_exit();
-	devbusdrvtest_exit();
-	raidtree_exit();
-	ext2test_exit();
-	workqueue_test_exit();
+	atomic_unit_exit();
+	devbusdrvtest_unit_exit();
+	raidtree_unit_exit();
+	ext2test_unit_exit();
+	workqueue_unit_exit();
+	msr_unit_exit();
+#endif
 	//misctest_workquere_exit();
 	device_remove_file(misc_dev.this_device, &dev_attr_enable);
-	msr_exit();
 	misc_deregister(&misc_dev);
 	kfree(misc_data);
 	printk("miscdriver unload \n");

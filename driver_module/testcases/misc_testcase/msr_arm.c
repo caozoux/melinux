@@ -508,7 +508,7 @@ static ssize_t msr_write(struct file *file, const char __user *buf,
  * Before reading and writing register, modify the instruction on
  * corresponding address
  */
-static long msr_ioctl(struct file *file, unsigned int ioc,
+static long msr_unit_ioctl(struct file *file, unsigned int ioc,
 	unsigned long arg)
 {
 	u32 insnp = 0, insn = 0;
@@ -598,7 +598,7 @@ static char *msr_devnode(struct device *dev, umode_t *mode)
 	return kasprintf(GFP_KERNEL, "cpu/%u/msr", MINOR(dev->devt));
 }
 
-int msr_init(void)
+int msr_unit_init(void)
 {
 	int err;
 
@@ -638,26 +638,28 @@ out_chrdev:
 	return err;
 }
 
-void msr_exit(void)
+int msr_unit_exit(void)
 {
 	unregister_undef_hook_el1(&mrs_hook);
 	unregister_undef_hook_el1(&msr_hook);
 	cpuhp_remove_state(cpuhp_msr_state);
 	class_destroy(msr_class);
 	__unregister_chrdev(MSR_MAJOR, 0, NR_CPUS, "cpu/msr");
+	return 0;
 }
 #else
-static long msr_ioctl(struct file *file, unsigned int ioc,
-	unsigned long arg)
+int msr_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 	return 0;
 }
 
-int msr_init(void)
+int msr_unit_init(void)
 {
+	return 0;
 }
 
-void msr_exit(void)
+int msr_unit_exit(void)
 {
+	return 0;
 }
 #endif

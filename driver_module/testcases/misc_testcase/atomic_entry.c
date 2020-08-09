@@ -101,7 +101,7 @@ static void atm_per_cpu_test(struct work_struct *work)
 	return time_cnt_new;
 }
 
-int atomic_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
+int atomic_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
 	int ret = -1;
 	int i;
@@ -131,7 +131,7 @@ OUT:
 	return 0;
 }
 
-int atomic_init(void)
+int atomic_unit_init(void)
 {
 	atm_dt = kzalloc(sizeof(struct atomic_test_data), GFP_KERNEL);
 
@@ -162,7 +162,7 @@ OUT:
 
 }
 
-int atomic_exit(void)
+int atomic_unit_exit(void)
 {
 	destroy_workqueue(atm_dt->sigtestworkqueue);
 	destroy_workqueue(atm_dt->workqueue);

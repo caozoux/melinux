@@ -109,7 +109,7 @@ static void wkq_sig_performace_delay(struct work_struct *work)
 	wake_up(&wkq_dt->wait);
 }
 
-int workqueue_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
+int workqueue_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 
 	int ret = -1;
@@ -156,7 +156,7 @@ OUT:
 	return ret;
 }
 
-int workqueue_test_init(void)
+int workqueue_unit_init(void)
 {
 
 	wkq_dt = kzalloc(sizeof(struct wkq_data), GFP_KERNEL);
@@ -184,9 +184,10 @@ int workqueue_test_init(void)
 	return 0;
 }
 
-void workqueue_test_exit(void)
+int workqueue_unit_exit(void)
 {
 	destroy_workqueue(wkq_dt->sigtestworkqueue);
 	destroy_workqueue(wkq_dt->workqueue);
 	kfree(wkq_dt);
+	return 0;
 }

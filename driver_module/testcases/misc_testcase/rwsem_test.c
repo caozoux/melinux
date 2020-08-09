@@ -23,7 +23,7 @@
 #include "debug_ctrl.h"
 
 
-int rcu_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
+int rcu_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 
 	int ret = -1;
@@ -46,7 +46,7 @@ OUT:
 	return 0;
 }
 
-int rwsem_init(void)
+int rwsem_unit_init(void)
 {
 	return 0;
 }

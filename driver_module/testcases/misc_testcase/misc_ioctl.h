@@ -11,44 +11,60 @@
 		}								\
 	} while (0)
 
-int page_ioctl_func(unsigned int  cmd, unsigned long arg);
+typedef int (*misc_unit_fn)(void);
+typedef int (*misc_unit_ioctl_fn)(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
+struct misc_uint_item {
+	const char *u_name;
+	enum ioctl_cmdtype type;
+	misc_unit_ioctl_fn ioctl;
+	misc_unit_fn init;
+	misc_unit_fn exit;
+};
 
-int mem_ioctl_func(unsigned int  cmd, struct ioctl_data *data);
-int rcu_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
-int kprobe_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
-int rcutest_init(void);
-int kprobe_init(void);
+
+int page_unit_ioctl_func(unsigned int  cmd, unsigned long arg);
+
+
+int rcutest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
+int rcutest_unit_init(void);
+int rcutest_unit_exit(void);
+
+int kprobe_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
+int kprobe_unit_init(void);
+int kprobe_unit_exit(void);
+
 void misc_show_stack(const char *log_buf, struct task_struct *task, unsigned long *sp);
-int showstack_init(void);
+int showstack_unit_init(void);
 
-int workqueue_test_init(void);
-void workqueue_test_exit(void);
-int workqueue_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
+int workqueue_unit_init(void);
+int workqueue_unit_exit(void);
+int workqueue_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
 
-int locktest_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
-int locktest_init(void);
+int locktest_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
+int locktest_unit_init(void);
 
-int msr_init(void);
-void msr_exit(void);
+int msr_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
+int msr_unit_init(void);
+int msr_unit_exit(void);
 
-int raidtree_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
-int raidtree_init(void);
-int raidtree_exit(void);
+int raidtree_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
+int raidtree_unit_init(void);
+int raidtree_unit_exit(void);
 
-int ext2test_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
-int ext2test_init(void);
-void ext2test_exit(void);
+int ext2test_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
+int ext2test_unit_init(void);
+int ext2test_unit_exit(void);
 
-int atomic_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
-int atomic_init(void);
-int atomic_exit(void);
+int atomic_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
+int atomic_unit_init(void);
+int atomic_unit_exit(void);
 
-int kmemt_unit_init(void);
+int kmem_unit_init(void);
 int kmem_unit_exit(void);
 int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
 
 
-int devbusdrvtest_exit(void);
-int devbusdrvtest_init(void);
-int devbusdrv_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
+int devbusdrvtest_unit_exit(void);
+int devbusdrvtest_unit_init(void);
+int devbusdrvtest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
 #endif

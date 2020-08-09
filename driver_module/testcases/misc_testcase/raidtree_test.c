@@ -64,7 +64,7 @@ static int rxtree_misc_dump(struct radix_tree_root *root)
 }
 
 
-int raidtree_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
+int raidtree_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 	int ret = 0;
 	void *p;
@@ -122,7 +122,7 @@ int raidtree_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data
 }
 
 
-int raidtree_init(void)
+int raidtree_unit_init(void)
 {
 	rxtree_misc_data = kzalloc(sizeof(struct rxtree_misc_data), GFP_KERNEL);
 	INIT_RADIX_TREE(&rxtree_misc_data->root, GFP_KERNEL);
@@ -138,7 +138,7 @@ int raidtree_init(void)
 
 }
 
-int raidtree_exit(void)
+int raidtree_unit_exit(void)
 {
 	kfree(rxtree_misc_data);
 	return 0;

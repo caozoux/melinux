@@ -44,7 +44,7 @@ struct bus_type virme_bus_type = {
 	.uevent = virme_bus_uevent,
 };
 
-int devbusdrv_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
+int devbusdrvtest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 
 	int ret = -1;
@@ -82,7 +82,7 @@ dev_set_name(ctrl->device, "nvme%d", ctrl->instance);
 #endif
 }
 
-int devbusdrvtest_init(void)
+int devbusdrvtest_unit_init(void)
 {
 #if 0
 static struct idr dca_idr;
@@ -113,7 +113,7 @@ dca_class = class_create(THIS_MODULE, "dca");
 	
 }
 
-int devbusdrvtest_exit(void)
+int devbusdrvtest_unit_exit(void)
 {
 	//device_destroy(dbd_dt->dev, )
 

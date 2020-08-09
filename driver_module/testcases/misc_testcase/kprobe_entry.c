@@ -87,7 +87,7 @@ static int kprobe_func_dump(char *dump_buf, char *name)
 	return 0;
 }
 
-int kprobe_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
+int kprobe_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 	int ret = -1;
 	char name[125];
@@ -119,7 +119,14 @@ OUT:
 }
 
 
-int kprobe_init(void)
+int kprobe_unit_init(void)
+{
+	orig_dump_stack_print_info = kallsyms_lookup_name("dump_stack_print_info");
+	return 0;
+
+}
+
+int kprobe_unit_exit(void)
 {
 	orig_dump_stack_print_info = kallsyms_lookup_name("dump_stack_print_info");
 	return 0;

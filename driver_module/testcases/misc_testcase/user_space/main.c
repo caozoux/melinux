@@ -6,16 +6,26 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <getopt.h>
 #include "template_iocmd.h"
 #include "common_head.h"
 
 
 #define DEV_NAME "/dev/misc_template"
 
+typedef int (*misc_fp)(int argc, char **argv);
+
+struct memisc_func {
+    const char* name;
+    misc_fp func;
+};
+
 struct ping_data {
 	short unsigned int  s_send;
 	short unsigned int  s_recv;
 };
+
+int misc_fd;
 
 void usage_help()
 {
@@ -132,25 +142,35 @@ static int atomic_test(int fd ,struct ioctl_data *data)
 	return ioctl(fd, sizeof(struct ioctl_data), data);
 }
 
-int main(int argc, char *argv[])
+static int usage(int argc, char **argv)
+{
+	static const struct option long_options[] = {
+		{"input",     required_argument, 0,  0 },
+		{"output",     required_argument, 0,  0 },
+		{0,0,0,0}};
+	int c;
+	int __attribute__ ((unused)) ret;
+
+	while (1) {
+		int option_index = -1;
+		c = getopt_long_only(argc, argv, "", long_options, &option_index);
+		if ( c == -1 )
+			break;
+		if (option_index == 0) {
+			
+		} else if (option_index == 1) {
+			
+		}
+
+	}
+}
+
+static int normal_usage(int argc, char **argv)
 {
 	struct ioctl_data data;
 	char ch;
-	int fd;	
 	int ret;
 	char name[128];
-
-	if (argc == 1) {
-		usage_help();
-		return 0;
-	}
-
-	fd = open(DEV_NAME, O_RDWR);
-	if (fd <= 0) {
-		printf("%s open failed", DEV_NAME);
-		return 0;
-	}
-
     while((ch=getopt(argc,argv,"hsw:rm:k:q:a"))!=-1)
   	{
 		switch (ch) {
@@ -161,7 +181,7 @@ int main(int argc, char *argv[])
 			case 'a':
 				data.type = IOCTL_USEATOMIC ;
 				data.cmdcode = IOCTL_USEATOMIC_PERFORMANCE;
-				atomic_test(fd, &data);
+				atomic_test(misc_fd, &data);
 				break;
 
 			case 's':
@@ -194,14 +214,14 @@ int main(int argc, char *argv[])
 						printf("hardlock operation not support\n");
 						return -1;
 				}
-				return ioctl(fd, sizeof(struct ioctl_data), &data);
+				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 
 			case 'e':
-				ruc_test(fd);
+				ruc_test(misc_fd);
 				goto out;
 
 			case 'r':
-				ruc_test(fd);
+				ruc_test(misc_fd);
 				goto out;
 
 			case 'm':
@@ -210,7 +230,7 @@ int main(int argc, char *argv[])
 				break;
 
 			case 'q':
-				ret = workqueue_test(fd, &data, argv[optind-1], argv[optind]);
+				ret = workqueue_test(misc_fd, &data, argv[optind-1], argv[optind]);
 				break;
 
 			case 'k':
@@ -222,7 +242,7 @@ int main(int argc, char *argv[])
 				data.kp_data.len = strlen(name);
 				data.kp_data.dump_buf= malloc(4096);
 				data.kp_data.dump_len= 4096;
-				ret = kprobe_test(fd, &data);
+				ret = kprobe_test(misc_fd, &data);
 				if (ret) {
 					printf("kprobe failed\n");
 					return 0;
@@ -237,8 +257,40 @@ int main(int argc, char *argv[])
 		}
 	}
 
+out:
+	return -1;
+}
+
+static struct memisc_func all_funcs[] = {
+	{"usage", usage},
+	{"normal", normal_usage},
+};
+
+int main(int argc, char *argv[])
+{
+	if (argc == 1) {
+		usage_help();
+		return 0;
+	}
+
+	misc_fd = open(DEV_NAME, O_RDWR);
+	if (misc_fd <= 0) {
+		printf("%s open failed", DEV_NAME);
+		return 0;
+	}
+
+#if 0
+	for (i = 0; i < sizeof(all_funcs) / sizeof(struct diagnose_func); i++) {
+		if (strcmp(argv[1], all_funcs[i].name) == 0) {
+			func = all_funcs[i].func;
+			break;
+		}
+	}
+#endif
+
+
 
 out:
-	close(fd);
+	close(misc_fd);
 	return 0;
 }

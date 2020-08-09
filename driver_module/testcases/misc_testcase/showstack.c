@@ -182,7 +182,7 @@ void misc_show_stack(char *log_buf, struct task_struct *task, unsigned long *sp)
 	show_trace_log(log_buf, task, NULL, sp, KERN_DEFAULT);
 }
 
-int showstack_init(void)
+int showstack_unit_init(void)
 {
 	LOOKUP_SYMBOL(unwind_get_return_address_ptr);
 	LOOKUP_SYMBOL(__kernel_text_address);
@@ -196,7 +196,7 @@ int showstack_init(void)
 void misc_show_stack(char *log_buf, struct task_struct *task, unsigned long *sp)
 {
 }
-int showstack_init(void)
+int showstack_unit_init(void)
 {
 }
 #endif

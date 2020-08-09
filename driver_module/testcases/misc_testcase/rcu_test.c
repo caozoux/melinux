@@ -99,7 +99,7 @@ static void rcu_readlock_test_start(void)
 
 }
 
-int rcu_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
+int rcutest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 
 	int ret = -1;
@@ -130,9 +130,14 @@ OUT:
 	return 0;
 }
 
-int rcutest_init(void)
+int rcutest_unit_init(void)
 {
 	RCU_INIT_POINTER(rcu_pointer, NULL);
+	return 0;
+}
+
+int rcutest_unit_exit(void)
+{
 	return 0;
 }
 
