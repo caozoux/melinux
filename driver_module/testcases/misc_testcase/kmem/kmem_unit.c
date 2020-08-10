@@ -71,12 +71,11 @@ static void kmem_dump_node_item(atomic_long_t *vm_stat)
 	printk("NR_SHMEM_THPS: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_SHMEM_THPS]));
 	printk("NR_SHMEM_PMDMAPPED: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_SHMEM_PMDMAPPED]));
 	printk("NR_ANON_THPS: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_ANON_THPS]));
-	printk("NR_UNSTABLE_NFS: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_UNSTABLE_NFS]));
 	printk("NR_VMSCAN_WRITE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_VMSCAN_WRITE]));
 	printk("NR_VMSCAN_IMMEDIATE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_VMSCAN_IMMEDIATE]));
 	printk("NR_DIRTIED: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_DIRTIED]));
 	printk("NR_WRITTEN: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_WRITTEN]));
-	printk("NR_INDIRECTLY_RECLAIMABLE_BYTES: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_INDIRECTLY_RECLAIMABLE_BYTES]));
+	//printk("NR_INDIRECTLY_RECLAIMABLE_BYTES: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_INDIRECTLY_RECLAIMABLE_BYTES]));
 	printk("NR_VM_NODE_STAT_ITEMS: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_VM_NODE_STAT_ITEMS]));
 }
 
@@ -120,6 +119,7 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 	switch (data->cmdcode) {
 		case  IOCTL_USEKMEM_SHOW:
 			DEBUG("mem_readlock_test_start\n")
+			kmem_dump_state();
 			break;
 		case  IOCTL_USERCU_READTEST_END:
 			DEBUG("mem_readlock_test_stop\n")
@@ -137,7 +137,6 @@ int kmem_unit_init(void)
 	LOOKUP_SYMS(vm_zone_stat);
 	LOOKUP_SYMS(vm_numa_stat);
 	LOOKUP_SYMS(vm_node_stat);
-	kmem_dump_state();
 	return 0;
 }
 

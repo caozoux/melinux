@@ -103,7 +103,7 @@ static void wkq_sig_spinlockirq_race_test(struct work_struct *work)
 static void wkq_sig_performace_delay(struct work_struct *work)
 {
 	struct wkq_data *wkq_dt = container_of(work, struct wkq_data, wq_sigtestwq_performace_delay);
-	unsigned long tsc_val = rdtsc();
+	unsigned long tsc_val = get_time_tick();
 	wkq_dt->performance_exp = tsc_val - wkq_dt->performance_delay;
 	wkq_dt->wq_complete = 1;
 	wake_up(&wkq_dt->wait);

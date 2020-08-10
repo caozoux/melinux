@@ -574,8 +574,8 @@ static const struct file_operations msr_fops = {
 	.read = msr_read,
 	.write = msr_write,
 	.open = msr_open,
-	.unlocked_ioctl = msr_ioctl,
-	.compat_ioctl = msr_ioctl,
+	.unlocked_ioctl = msr_unit_ioctl,
+	.compat_ioctl = msr_unit_ioctl,
 };
 
 static int msr_device_create(unsigned int cpu)
@@ -596,6 +596,11 @@ static int msr_device_destroy(unsigned int cpu)
 static char *msr_devnode(struct device *dev, umode_t *mode)
 {
 	return kasprintf(GFP_KERNEL, "cpu/%u/msr", MINOR(dev->devt));
+}
+
+int msr_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
+{
+	return 0;
 }
 
 int msr_unit_init(void)

@@ -71,6 +71,18 @@ void me_mdelay(unsigned long var)
 
 unsigned long get_time_tick(void)
 {
+#ifdef CONFIG_X86
 	return rdtsc();
+#else
+	unsigned long timer_val;
+
+	asm (   " mrs %0, cntvct_el0"
+		: "=r" (timer_val)
+		:
+		: "memory"
+	);
+
+	return timer_val;
+#endif
 }
 
