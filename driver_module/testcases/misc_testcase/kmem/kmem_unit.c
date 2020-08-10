@@ -118,7 +118,7 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 {
 	int ret = -1;
 	switch (data->cmdcode) {
-		case  IOCTL_USEMEM_SHOW:
+		case  IOCTL_USEKMEM_SHOW:
 			DEBUG("mem_readlock_test_start\n")
 			break;
 		case  IOCTL_USERCU_READTEST_END:

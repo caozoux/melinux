@@ -11,6 +11,11 @@
 		}								\
 	} while (0)
 
+#define FUNC_UNIT(name) \
+	int name##_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data); \
+	int name##_unit_init(void); \
+	int name##_unit_exit(void); 
+
 typedef int (*misc_unit_fn)(void);
 typedef int (*misc_unit_ioctl_fn)(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
 struct misc_uint_item {
@@ -67,4 +72,6 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 int devbusdrvtest_unit_exit(void);
 int devbusdrvtest_unit_init(void);
 int devbusdrvtest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
+
+FUNC_UNIT(hwpci);
 #endif

@@ -264,6 +264,7 @@ out:
 static struct memisc_func all_funcs[] = {
 	{"usage", usage},
 	{"normal", normal_usage},
+	{"kmem", normal_usage},
 };
 
 int main(int argc, char *argv[])

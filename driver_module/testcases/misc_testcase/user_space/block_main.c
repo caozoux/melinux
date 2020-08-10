@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	data.type = IOCTL_USEREXT2;
+	data.type = IOCTL_USEEXT2;
     while((ch=getopt(argc,argv,"heb:r"))!=-1)
   	{
 		switch (ch) {
