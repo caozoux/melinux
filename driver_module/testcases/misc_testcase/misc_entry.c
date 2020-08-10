@@ -65,6 +65,7 @@ struct misc_uint_item unit_list[] =
 	MISC_UNIT(rcutest, IOCTL_USERCU),
 	MISC_UNIT(kprobe, IOCTL_USEKPROBE),
 	MISC_UNIT(workqueue, IOCTL_USEWORKQUEUE),
+	MISC_UNIT(hwpci, IOCTL_USEHWPCI),
 	{}
 };
 
