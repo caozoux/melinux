@@ -74,4 +74,5 @@ int devbusdrvtest_unit_init(void);
 int devbusdrvtest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
 
 FUNC_UNIT(hwpci);
+FUNC_UNIT(statickey);
 #endif
