@@ -75,4 +75,6 @@ int devbusdrvtest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct 
 
 FUNC_UNIT(hwpci);
 FUNC_UNIT(statickey);
+FUNC_UNIT(sched);
+FUNC_UNIT(cpu);
 #endif

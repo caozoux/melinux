@@ -6,23 +6,12 @@
 #include <linux/fs.h>
 #include <linux/miscdevice.h>
 #include <linux/mm.h>
-#include <linux/pagemap.h>
 #include <linux/slab.h>
-#include <linux/poll.h>
-#include <linux/of.h>
 #include <linux/kthread.h>
-#include <linux/reboot.h>
-#include <linux/uaccess.h>
 #include <linux/notifier.h>
 #include <linux/interrupt.h>
-#include <linux/rcupdate.h>
 #include <linux/delay.h>
-#ifndef CONFIG_ARM64
-#include <asm/cpu_entry_area.h>
-#include <asm/unwind.h> 
-#endif
 
-#include <asm/stacktrace.h>
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
 #include "debug_ctrl.h"
