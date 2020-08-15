@@ -22,6 +22,7 @@
 #define THREAD_CNT  	(12)
 
 static atomic_t atomic_test_val1 __attribute__((aligned (128)));
+static struct task_struct *thread_task[THREAD_CNT];
 
 struct atomic_test_data {
 	struct workqueue_struct *sigtestworkqueue;
@@ -140,7 +141,11 @@ int atomic_unit_init(void)
 
 	INIT_WORK(&atm_dt->wq_sigtestwq, atm_sig_test);
 	INIT_WORK(&atm_dt->per_cpu_atomic_wq, atm_sig_test);
-	//kthread_create(speakup_thread, NULL, "atomic_test");
+#if 0
+	for(i=0; i < THREAD_CNT, i++) {
+		kthread_create(speakup_thread, NULL, "atomic_test");
+	}
+#endif
 
 	return 0;
 

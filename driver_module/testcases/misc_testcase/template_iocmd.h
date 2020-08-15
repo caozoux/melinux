@@ -18,6 +18,7 @@ enum ioctl_cmdtype {
 	IOCTL_USEKMEM,
 	IOCTL_USEMSR,
 	IOCTL_USEHWPCI,
+	IOCTL_USEBLOCK,
 };
 
 enum IOCTL_TYPE {

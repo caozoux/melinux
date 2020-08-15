@@ -69,6 +69,7 @@ struct misc_uint_item unit_list[] =
 	MISC_UNIT(statickey, IOCTL_USEHWPCI),
 	MISC_UNIT(sched, IOCTL_USEHWPCI),
 	MISC_UNIT(cpu, IOCTL_USEHWPCI),
+	MISC_UNIT(block, IOCTL_USEBLOCK),
 	{}
 };
 

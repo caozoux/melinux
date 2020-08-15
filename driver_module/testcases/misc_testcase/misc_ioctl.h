@@ -77,4 +77,5 @@ FUNC_UNIT(hwpci);
 FUNC_UNIT(statickey);
 FUNC_UNIT(sched);
 FUNC_UNIT(cpu);
+FUNC_UNIT(block);
 #endif
