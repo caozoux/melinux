@@ -27,7 +27,8 @@ struct ping_data {
 
 int misc_fd;
 
-void usage_help()
+static int usage_help(int argc, char **argv);
+void usage_limit_help()
 {
 	printf("help:  -t [optcode:softlock/hwlock/mem/rcu] -o optcode\n");
 	printf("       -s softlock: test softlock \n");
@@ -142,28 +143,6 @@ static int atomic_test(int fd ,struct ioctl_data *data)
 	return ioctl(fd, sizeof(struct ioctl_data), data);
 }
 
-static int usage(int argc, char **argv)
-{
-	static const struct option long_options[] = {
-		{"input",     required_argument, 0,  0 },
-		{"output",     required_argument, 0,  0 },
-		{0,0,0,0}};
-	int c;
-	int __attribute__ ((unused)) ret;
-
-	while (1) {
-		int option_index = -1;
-		c = getopt_long_only(argc, argv, "", long_options, &option_index);
-		if ( c == -1 )
-			break;
-		if (option_index == 0) {
-			
-		} else if (option_index == 1) {
-			
-		}
-
-	}
-}
 
 static int normal_usage(int argc, char **argv)
 {
@@ -175,7 +154,7 @@ static int normal_usage(int argc, char **argv)
   	{
 		switch (ch) {
 			case 'h':
-				usage_help();
+				usage_limit_help();
 				break;
 
 			case 'a':
@@ -252,7 +231,7 @@ static int normal_usage(int argc, char **argv)
 
 				break;
 			default:
-				usage_help();
+				usage_limit_help();
 				return 0;
 		}
 	}
@@ -262,15 +241,47 @@ out:
 }
 
 static struct memisc_func all_funcs[] = {
-	{"usage", usage},
+	{"help", usage_help},
 	{"normal", normal_usage},
-	{"kmem", normal_usage},
+	{"kmem", kmem_usage},
+	{"block", block_usage},
 };
+
+static int usage_help(int argc, char **argv)
+{
+#if 0
+	static const struct option long_options[] = {
+		{"input",     required_argument, 0,  0 },
+		{"output",     required_argument, 0,  0 },
+		{"output",     required_argument, 0,  0 },
+		{0,0,0,0}};
+	int c;
+	int __attribute__ ((unused)) ret;
+
+	while (1) {
+		int option_index = -1;
+		c = getopt_long_only(argc, argv, "", long_options, &option_index);
+		if ( c == -1 )
+			break;
+		if (option_index == 0) {
+			usage_help();
+		} else if (option_index == 1) {
+			
+		}
+
+	}
+#else
+	usage_limit_help();
+	printf("kmem --help\n");
+	printf("block --help\n");
+#endif
+}
 
 int main(int argc, char *argv[])
 {
-	if (argc == 1) {
-		usage_help();
+	int i;
+	if (argc < 1) {
+		usage_help(argc, argv);
 		return 0;
 	}
 
@@ -280,15 +291,12 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-#if 0
-	for (i = 0; i < sizeof(all_funcs) / sizeof(struct diagnose_func); i++) {
+	for (i = 0; i < sizeof(all_funcs) / sizeof(struct memisc_func); i++) {
 		if (strcmp(argv[1], all_funcs[i].name) == 0) {
-			func = all_funcs[i].func;
+			all_funcs[i].func(argc - 1, argv + 1);
 			break;
 		}
 	}
-#endif
-
 
 
 out:

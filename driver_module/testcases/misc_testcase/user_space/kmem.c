@@ -17,7 +17,7 @@ static void help(void)
 	printf("--kmem --mode get  get the vm_state of zone/none/numa");
 }
 
-static int kmem_usage(int argc, char **argv)
+int kmem_usage(int argc, char **argv)
 {
 	static const struct option long_options[] = {
 		{"help",     required_argument, 0,  0 },

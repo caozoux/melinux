@@ -193,6 +193,7 @@ static int __init miscdriver_init(void)
 {
 	int ret;
 	int i=0;
+	int init_offset =0;
 
 #if 0
 	if (kmem_unit_init()) {
@@ -256,7 +257,7 @@ static int __init miscdriver_init(void)
 			ret = -EINVAL;
 			goto out0;
 		}
-
+		init_offset++;
 	}
 #endif
 
@@ -292,6 +293,9 @@ out1:
 	kfree(misc_data);
 	return ret;
 out0:
+	for(i=0; i < init_offset; i++)
+		unit_list[i].exit();
+
 	ret = -EINVAL;
 	return ret;
 }

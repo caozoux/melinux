@@ -8,15 +8,13 @@
 #include <linux/mm.h>
 #include <linux/pagemap.h>
 #include <linux/slab.h>
-#include <linux/poll.h>
-#include <linux/of.h>
 #include <linux/kthread.h>
-#include <linux/reboot.h>
 #include <linux/uaccess.h>
 #include <linux/notifier.h>
 #include <linux/interrupt.h>
-#include <linux/rcupdate.h>
 #include <linux/delay.h>
+#include <linux/dcache.h>
+#include <linux/fdtable.h>
 
 #include <asm/stacktrace.h>
 #include "template_iocmd.h"
@@ -25,9 +23,14 @@
 #include "medelay.h"
 #include "mekernel.h"
 
-#if 0
-void merequest_dump_full_patch(struct request *req)
+void medentry_dump_full_patch(struct dentry *dentry)
 {
+	struct dentry *parent;
 
+	parent = dentry;
+	while (!IS_ROOT(parent)) {
+		parent = parent->d_parent;
+		printk("%s\n", parent->d_iname);
+	}
 }
-#endif
+
