@@ -78,4 +78,5 @@ FUNC_UNIT(statickey);
 FUNC_UNIT(sched);
 FUNC_UNIT(cpu);
 FUNC_UNIT(block);
+FUNC_UNIT(arm64gic);
 #endif

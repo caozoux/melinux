@@ -26,18 +26,26 @@ struct bus_type *orig_virtio_bus;
 static int __must_check pci_rescan_devices(struct device *dev, void *data)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
-	unsigned long *addr;
 	unsigned long ali_addr;
 
 	if (pdev->msix_enabled) {
 		 struct msi_desc *entry;
 		 for_each_pci_msi_entry(entry, pdev) {
+			printk("msi irq:%d\n", entry->irq);
+#if 0
+			unsigned long *addr;
 			ali_addr = (entry->msg.address_lo&0x1000);
 			addr = (unsigned long *)ioremap(ali_addr, PAGE_SIZE);
 			iounmap(addr);
-		 }	
+#endif
+		 }
 	}
 	return 0;
+}
+
+void pci_bus_scan(void)
+{
+	bus_for_each_dev(orig_pci_bus_type, NULL, NULL, pci_rescan_devices);
 }
 
 int hwpci_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)

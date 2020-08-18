@@ -57,17 +57,17 @@ int block_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_dat
 
 int block_unit_init(void)
 {
-	LOOKUP_SYMS(virtio_queue_rq_hook);
+	//LOOKUP_SYMS(virtio_queue_rq_hook);
 
-	printk("zz %s orig_virtio_queue_rq_hook:%lx \n",__func__, (unsigned long)orig_virtio_queue_rq_hook);
-	*orig_virtio_queue_rq_hook = (virtio_hook) misc_virtio_queue_rq_hook;
+	//printk("zz %s orig_virtio_queue_rq_hook:%lx \n",__func__, (unsigned long)orig_virtio_queue_rq_hook);
+	//*orig_virtio_queue_rq_hook = (virtio_hook) misc_virtio_queue_rq_hook;
 	
 	return 0;
 }
 
 int block_unit_exit(void)
 {
-	*orig_virtio_queue_rq_hook = NULL;
+	//*orig_virtio_queue_rq_hook = NULL;
 	return 0;
 }
 
