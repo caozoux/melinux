@@ -25,9 +25,17 @@
 #include "medelay.h"
 #include "mekernel.h"
 
-#if 0
+static void merequest_list_dump(struct request *req)
+{
+	struct request *rq;
+	int i;
+
+	list_for_each_entry(rq, list, queuelist) {
+		printk("req:%lx %d@%lx \n", req, rq);
+	}
+}
 void merequest_dump_full_patch(struct request *req)
 {
-
+	//struct request_queue *q;
+	//struct bio *bio;
 }
-#endif
