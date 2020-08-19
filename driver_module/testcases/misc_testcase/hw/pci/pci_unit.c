@@ -23,16 +23,27 @@
 struct bus_type *orig_pci_bus_type;
 struct bus_type *orig_virtio_bus;
 
+struct pci_dev *pci_unit_register_pci_device(void)
+{
+	struct pci_dev *dev;
+	dev = pci_alloc_dev(orig_virtio_bus);
+	if (!dev)
+		return -ENODEV;
+	dev->devfn = 0xffff;
+	dev->vendor = 0xffff;
+	dev->device = 0xffff;
+}
+
 static int __must_check pci_rescan_devices(struct device *dev, void *data)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
-	unsigned long ali_addr;
 
 	if (pdev->msix_enabled) {
 		 struct msi_desc *entry;
 		 for_each_pci_msi_entry(entry, pdev) {
 			printk("msi irq:%d\n", entry->irq);
 #if 0
+			unsigned long ali_addr;
 			unsigned long *addr;
 			ali_addr = (entry->msg.address_lo&0x1000);
 			addr = (unsigned long *)ioremap(ali_addr, PAGE_SIZE);
@@ -63,6 +74,10 @@ OUT:
 int hwpci_unit_init(void)
 {
 	LOOKUP_SYMS(pci_bus_type);
+	orig_virtio_bus = (void *)kallsyms_lookup_name("virtio_bus");
+	if (orig_virtio_bus == NULL)
+		orig_virtio_bus = orig_pci_bus_type;
+
 	return 0;
 }
 
