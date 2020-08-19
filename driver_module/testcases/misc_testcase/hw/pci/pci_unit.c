@@ -25,6 +25,7 @@ struct bus_type *orig_virtio_bus;
 
 struct pci_dev *pci_unit_register_pci_device(void)
 {
+#if 0
 	struct pci_dev *dev;
 	dev = pci_alloc_dev(orig_virtio_bus);
 	if (!dev)
@@ -32,6 +33,8 @@ struct pci_dev *pci_unit_register_pci_device(void)
 	dev->devfn = 0xffff;
 	dev->vendor = 0xffff;
 	dev->device = 0xffff;
+#endif
+	return NULL;
 }
 
 static int __must_check pci_rescan_devices(struct device *dev, void *data)

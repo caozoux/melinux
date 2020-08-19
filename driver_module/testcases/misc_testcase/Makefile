@@ -15,7 +15,7 @@ ifdef CONFIG_ARM64
 $(TARGET)-objs += arm64/gic/gic_entry.o arm64/gic/gic_virtual_device.o
 endif
 
-$(TARGET)-objs += kernel/task.o kernel/dentry.o block/request.o
+$(TARGET)-objs += kernel/task.o kernel/dentry.o block/request.o kernel/virtual_bus.o
 
 all:
 	make -C user_space

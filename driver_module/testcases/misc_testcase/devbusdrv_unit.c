@@ -21,28 +21,8 @@
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
 #include "debug_ctrl.h"
+#include "mekernel.h"
 
-struct devbusdrv_data {
-	struct device *dev;
-	struct class *metest_class;
- 	struct idr metest_idr;
-} *dbd_dt;
-
-int virme_bus_match(struct device *dev, struct device_driver *drv)
-{
-	return 0;
-}
-
-int virme_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
-{
-	return 0;
-}
-
-struct bus_type virme_bus_type = {
-	.name    = "virme_bus",
-	.match   = virme_bus_match,
-	.uevent = virme_bus_uevent,
-};
 
 int devbusdrvtest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
@@ -51,17 +31,6 @@ int devbusdrvtest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct 
 
 	switch (data->cmdcode) {
 		case  IOCTL_USERCU_READTEST_START:
-#if 0
-			device_initialize(&dbd_dt->dev);
-		    dev_set_name(ctrl->device, "nvme%d", ctrl->instance);
-			DEBUG("rcu_readlock_test_start\n")
-			rcu_readlock_test_start();
-			dev = device_create(NULL, &virme_bus_d.dev,
-			0, NULL,
-			"testcase_dev");
-#else
-
-#endif
 			break;
 		case  IOCTL_USERCU_READTEST_END:
 			DEBUG("rcu_readlock_test_stop\n")
@@ -99,32 +68,14 @@ dca_class = class_create(THIS_MODULE, "dca");
 
 	device_destroy(dca_class, MKDEV(0, slot + 1));
 #endif
-	int res;
-
-	dbd_dt = kzalloc(sizeof(struct devbusdrv_data), GFP_KERNEL);
-    res = bus_register(&virme_bus_type);
-
-	idr_init(&dbd_dt->metest_idr);
-    dbd_dt->metest_class = class_create(THIS_MODULE, "metest");
-	idr_init(&dbd_dt->metest_idr);
-
-	dbd_dt->dev = device_create(dbd_dt->metest_class, NULL, MKDEV(0, 0), NULL, "test%d", 0);
+	virtual_test_bus_init();
 	return 0;
 	
 }
 
 int devbusdrvtest_unit_exit(void)
 {
-	//device_destroy(dbd_dt->dev, )
-
-	if (dbd_dt->dev)
-		device_destroy(dbd_dt->metest_class, MKDEV(0,0));
-
-	class_destroy(dbd_dt->metest_class);
-	idr_destroy(&dbd_dt->metest_idr);
-    bus_unregister(&virme_bus_type);
-    kfree(dbd_dt);
+	virtual_test_bus_exit();
 }
-
 
 
