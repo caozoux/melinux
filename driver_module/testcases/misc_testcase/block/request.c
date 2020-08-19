@@ -17,6 +17,7 @@
 #include <linux/interrupt.h>
 #include <linux/rcupdate.h>
 #include <linux/delay.h>
+#include <linux/blkdev.h>
 
 #include <asm/stacktrace.h>
 #include "template_iocmd.h"
@@ -27,15 +28,11 @@
 
 static void merequest_list_dump(struct request *req)
 {
-	struct request *rq;
+	struct request *next_rq;
 	int i;
 
-	list_for_each_entry(rq, list, queuelist) {
-		printk("req:%lx %d@%lx \n", req, rq);
+	list_for_each_entry(next_rq, &req->queuelist, queuelist) {
+		//printk("req:%lx %d@%lx \n", req, rq);
 	}
 }
-void merequest_dump_full_patch(struct request *req)
-{
-	//struct request_queue *q;
-	//struct bio *bio;
-}
+
