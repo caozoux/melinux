@@ -173,7 +173,6 @@ static void gic_its_device_table_entry_list(struct its_baser *baser)
 			//break;
 		}
 	}
-		
 }
 
 static void gic_its_device_table(struct its_baser *baser)
