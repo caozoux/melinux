@@ -26,21 +26,7 @@
 #include "medelay.h"
 #include "mekernel.h"
 
-typedef void (*virtio_hook)(struct blk_mq_hw_ctx *hctx, const struct blk_mq_queue_data *bd);
-
-static virtio_hook *orig_virtio_queue_rq_hook;
-struct list_head *orig_all_bdevs;
-struct list_head *orig_bdi_list;
-spinlock_t *orig_bdev_lock;
-
-void misc_virtio_queue_rq_hook(struct blk_mq_hw_ctx *hctx, const struct blk_mq_queue_data *bd)
-{
-	struct request *req = bd->rq;
-	merequest_list_dump(req);
-}
-
-
-int block_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
+int ktime_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
 	
 	int ret = -1;
@@ -58,24 +44,20 @@ int block_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_dat
 		default:
 			break;
 	}
-
 	return 0;
 }
 
-int block_unit_init(void)
+int ktime_unit_init(void)
 {
 	LOOKUP_SYMS(virtio_queue_rq_hook);
-	LOOKUP_SYMS(all_bdevs);
-	LOOKUP_SYMS(bdev_lock);
-	LOOKUP_SYMS(bdi_list);
 
 	//printk("zz %s orig_virtio_queue_rq_hook:%lx \n",__func__, (unsigned long)orig_virtio_queue_rq_hook);
 	*orig_virtio_queue_rq_hook = (virtio_hook) misc_virtio_queue_rq_hook;
-	scan_block_dev_disk();
+	
 	return 0;
 }
 
-int block_unit_exit(void)
+int ktime_unit_exit(void)
 {
 	//*orig_virtio_queue_rq_hook = NULL;
 	return 0;

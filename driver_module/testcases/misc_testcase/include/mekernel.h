@@ -6,6 +6,10 @@ void medentry_dump_full_patch(struct dentry *dentry);
 void merequest_dump_full_patch(struct request *req);
 void pci_bus_scan(void);
 
+void merequest_list_dump(struct request *req);
+void scan_block_dev_disk(void);
+
+void dump_inode_data(struct inode *inode, int leve);
 
 int virtual_test_bus_init(void);
 int virtual_test_bus_exit(void);
