@@ -14,4 +14,6 @@ void dump_inode_data(struct inode *inode, int leve);
 int virtual_test_bus_init(void);
 int virtual_test_bus_exit(void);
 struct device * virtual_test_get_device(void);
+struct device *virtual_get_new_device(void);
+void virtual_put_new_device(struct device *dev);
 #endif

@@ -44,6 +44,8 @@ struct its_baser {
         u32             psz;
 };
 
+struct its_device;
+
 struct its_node {
         raw_spinlock_t          lock;
         struct mutex            dev_alloc_lock;

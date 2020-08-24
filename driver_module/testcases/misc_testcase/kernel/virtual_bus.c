@@ -55,20 +55,40 @@ struct bus_type virme_bus_type = {
 	.uevent = virme_bus_uevent,
 };
 
+struct device *virtual_get_new_device(void)
+{
+	struct device *dev;
+	dev = kzalloc(sizeof(struct device), GFP_KERNEL);
+	device_initialize(dev);
+	dev_set_name(dev, "%s", "vir_dev0");
+	//dev->bus = &virme_bus_type;
+	dev->release = virtual_test_device_release;
+	device_add(dev);
+	return dev;
+}
+
+void virtual_put_new_device(struct device *dev)
+{
+	//device_del(dev);
+	device_unregister(dev);
+	//printk("bus %p\n", dev->bus->p->bus_notifier);
+	kfree(dev);
+}
+
 int virtual_test_bus_init(void)
 {
 	int res;
 
 	dbd_dt = kzalloc(sizeof(struct devbusdrv_data), GFP_KERNEL);
-    res = bus_register(&virme_bus_type);
+    	res = bus_register(&virme_bus_type);
 
 	idr_init(&dbd_dt->metest_idr);
-    dbd_dt->metest_class = class_create(THIS_MODULE, "metest");
+    	dbd_dt->metest_class = class_create(THIS_MODULE, "metest");
 	idr_init(&dbd_dt->metest_idr);
 
 	//dbd_dt->dev = device_create(dbd_dt->metest_class, NULL, MKDEV(0, 0), NULL, "test%d", 0);
 	device_initialize(&dbd_dt->dev);
-	dev_set_name(&dbd_dt->dev, "%s", "vir_dev0");
+	dev_set_name(&dbd_dt->dev, "%s", "vir_testdev0");
 	dbd_dt->dev.bus = &virme_bus_type;
 	dbd_dt->dev.release = virtual_test_device_release;
 	device_add(&dbd_dt->dev);
@@ -81,6 +101,6 @@ int virtual_test_bus_exit(void)
 
 	class_destroy(dbd_dt->metest_class);
 	idr_destroy(&dbd_dt->metest_idr);
-    bus_unregister(&virme_bus_type);
-    kfree(dbd_dt);
+    	bus_unregister(&virme_bus_type);
+    	kfree(dbd_dt);
 }
