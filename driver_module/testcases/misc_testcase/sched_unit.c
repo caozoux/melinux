@@ -28,7 +28,16 @@ struct tk_core *orig_tk_core;
 
 int sched_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
+	struct u_task_info  info;
+	struct  sched_iotcl *sched_io;
+	struct  task_struct *task;
 	switch (data->cmdcode) {
+		case IOCTL_USESCHED_TASK_GET:
+				task = find_process_by_pid(sched_io->pid);
+				info.exec_start;
+				info.sum_exec_runtime;
+				info.vruntime;
+				info.prev_sum_exec_runtime;
 		default:
 			break;
 	}
