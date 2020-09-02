@@ -74,6 +74,7 @@ int (*orig_irq_domain_activate_irq)(struct irq_data *irq_data, bool reserve);
 void (*orig_irq_domain_free_irqs)(unsigned int virq, unsigned int nr_irqs);
 void (*orig_irq_domain_deactivate_irq)(struct irq_data *irq_data);
 void (*orig_irq_domain_free_irqs)(unsigned int virq, unsigned int nr_irqs);
+void (*orig_lpi_update_config)(struct irq_data *d, u8 clr, u8 set);
 
 static ssize_t store_irq_trigger(struct device *dev, struct device_attribute *attr,
 	const char *buf, size_t count)
@@ -92,12 +93,26 @@ static ssize_t store_irq_trigger(struct device *dev, struct device_attribute *at
 static ssize_t store_irq_mask(struct device *dev, struct device_attribute *attr,
 	const char *buf, size_t count)
 {
+	struct gic_vdev_irq_attr *vdev_irq_attr =
+		container_of(attr, struct gic_vdev_irq_attr, dev_irq_mask);
+	struct irq_data *irq_data;
+
+	irq_data = irq_domain_get_irq_data(its_domain,vdev_irq_attr->irq);
+
+	orig_lpi_update_config(irq_data, LPI_PROP_ENABLED, 0);
 	return count;
 }
 
 static ssize_t store_irq_unmask(struct device *dev, struct device_attribute *attr,
 	const char *buf, size_t count)
 {
+	struct gic_vdev_irq_attr *vdev_irq_attr =
+		container_of(attr, struct gic_vdev_irq_attr, dev_irq_unmask);
+	struct irq_data *irq_data;
+
+	irq_data = irq_domain_get_irq_data(its_domain,vdev_irq_attr->irq);
+
+	orig_lpi_update_config(irq_data, 0, LPI_PROP_ENABLED);
 	return count;
 }
 
@@ -281,6 +296,7 @@ static int kallsyms_init(void)
 	LOOKUP_SYMS(irq_domain_free_irqs);
 	LOOKUP_SYMS(irq_domain_deactivate_irq);
 	LOOKUP_SYMS(irq_domain_free_irqs);
+	LOOKUP_SYMS(lpi_update_config);
 	return 0;
 }
 struct virtual_gic_dev_data  *data1;

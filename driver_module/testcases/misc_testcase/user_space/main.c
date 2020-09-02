@@ -244,6 +244,7 @@ static struct memisc_func all_funcs[] = {
 	{"help", usage_help},
 	{"normal", normal_usage},
 	{"kmem", kmem_usage},
+	{"ktime", ktime_usage},
 	{"block", block_usage},
 };
 

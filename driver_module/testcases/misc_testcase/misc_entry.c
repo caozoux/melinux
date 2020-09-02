@@ -70,8 +70,10 @@ struct misc_uint_item unit_list[] =
 	MISC_UNIT(sched, IOCTL_USEHWPCI),
 	MISC_UNIT(cpu, IOCTL_USEHWPCI),
 	MISC_UNIT(block, IOCTL_USEBLOCK),
+	MISC_UNIT(cpu, IOCTL_USEBLOCK),
+	MISC_UNIT(ktime, IOCTL_USEKTIME),
 #ifdef CONFIG_ARM64
-	MISC_UNIT(arm64gic, IOCTL_USEBLOCK),
+	//MISC_UNIT(arm64gic, IOCTL_USEBLOCK),
 #endif
 	{}
 };

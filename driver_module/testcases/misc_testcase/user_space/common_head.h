@@ -5,6 +5,7 @@
 int ruc_test(int fd);
 int block_usage(int argc, char **argv);
 int kmem_usage(int argc, char **argv);
+int ktime_usage(int argc, char **argv);
 
 #endif
 

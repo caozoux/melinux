@@ -17,7 +17,7 @@
 #include <linux/interrupt.h>
 #include <linux/rcupdate.h>
 #include <linux/delay.h>
-#include <linux/blk-mq.h>
+#include <linux/clockchips.h>
 
 #include <asm/stacktrace.h>
 #include "template_iocmd.h"
@@ -26,19 +26,30 @@
 #include "medelay.h"
 #include "mekernel.h"
 
+struct list_head *orig_clockevent_devices;
+
+static void timer_clockevent_device_scan(void)
+{
+	struct clock_event_device *dev;
+
+	list_for_each_entry(dev, orig_clockevent_devices, list) {
+		int cpu;
+		printk("clockevent:%s\n", dev->name);
+		for_each_cpu(cpu, dev->cpumask) {
+			printk("bind into cpu%d \n", cpu);
+		}
+	}
+}
+
 int ktime_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
 	
 	int ret = -1;
-	int i;
-	int cpu = smp_processor_id();
 
 	switch (data->cmdcode) {
-		case  IOCTL_USEBLOCK_INDOE:
-			break;
 
-		case  IOCTL_USEBLOCK_FILE:
-			task_file_enum(current);
+		case   IOCTL_USEKTIME_DEV_SCAN:
+			timer_clockevent_device_scan();
 			break;
 
 		default:
@@ -49,11 +60,8 @@ int ktime_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_dat
 
 int ktime_unit_init(void)
 {
-	LOOKUP_SYMS(virtio_queue_rq_hook);
+	LOOKUP_SYMS(clockevent_devices);
 
-	//printk("zz %s orig_virtio_queue_rq_hook:%lx \n",__func__, (unsigned long)orig_virtio_queue_rq_hook);
-	*orig_virtio_queue_rq_hook = (virtio_hook) misc_virtio_queue_rq_hook;
-	
 	return 0;
 }
 

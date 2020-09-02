@@ -17,40 +17,57 @@
 #include <linux/interrupt.h>
 #include <linux/rcupdate.h>
 #include <linux/delay.h>
+#include <linux/blk-mq.h>
 
 #include <asm/stacktrace.h>
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
 #include "debug_ctrl.h"
 #include "medelay.h"
+#include "mekernel.h"
 
-struct cpu_smp_data {
-	unsigned long start;
-	unsigned long end;
-};
-
-void cpu_wakeup_time(void *info)
-{
-	struct cpu_smp_data *data = (struct cpu_smp_data*) info;
-	data->end = get_time_tick();
-}
+bool (*orig_cpus_share_cache)(int this_cpu, int that_cpu);
 
 int cpu_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
+	
+	switch (data->cmdcode) {
+		default:
+			break;
+	}
+
 	return 0;
 }
 
 int cpu_unit_init(void)
 {
-	int ret;
-	struct cpu_smp_data data;
-	int cpu = smp_processor_id();
+	int cpu, cpu2;
+	int share;
 
-	data.start = get_time_tick();
-	ret = smp_call_function_single(cpu+1,
-			cpu_wakeup_time,
-			&data, 1);
-	printk("cpu%d wake cpu%d time is %ld\n", cpu,  cpu+1, data.end - data.start);
+	LOOKUP_SYMS(cpus_share_cache);
+	//printk("zz %s\n", __func__);
+#if 0
+	cpu = 1;
+	share = orig_cpus_share_cache(cpu, cpu+1);
+	if (share)
+		printk("cpu%d and cpu%d is cache\n", cpu, cpu+1);
+	else
+		printk("cpu%d and cpu%d is not cache\n", cpu, cpu+1);
+#else
+	for_each_possible_cpu(cpu) {
+		for_each_possible_cpu(cpu2) {
+			if (cpu == cpu2)
+				continue;
+			share = orig_cpus_share_cache(cpu, cpu2);
+			if (cpu_online(cpu+1)) {
+				if (share)
+					printk("cpu%d and cpu%d is cache\n", cpu, cpu2);
+				else
+					printk("cpu%d and cpu%d is not cache\n", cpu, cpu2);
+			}
+		}
+	}
+#endif
 
 	return 0;
 }
