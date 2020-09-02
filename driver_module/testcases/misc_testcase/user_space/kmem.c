@@ -20,7 +20,7 @@ static void help(void)
 int kmem_usage(int argc, char **argv)
 {
 	static const struct option long_options[] = {
-		{"help",     required_argument, 0,  0 },
+		{"help",     no_argument, 0,  0 },
 		{"dump",     required_argument, 0,  0 },
 		{"output",     required_argument, 0,  0 },
 		{0,0,0,0}};
@@ -42,12 +42,18 @@ int kmem_usage(int argc, char **argv)
 	while (1) {
 		int option_index = -1;
 		c = getopt_long_only(argc, argv, "", long_options, &option_index);
+		if (c == -1)
+			break;
+
 		switch (option_index) {
 			case 0:
+				help();
+				break;
+			case 1:
 				data.cmdcode = IOCTL_USEKMEM_GET;
 				return ioctl(misc_fd, sizeof(struct ioctl_data), data);
 				break;
-			case 1:
+			case 2:
 				data.cmdcode = IOCTL_USEKMEM_GET;
 				return ioctl(misc_fd, sizeof(struct ioctl_data), data);
 				break;

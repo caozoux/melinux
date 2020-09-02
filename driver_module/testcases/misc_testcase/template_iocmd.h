@@ -20,6 +20,7 @@ enum ioctl_cmdtype {
 	IOCTL_USEHWPCI,
 	IOCTL_USEBLOCK,
 	IOCTL_USEKTIME,
+	IOCTL_USESCHED,
 };
 
 enum IOCTL_TYPE {
@@ -31,6 +32,12 @@ enum IOCTL_USEKTIME_SUB{
 	IOCTL_USEKTIME_DEV_SCAN,
 	IOCTL_USEKTIME_FILE,
 };
+enum IOCTL_USESCHED_SUB{
+	IOCTL_USESCHED_NONE = 0,
+	// get task struct 
+	IOCTL_USESCHED_TASK_GET,
+};
+
 enum IOCTL_USEBLOCK_SUB{
 	IOCTL_USEBLOCK_NONE = 0,
 	IOCTL_USEBLOCK_INDOE,
@@ -138,6 +145,17 @@ struct ioctl_data {
 			unsigned long *numa_vm_state;
 			unsigned long numa_len;
 		} kmem_data;
+		struct sched_ioctl {
+			int pid;
+			struct u_task_info {
+				unsigned int rq;
+				unsigned long exec_start;
+				unsigned long sum_exec_runtime;
+				unsigned long vruntime;
+				unsigned long prev_sum_exec_runtime;
+
+			};
+		} sched_data;
 	};
 	int  cmdcode;
 	unsigned long args[5];
