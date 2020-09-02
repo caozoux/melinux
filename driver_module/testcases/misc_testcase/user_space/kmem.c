@@ -47,13 +47,13 @@ int kmem_usage(int argc, char **argv)
 
 		switch (option_index) {
 			case 0:
-				kmem_usage();
+				help();
 				break;
-			case 0:
+			case 1:
 				data.cmdcode = IOCTL_USEKMEM_GET;
 				return ioctl(misc_fd, sizeof(struct ioctl_data), data);
 				break;
-			case 1:
+			case 2:
 				data.cmdcode = IOCTL_USEKMEM_GET;
 				return ioctl(misc_fd, sizeof(struct ioctl_data), data);
 				break;

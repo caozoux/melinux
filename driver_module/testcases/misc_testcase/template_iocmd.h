@@ -143,10 +143,10 @@ struct ioctl_data {
 			int pid;
 			struct u_task_info {
 				unsigned int rq;
-				u64             exec_start;
-				u64             sum_exec_runtime;
-				u64             vruntime;
-				u64             prev_sum_exec_runtime;
+				unsigned long exec_start;
+				unsigned long sum_exec_runtime;
+				unsigned long vruntime;
+				unsigned long prev_sum_exec_runtime;
 
 			};
 		} sched_data;

@@ -64,13 +64,18 @@ int block_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_dat
 
 int block_unit_init(void)
 {
-	LOOKUP_SYMS(virtio_queue_rq_hook);
 	LOOKUP_SYMS(all_bdevs);
 	LOOKUP_SYMS(bdev_lock);
 	LOOKUP_SYMS(bdi_list);
 
-	//printk("zz %s orig_virtio_queue_rq_hook:%lx \n",__func__, (unsigned long)orig_virtio_queue_rq_hook);
-	*orig_virtio_queue_rq_hook = (virtio_hook) misc_virtio_queue_rq_hook;
+	orig_virtio_queue_rq_hook = (void *)kallsyms_lookup_name("virtio_queue_rq_hook");
+	if (!orig_virtio_queue_rq_hook) {
+		pr_warn("kallsyms_lookup_name: %s failed\n", "virtio_queue_rq_hook");
+	} else {
+		*orig_virtio_queue_rq_hook = (virtio_hook) misc_virtio_queue_rq_hook;
+		pr_info("hook virtio_queue_rq_hook\n");
+	}
+	
 	scan_block_dev_disk();
 	return 0;
 }
