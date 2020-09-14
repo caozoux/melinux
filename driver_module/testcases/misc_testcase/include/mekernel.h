@@ -16,4 +16,6 @@ int virtual_test_bus_exit(void);
 struct device * virtual_test_get_device(void);
 struct device *virtual_get_new_device(void);
 void virtual_put_new_device(struct device *dev);
+
+void bio_dump_data(struct bio *bio);
 #endif

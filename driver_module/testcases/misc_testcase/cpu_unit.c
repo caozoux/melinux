@@ -54,6 +54,7 @@ int cpu_unit_init(void)
 	else
 		printk("cpu%d and cpu%d is not cache\n", cpu, cpu+1);
 #else
+#if 0
 	for_each_possible_cpu(cpu) {
 		for_each_possible_cpu(cpu2) {
 			if (cpu == cpu2)
@@ -67,6 +68,7 @@ int cpu_unit_init(void)
 			}
 		}
 	}
+#endif
 #endif
 
 	return 0;
