@@ -5,7 +5,7 @@ all: block_test test
 block_test: block_main.c
 	@gcc -L/usr/lib64 -lm -lc -lpthread  $^ -o block_test
 
-test: main.o rcu_test.o kmem.o block.o ktime.c
+test: main.o rcu_test.o kmem.o block.o ktime.o  kprobe.c lock.o workqueue.o
 	@gcc -L/usr/lib64 -lm -lc -lpthread  $^ -o test
 
 %.o:%.c

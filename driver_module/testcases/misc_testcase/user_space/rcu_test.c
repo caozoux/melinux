@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <signal.h>
 #include <sys/ioctl.h>
+#include <getopt.h>
 #include "template_iocmd.h"
 
 static int s_fd;
@@ -64,7 +65,7 @@ void* thread2()
 	return NULL;
 }
 
-int ruc_test(int fd)
+int rcu_test(int fd)
 {
 
 	pthread_t tid1;
@@ -88,4 +89,45 @@ int ruc_test(int fd)
 	pthread_join(tid2, NULL);
 #endif
 
+}
+
+extern int misc_fd;
+
+static void help(void)
+{
+	printf("rcu --rcu_read_sync  test the rcu read for rcu sync");
+}
+
+static const struct option long_options[] = {
+	{"help",     no_argument, 0,  0 },
+	{"rcu_read_sync",     no_argument, 0,  0 },
+	{0,0,0,0}};
+
+int rcu_usage(int argc, char **argv)
+{
+	int c;
+	struct ioctl_data data;
+
+	while (1) {
+
+		int option_index = -1;
+		c = getopt_long_only(argc, argv, "", long_options, &option_index);
+		if (c == -1)
+			break;
+
+		switch (option_index) {
+			case '0':
+				help();
+				break;
+			case '1':
+				rcu_test(misc_fd);
+				return;
+			default:
+				printf("hardlock operation not support\n");
+				return -1;
+		}
+	}
+
+	
+	return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 }

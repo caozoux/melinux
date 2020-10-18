@@ -90,41 +90,6 @@ static int raidix_test(int fd ,struct ioctl_data *data, char *ch1, char *ch2, ch
 		return ioctl(fd, sizeof(struct ioctl_data), data);
 }
 
-static int workqueue_test(int fd ,struct ioctl_data *data, char *ch1, char *ch2)
-{
-		char ch = *ch1;
-		unsigned long workqueue_wakeup_time;
-		int ret;
-		int runtime = atoi(ch2);
-		data->type = IOCTL_USEWORKQUEUE;
-		data->wq_data.runtime = runtime;
-		data->wq_data.workqueue_performance = &workqueue_wakeup_time;
-		*data->wq_data.workqueue_performance = 0;
-		switch (ch) {
-			case '1':
-				data->cmdcode = IOCTL_USEWORKQUEUE_SIG;
-				break;
-			case '2':
-				data->cmdcode = IOCTL_USEWORKQUEUE_SIG_SPINLOCK;
-				break;
-			case '3':
-				data->cmdcode = IOCTL_USEWORKQUEUE_SIG_SPINLOCKIRQ;
-				break;
-			case '4':
-				data->cmdcode =  IOCTL_USEWORKQUEUE_PERCPU_SPINLOCKIRQ_RACE;
-				break;
-			case '5':
-				data->cmdcode =  IOCTL_USEWORKQUEUE_PEFORMANCE_DELAY;
-				break;
-			default:
-				return 1;
-		}
-
-		ret = ioctl(fd, sizeof(struct ioctl_data), data);
-		if (data->cmdcode ==  IOCTL_USEWORKQUEUE_PEFORMANCE_DELAY)
-			printf("the workqueue wakeup time:%ld \n", *(data->wq_data.workqueue_performance));
-}
-
 static int hardlock_test(int fd, struct ioctl_data *data)
 {
 		data->type = IOCTL_HARDLOCK;
@@ -150,7 +115,7 @@ static int normal_usage(int argc, char **argv)
 	char ch;
 	int ret;
 	char name[128];
-    while((ch=getopt(argc,argv,"hsw:rm:k:q:a"))!=-1)
+    while((ch=getopt(argc,argv,"hsw:m:k:a"))!=-1)
   	{
 		switch (ch) {
 			case 'h':
@@ -195,21 +160,9 @@ static int normal_usage(int argc, char **argv)
 				}
 				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 
-			case 'e':
-				ruc_test(misc_fd);
-				goto out;
-
-			case 'r':
-				ruc_test(misc_fd);
-				goto out;
-
 			case 'm':
 				data.type = IOCTL_MEM;
 				data.cmdcode = IOCTL_TYPE_VMALLOC_MAX;
-				break;
-
-			case 'q':
-				ret = workqueue_test(misc_fd, &data, argv[optind-1], argv[optind]);
 				break;
 
 			case 'k':
@@ -246,6 +199,10 @@ static struct memisc_func all_funcs[] = {
 	{"kmem", kmem_usage},
 	{"ktime", ktime_usage},
 	{"block", block_usage},
+	{"lock", lock_usage},
+	{"workqueue", workqueue_usage},
+	{"rcu", rcu_usage},
+	{"kprobe", kprobe_usage},
 };
 
 static int usage_help(int argc, char **argv)
