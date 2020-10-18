@@ -85,17 +85,31 @@ static void test_user_page(u64 addr)
 	printk("zz %s val:%lx \n",__func__, (unsigned long)p[0]);
 }
 
-int page_unit_ioctl_func(unsigned int  cmd, unsigned long arg)
+int page_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 	int ret = -1;
-	switch (cmd) {
-		case  IOCTL_USERMAP:
-			pgd_pud_pnd_pte_dump(arg);
-			test_user_page((u64)arg);
+
+	switch (data->cmdcode) {
+		case  IOCTL_USEMEM_PAGEDUMP:
+			//pgd_pud_pnd_pte_dump(arg);
+			//test_user_page((u64)arg);
 			break;
+
 		default:
 			goto OUT;
 	}
+
 OUT:
 	return ret;
 }
+
+int page_unit_init(void)
+{
+	return 0;
+}
+
+int page_unit_exit(void)
+{
+	return 0;
+}
+

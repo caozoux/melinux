@@ -14,7 +14,8 @@ extern int misc_fd;
 
 static void help(void)
 {
-	printf("--kmem --mode get  get the vm_state of zone/none/numa");
+	printf("kmem --dump  get the vm_state of zone/none/numa\n");
+	printf("kmem --vma_scan --pid scan the vma of current task\n");
 }
 
 int kmem_usage(int argc, char **argv)
@@ -23,10 +24,14 @@ int kmem_usage(int argc, char **argv)
 		{"help",     no_argument, 0,  0 },
 		{"dump",     required_argument, 0,  0 },
 		{"output",     required_argument, 0,  0 },
+		{"vma_scan",   no_argument, 0,  0 },
+		{"pid",   required_argument, 0,  0 },
 		{0,0,0,0}};
 	int c;
 	struct ioctl_data data;
-	int __attribute__ ((unused)) ret;
+	int  __attribute__ ((unused)) ret = 0;
+	char pidstr[128];
+	int  pid = -1; 
 	unsigned long zone_vm_stat[64];
 	unsigned long numa_vm_stat[64];
 	unsigned long node_vm_stat[64];
@@ -51,17 +56,29 @@ int kmem_usage(int argc, char **argv)
 				break;
 			case 1:
 				data.cmdcode = IOCTL_USEKMEM_GET;
-				return ioctl(misc_fd, sizeof(struct ioctl_data), data);
+				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 				break;
 			case 2:
 				data.cmdcode = IOCTL_USEKMEM_GET;
-				return ioctl(misc_fd, sizeof(struct ioctl_data), data);
+				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+				break;
+			case 3:
+				data.cmdcode = IOCTL_USEKMEM_VMA_SCAN;
+				//return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+				break;
+			case 4:
+				strncpy(pidstr, optarg, 128);
+				pid = atoi(pidstr);
 				break;
 			default:
 				break;
 		}
 	}
 
+	if (data.cmdcode == IOCTL_USEKMEM_VMA_SCAN) {
+		data.pid = pid;
+		ret = ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+	}
 	
-	return 0;
+	return ret;
 }

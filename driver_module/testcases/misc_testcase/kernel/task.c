@@ -64,3 +64,7 @@ void task_file_enum(struct task_struct *task)
 
 }
 
+struct task_struct *get_taskstruct_by_pid(int pid)
+{
+	return pid_task(find_pid_ns(pid, task_active_pid_ns(current)), PIDTYPE_PID);
+}

@@ -12,6 +12,7 @@
 #include "../template_iocmd.h"
 #include "../misc_ioctl.h"
 #include "../debug_ctrl.h"
+#include "mekernel.h"
 
 atomic_long_t *orig_vm_zone_stat;
 atomic_long_t *orig_vm_numa_stat;
@@ -112,6 +113,34 @@ static void kmem_dump_state(void)
 #endif
 }
 
+static void vma_scan(struct ioctl_data *data)
+{
+	struct task_struct *task;
+	struct mm_struct *mm = current->mm;
+	struct vm_area_struct *vma;
+	int index = 0;	
+
+	if (data->pid != -1)
+			task = get_taskstruct_by_pid(data->pid);
+	else
+			task = current;
+
+	if (task == NULL) {	
+		printk("error vma scan not find task struct\n");
+		return;
+	}
+
+	printk("vma scan task name:%s\n", task->comm);
+	down_read(&mm->mmap_sem);
+
+	for (vma = mm->mmap; vma; vma = vma->vm_next) {
+		printk("%d: %lx~%lx\n", index++, vma->vm_start, vma->vm_end);
+	}
+
+	up_read(&mm->mmap_sem);
+
+}
+
 int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 	int ret = -1;
@@ -120,6 +149,12 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 			DEBUG("mem_readlock_test_start\n")
 			kmem_dump_state();
 			break;
+
+		case  IOCTL_USEKMEM_VMA_SCAN:
+			DEBUG("mem vma scan\n")
+			vma_scan(data);
+			break;
+
 		case  IOCTL_USERCU_READTEST_END:
 			DEBUG("mem_readlock_test_stop\n")
 			//mem_readlock_test_stop();

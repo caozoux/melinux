@@ -18,4 +18,5 @@ struct device *virtual_get_new_device(void);
 void virtual_put_new_device(struct device *dev);
 
 void bio_dump_data(struct bio *bio);
+struct task_struct *get_taskstruct_by_pid(int pid);
 #endif

@@ -27,9 +27,6 @@ struct misc_uint_item {
 };
 
 
-int page_unit_ioctl_func(unsigned int  cmd, unsigned long arg);
-
-
 int rcutest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
 int rcutest_unit_init(void);
 int rcutest_unit_exit(void);
@@ -81,4 +78,5 @@ FUNC_UNIT(block);
 FUNC_UNIT(arm64gic);
 FUNC_UNIT(cpu);
 FUNC_UNIT(ktime);
+FUNC_UNIT(page);
 #endif

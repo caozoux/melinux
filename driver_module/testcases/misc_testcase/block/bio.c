@@ -35,9 +35,10 @@ void bio_dump_data(struct bio *bio)
 {
 	struct bvec_iter iter;
 	struct bio_vec      *bi_vecs;
-	bi_vecs = bio->bi_inline_vecs;
+	int i;
+	bi_vecs = bio->bi_io_vec;
 
-	printk("bi_phys_segments:%lx bi_vcnt:%d bi_max_vecs:%d bi_size:%x bi_idx:%d bi_done:%x bi_bvec_dong:%x"
+	printk("bi_phys_segments:%lx bi_vcnt:%d bi_max_vecs:%d bi_size:%x bi_idx:%d bi_done:%x bi_bvec_dong:%x op:%lx\n"
 			, bio->bi_phys_segments
 			, bio->bi_vcnt
 			, bio->bi_max_vecs
@@ -45,8 +46,16 @@ void bio_dump_data(struct bio *bio)
 			, bio->bi_iter.bi_idx
 			, bio->bi_iter.bi_done
 			, bio->bi_iter.bi_bvec_done
+			, bio_op(bio)
 		 	);
 
+	for (i = 0; i <= bio->bi_vcnt; ++i) {
+		printk("bv_page:%lx bv_len:%lx bv_offset:%lx \n", (unsigned long)bi_vecs->bv_page, (unsigned long)bi_vecs->bv_len, (unsigned long)bi_vecs->bv_offset);
+		bi_vecs++;
+	}
+#if 0
 	if (bi_vecs)
 		printk("bv_page:%lx bv_len:%lx bv_offset:%lx \n", (unsigned long)bi_vecs->bv_page, (unsigned long)bi_vecs->bv_len, (unsigned long)bi_vecs->bv_offset);
+#endif
 }
+

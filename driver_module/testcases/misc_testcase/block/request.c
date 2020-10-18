@@ -145,6 +145,7 @@ static void dump_request(struct request *req)
 {
 	 struct bio_vec iv;
 	 struct bvec_iter iter;
+	 struct bio *bio_next;
 #if 0
 	if ((req->cmd_flags & REQ_OP_WRITE) && (req->cmd_flags & REQ_BACKGROUND)
 		 
@@ -153,16 +154,30 @@ static void dump_request(struct request *req)
 		//dump_stack();
 	}
 #endif
-	printk("len:%lx sector:%lx\n", (unsigned long)req->__data_len, (unsigned long)req->__sector);
-	printk("cmd_flags:%lx rq_flags:%lx ", (unsigned long)req->cmd_flags, (unsigned long)req->rq_flags);
-	printk("bio:%lx bio_tail:%lx ", (unsigned long)req->bio, (unsigned long)req->biotail);
+
+	printk("req len %lx sector %lx\n", (unsigned long)req->__data_len, (unsigned long)req->__sector);
+	printk("req cmd_flags %lx rq_flags %lx\n", (unsigned long)req->cmd_flags, (unsigned long)req->rq_flags);
+	//printk("bio:%lx bio_tail:%lx ", (unsigned long)req->bio, (unsigned long)req->biotail);
+
 	if (req->bio)
 		bio_dump_data(req->bio);
-	request_flag_dump(req);
 
+#if 1
+	bio_next = req->bio;
+	printk("sector:%ld bi_size:%lx bi_idx:%d bi_bvec_done:%lx\n"
+			, bio_next->bi_iter.bi_sector
+			, bio_next->bi_iter.bi_size
+			, bio_next->bi_iter.bi_done
+			, bio_next->bi_iter.bi_bvec_done);
+	for_each_bio(bio_next) {
+		bio_for_each_segment(iv, bio_next, iter) {
+			printk("iv_len:%x bi_idx:%d\n", iv.bv_len, iter.bi_idx);
+		}
+	}
+#else
 		for_each_bio(req->bio)
-			bio_for_each_segment(iv, req->bio, iter)
-				printk("iv_len:%x\n", iv.bv_len);
+				printk("zz %s bio:%lx \n",__func__, (unsigned long)req->bio);
+#endif
 
 	//printk("s_ns:%lx io_s_ns:%lx timeout:%lx \n",(unsigned long)req->start_time_ns, (unsigned long)req->io_start_time_ns, (unsigned long)req->timeout);
 #if 0
