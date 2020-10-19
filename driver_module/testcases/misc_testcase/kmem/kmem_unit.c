@@ -8,6 +8,7 @@
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/swap.h>
+#include <asm/tlb.h>
 
 #include "../template_iocmd.h"
 #include "../misc_ioctl.h"
@@ -17,6 +18,11 @@
 atomic_long_t *orig_vm_zone_stat;
 atomic_long_t *orig_vm_numa_stat;
 atomic_long_t *orig_vm_node_stat;
+//int (*orig_zap_huge_pud)(struct mmu_gather *tlb, struct vm_area_struct *vma, pud_t *pud, unsigned long addr);
+struct page *(*orig__vm_normal_page)(struct vm_area_struct *vma, unsigned long addr, pte_t pte, bool with_public_device);
+void (*orig_arch_tlb_gather_mmu)(struct mmu_gather *tlb, struct mm_struct *mm, unsigned long start, unsigned long end);
+
+         
 
 static void __maybe_unused mem_proc_show(void)
 {
@@ -113,12 +119,174 @@ static void kmem_dump_state(void)
 #endif
 }
 
+void pgd_clear_bad(pgd_t *pgd)
+{
+    pgd_ERROR(*pgd);
+    pgd_clear(pgd);
+}
+
+void p4d_clear_bad(p4d_t *p4d)
+{
+    p4d_ERROR(*p4d);
+    p4d_clear(p4d);
+}
+
+void pud_clear_bad(pud_t *pud)
+{
+    pud_ERROR(*pud);
+    pud_clear(pud);
+}
+
+void pmd_clear_bad(pmd_t *pmd)
+{
+    pmd_ERROR(*pmd);
+    pmd_clear(pmd);
+}
+
+static unsigned long zap_pte_range(struct mmu_gather *tlb,
+                struct vm_area_struct *vma, pmd_t *pmd,
+                unsigned long addr, unsigned long end,
+                struct zap_details *details)
+{
+	struct mm_struct *mm = tlb->mm;
+	spinlock_t *ptl;
+	pte_t *start_pte;
+	pte_t *pte;
+
+	start_pte = pte_offset_map_lock(mm, pmd, addr, &ptl);
+    pte = start_pte;
+	do {
+		pte_t ptent = *pte;
+        if (pte_none(ptent))
+            continue;
+
+        if (pte_present(ptent)) {
+            struct page *page;
+			page = orig__vm_normal_page(vma, addr, ptent, true);
+			if (unlikely(!page))
+				continue;
+
+		}
+		
+	} while (pte++, addr += PAGE_SIZE, addr != end);
+	pte_unmap_unlock(start_pte, ptl);
+
+	return addr;
+}
+
+static inline unsigned long zap_pmd_range(struct mmu_gather *tlb,
+                struct vm_area_struct *vma, pud_t *pud,
+                unsigned long addr, unsigned long end,
+				struct zap_details *details)
+{
+    pmd_t *pmd;
+    unsigned long next;
+
+    pmd = pmd_offset(pud, addr);
+    do {
+        next = pmd_addr_end(addr, end);
+        if (is_swap_pmd(*pmd) || pmd_trans_huge(*pmd) || pmd_devmap(*pmd)) {
+            //if (next - addr != HPAGE_PMD_SIZE)
+            //   __split_huge_pmd(vma, pmd, addr, false, NULL);
+            //else if (zap_huge_pmd(tlb, vma, pmd, addr))
+            //   goto next;
+            /* fall through */
+        }
+        /*
+         * Here there can be other concurrent MADV_DONTNEED or
+         * trans huge page faults running, and if the pmd is
+         * none or trans huge it can change under us. This is
+         * because MADV_DONTNEED holds the mmap_sem in read
+         * mode.
+         */
+        if (pmd_none_or_trans_huge_or_clear_bad(pmd))
+            goto next;
+        next = zap_pte_range(tlb, vma, pmd, addr, next, details);
+next:
+        cond_resched();
+    } while (pmd++, addr = next, addr != end);
+
+    return addr;
+}
+
+static inline unsigned long zap_pud_range(struct mmu_gather *tlb,
+                struct vm_area_struct *vma, p4d_t *p4d,
+                unsigned long addr, unsigned long end,
+				struct zap_details *details)
+{
+    pud_t *pud;
+    unsigned long next;
+
+    pud = pud_offset(p4d, addr);
+    do {
+        next = pud_addr_end(addr, end);
+        if (pud_trans_huge(*pud) || pud_devmap(*pud)) {
+            if (next - addr != HPAGE_PUD_SIZE) {
+                VM_BUG_ON_VMA(!rwsem_is_locked(&tlb->mm->mmap_sem), vma);
+            //   split_huge_pud(vma, pud, addr);
+			}
+            //} else if (zap_huge_pud(tlb, vma, pud, addr))
+            //   goto next;
+            /* fall through */
+        }
+        if (pud_none_or_clear_bad(pud))
+            continue;
+        next = zap_pmd_range(tlb, vma, pud, addr, next, details);
+next:
+        cond_resched();
+    } while (pud++, addr = next, addr != end);
+
+    return addr;
+}
+
+static unsigned long zap_p4d_range(struct mmu_gather *tlb,
+                struct vm_area_struct *vma, pgd_t *pgd,
+                unsigned long addr, unsigned long end,
+				struct zap_details *details)
+{
+    p4d_t *p4d;
+    unsigned long next;
+
+    p4d = p4d_offset(pgd, addr);
+    do {
+        next = p4d_addr_end(addr, end);
+        if (p4d_none_or_clear_bad(p4d))
+            continue;
+        next = zap_pud_range(tlb, vma, p4d, addr, next, details);
+    } while (p4d++, addr = next, addr != end);
+
+    return addr;
+}
+
+static void vma_scan_map_page_list(struct task_struct *task, struct vm_area_struct *p)
+{
+	struct vm_area_struct *vma = p;
+	unsigned long addr = vma->vm_start;
+	unsigned long end = vma->vm_end;
+	unsigned long next;
+	pgd_t *pgd;
+	struct mmu_gather tlb;
+
+	orig_arch_tlb_gather_mmu(tlb, mm, start, end);
+
+	pgd = pgd_offset(vma->vm_mm, addr);
+	do {
+		next = pgd_addr_end(addr, end);
+	    if (pgd_none_or_clear_bad(pgd))
+			continue;
+		next = zap_p4d_range(&tlb, vma, pgd, addr, next, NULL);
+	} while (pgd++, addr = next, addr != end);
+	tlb_finish_mmu(&tlb, start, end)
+}
+
+// it will scan all vma list of task
 static void vma_scan(struct ioctl_data *data)
 {
 	struct task_struct *task;
-	struct mm_struct *mm = current->mm;
+	struct mm_struct *mm;
 	struct vm_area_struct *vma;
 	int index = 0;	
+
 
 	if (data->pid != -1)
 			task = get_taskstruct_by_pid(data->pid);
@@ -130,11 +298,13 @@ static void vma_scan(struct ioctl_data *data)
 		return;
 	}
 
+	mm = task->mm;
 	printk("vma scan task name:%s\n", task->comm);
 	down_read(&mm->mmap_sem);
 
 	for (vma = mm->mmap; vma; vma = vma->vm_next) {
-		printk("%d: %lx~%lx\n", index++, vma->vm_start, vma->vm_end);
+		data->log_buf += sprintf(data->log_buf, "%d: %lx~%lx\n", index++, vma->vm_start, vma->vm_end);
+		vma_scan_map_page_list(task, vma);
 	}
 
 	up_read(&mm->mmap_sem);
@@ -171,6 +341,7 @@ int kmem_unit_init(void)
 	LOOKUP_SYMS(vm_zone_stat);
 	LOOKUP_SYMS(vm_numa_stat);
 	LOOKUP_SYMS(vm_node_stat);
+	LOOKUP_SYMS(_vm_normal_page);
 	return 0;
 }
 
