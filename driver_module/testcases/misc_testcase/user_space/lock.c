@@ -13,7 +13,12 @@ extern int misc_fd;
 
 static void help(void)
 {
-	printf("--kmem --mode get  get the vm_state of zone/none/numa");
+	printf("lock --lock spin lock\n");
+	printf("lock --unlock spin unlock\n");
+	printf("lock --unlock try lock\n");
+	printf("lock --lock spin hw lock\n");
+	printf("lock --lock spin hw unlock\n");
+	printf("lock --lock spin hw try lock\n");
 }
 
 static const struct option long_options[] = {
@@ -23,7 +28,7 @@ static const struct option long_options[] = {
 	{"tryloc",   no_argument, 0,  0 },
 	{"hwlock",   no_argument, 0,  0 },
 	{"hwunlock",   no_argument, 0,  0 },
-	{"hwtryloc",   no_argument, 0,  0 },
+	{"hwtrylock",   no_argument, 0,  0 },
 	{0,0,0,0}};
 
 int lock_usage(int argc, char **argv)
@@ -35,8 +40,10 @@ int lock_usage(int argc, char **argv)
 
 		int option_index = -1;
 		c = getopt_long_only(argc, argv, "", long_options, &option_index);
-		if (c == -1)
+		if (c == -1) {
+			help();
 			break;
+		}
 
 		switch (option_index) {
 			case '0':

@@ -13,7 +13,7 @@ extern int misc_fd;
 
 static void help(void)
 {
-	printf("kprobe --dumpstack  dump the specify function of stack_dump");
+	printf("kprobe --dumpstack  dump the specify function of stack_dump\n");
 }
 
 static const struct option long_options[] = {
@@ -32,8 +32,10 @@ int kprobe_usage(int argc, char **argv)
 	while (1) {
 		int option_index = -1;
 		c = getopt_long_only(argc, argv, "", long_options, &option_index);
-		if (c == -1)
+		if (c == -1) {
+			help();
 			break;
+		}
 
 		switch (option_index) {
 			case '0':

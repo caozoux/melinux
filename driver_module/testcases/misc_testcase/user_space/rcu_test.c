@@ -95,7 +95,7 @@ extern int misc_fd;
 
 static void help(void)
 {
-	printf("rcu --rcu_read_sync  test the rcu read for rcu sync");
+	printf("rcu --rcu_read_sync  test the rcu read for rcu sync\n");
 }
 
 static const struct option long_options[] = {
@@ -112,8 +112,10 @@ int rcu_usage(int argc, char **argv)
 
 		int option_index = -1;
 		c = getopt_long_only(argc, argv, "", long_options, &option_index);
-		if (c == -1)
+		if (c == -1) {
+			help();
 			break;
+		}
 
 		switch (option_index) {
 			case '0':

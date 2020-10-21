@@ -36,6 +36,8 @@ int kmem_usage(int argc, char **argv)
 	unsigned long numa_vm_stat[64];
 	unsigned long node_vm_stat[64];
 
+	ioctl_data_init(&data);
+
 	data.type = IOCTL_USEKMEM;
 	data.kmem_data.zone_vm_state = zone_vm_stat;
 	data.kmem_data.zone_len = 4*64;
@@ -47,8 +49,10 @@ int kmem_usage(int argc, char **argv)
 	while (1) {
 		int option_index = -1;
 		c = getopt_long_only(argc, argv, "", long_options, &option_index);
-		if (c == -1)
+		if (c == -1) {
+			help();
 			break;
+		}
 
 		switch (option_index) {
 			case 0:
@@ -78,6 +82,7 @@ int kmem_usage(int argc, char **argv)
 	if (data.cmdcode == IOCTL_USEKMEM_VMA_SCAN) {
 		data.pid = pid;
 		ret = ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+		printf("zz %s data.log_buf:%s \n",__func__, data.log_buf);
 	}
 	
 	return ret;

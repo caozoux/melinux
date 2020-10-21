@@ -13,12 +13,12 @@ extern int misc_fd;
 
 static void help(void)
 {
-	printf("workqueue --wk_sig_cpu");
-	printf("workqueue --wk_sig_lock");
-	printf("workqueue --wk_sig_hwlock");
-	printf("workqueue --wk_sig_percpu_hwlock");
-	printf("workqueue --wk_sig_cpu_hwlock_race");
-	printf("workqueue --wk_perfermance_delay");
+	printf("workqueue --wk_sig_cpu\n");
+	printf("workqueue --wk_sig_lock\n");
+	printf("workqueue --wk_sig_hwlock\n");
+	printf("workqueue --wk_sig_percpu_hwlock\n");
+	printf("workqueue --wk_sig_cpu_hwlock_race\n");
+	printf("workqueue --wk_perfermance_delay\n");
 }
 
 static const struct option long_options[] = {
@@ -43,8 +43,10 @@ int workqueue_usage(int argc, char **argv)
 
 		int option_index = -1;
 		c = getopt_long_only(argc, argv, "", long_options, &option_index);
-		if (c == -1)
+		if (c == -1) {
+			help();
 			break;
+		}
 
 		data.type = IOCTL_USEWORKQUEUE;
 		data.wq_data.workqueue_performance = &workqueue_wakeup_time;

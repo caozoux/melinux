@@ -26,6 +26,7 @@ struct ping_data {
 };
 
 int misc_fd;
+char *glog_buf;
 
 static int usage_help(int argc, char **argv);
 void usage_limit_help()
@@ -207,6 +208,7 @@ static struct memisc_func all_funcs[] = {
 
 static int usage_help(int argc, char **argv)
 {
+	int i;
 #if 0
 	static const struct option long_options[] = {
 		{"input",     required_argument, 0,  0 },
@@ -229,20 +231,34 @@ static int usage_help(int argc, char **argv)
 
 	}
 #else
+	char *help[2]  = { "help", NULL};
 	usage_limit_help();
-	printf("kmem --help\n");
-	printf("block --help\n");
+	for (i = 0; i < sizeof(all_funcs) / sizeof(struct memisc_func); i++) {
+			if (strcmp("help", all_funcs[i].name) != 0) {
+				all_funcs[i].func(argc - 1, help);
+			}
+	}
+	//printf("kmem --help\n");
+	//printf("block --help\n");
 #endif
+}
+
+void ioctl_data_init(struct ioctl_data *data)
+{
+	data->log_buf = glog_buf;
 }
 
 int main(int argc, char *argv[])
 {
 	int i;
-	if (argc < 1) {
+	printf("zz %s argc:%08x \n",__func__, (int)argc);
+	if (argc < 2) {
 		usage_help(argc, argv);
 		return 0;
 	}
 
+	glog_buf = malloc(8192);
+	memset(glog_buf, 0, 8192);
 	misc_fd = open(DEV_NAME, O_RDWR);
 	if (misc_fd <= 0) {
 		printf("%s open failed", DEV_NAME);
@@ -259,5 +275,6 @@ int main(int argc, char *argv[])
 
 out:
 	close(misc_fd);
+	free(glog_buf);
 	return 0;
 }

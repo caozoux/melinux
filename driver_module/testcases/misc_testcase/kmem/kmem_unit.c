@@ -143,6 +143,7 @@ void pmd_clear_bad(pmd_t *pmd)
     pmd_clear(pmd);
 }
 
+static int rss_page_cnt = 0;
 static unsigned long zap_pte_range(struct mmu_gather *tlb,
                 struct vm_area_struct *vma, pmd_t *pmd,
                 unsigned long addr, unsigned long end,
@@ -157,6 +158,7 @@ static unsigned long zap_pte_range(struct mmu_gather *tlb,
     pte = start_pte;
 	do {
 		pte_t ptent = *pte;
+
         if (pte_none(ptent))
             continue;
 
@@ -165,9 +167,8 @@ static unsigned long zap_pte_range(struct mmu_gather *tlb,
 			page = orig__vm_normal_page(vma, addr, ptent, true);
 			if (unlikely(!page))
 				continue;
-
+			rss_page_cnt++;
 		}
-		
 	} while (pte++, addr += PAGE_SIZE, addr != end);
 	pte_unmap_unlock(start_pte, ptl);
 
@@ -227,7 +228,7 @@ static inline unsigned long zap_pud_range(struct mmu_gather *tlb,
 			}
             //} else if (zap_huge_pud(tlb, vma, pud, addr))
             //   goto next;
-            /* fall through */
+            /* fall through d*/
         }
         if (pud_none_or_clear_bad(pud))
             continue;
@@ -267,7 +268,7 @@ static void vma_scan_map_page_list(struct task_struct *task, struct vm_area_stru
 	pgd_t *pgd;
 	struct mmu_gather tlb;
 
-	orig_arch_tlb_gather_mmu(tlb, mm, start, end);
+	orig_arch_tlb_gather_mmu(&tlb, task->mm, addr, end);
 
 	pgd = pgd_offset(vma->vm_mm, addr);
 	do {
@@ -276,7 +277,7 @@ static void vma_scan_map_page_list(struct task_struct *task, struct vm_area_stru
 			continue;
 		next = zap_p4d_range(&tlb, vma, pgd, addr, next, NULL);
 	} while (pgd++, addr = next, addr != end);
-	tlb_finish_mmu(&tlb, start, end)
+	//tlb_finish_mmu(&tlb, start, end)
 }
 
 // it will scan all vma list of task
@@ -285,7 +286,7 @@ static void vma_scan(struct ioctl_data *data)
 	struct task_struct *task;
 	struct mm_struct *mm;
 	struct vm_area_struct *vma;
-	int index = 0;	
+	int index = 0, i ;
 
 
 	if (data->pid != -1)
@@ -298,8 +299,13 @@ static void vma_scan(struct ioctl_data *data)
 		return;
 	}
 
+	for (i = 0; i < NR_MM_COUNTERS; i++) {
+			printk("name %s type:%d rss:%d \n", task->comm, i, task->rss_stat.count[i]);
+ 	}
+
 	mm = task->mm;
 	printk("vma scan task name:%s\n", task->comm);
+	rss_page_cnt = 0;
 	down_read(&mm->mmap_sem);
 
 	for (vma = mm->mmap; vma; vma = vma->vm_next) {
@@ -307,6 +313,7 @@ static void vma_scan(struct ioctl_data *data)
 		vma_scan_map_page_list(task, vma);
 	}
 
+	printk("zz %s rss_page_cnt:%d \n",__func__, (int)rss_page_cnt);
 	up_read(&mm->mmap_sem);
 
 }
@@ -342,6 +349,7 @@ int kmem_unit_init(void)
 	LOOKUP_SYMS(vm_numa_stat);
 	LOOKUP_SYMS(vm_node_stat);
 	LOOKUP_SYMS(_vm_normal_page);
+	LOOKUP_SYMS(arch_tlb_gather_mmu);
 	return 0;
 }
 
