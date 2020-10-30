@@ -235,6 +235,7 @@ static int usage_help(int argc, char **argv)
 	usage_limit_help();
 	for (i = 0; i < sizeof(all_funcs) / sizeof(struct memisc_func); i++) {
 			if (strcmp("help", all_funcs[i].name) != 0) {
+				printf("zz %s name:%s \n",__func__, all_funcs[i].name);
 				all_funcs[i].func(argc - 1, help);
 			}
 	}
@@ -246,19 +247,22 @@ static int usage_help(int argc, char **argv)
 void ioctl_data_init(struct ioctl_data *data)
 {
 	data->log_buf = glog_buf;
+	memset(glog_buf, 0, 8192);
 }
 
 int main(int argc, char *argv[])
 {
 	int i;
-	printf("zz %s argc:%08x \n",__func__, (int)argc);
-	if (argc < 2) {
-		usage_help(argc, argv);
-		return 0;
-	}
+	int ret = 0;
 
 	glog_buf = malloc(8192);
 	memset(glog_buf, 0, 8192);
+
+	if (argc < 2) {
+		usage_help(argc, argv);
+		goto out1;
+	}
+
 	misc_fd = open(DEV_NAME, O_RDWR);
 	if (misc_fd <= 0) {
 		printf("%s open failed", DEV_NAME);
@@ -273,8 +277,10 @@ int main(int argc, char *argv[])
 	}
 
 
+
 out:
 	close(misc_fd);
+out1:
 	free(glog_buf);
-	return 0;
+	return ret;
 }

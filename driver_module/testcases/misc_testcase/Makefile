@@ -4,6 +4,7 @@ TARGET := misc
 
 KERVER =$(shell uname -r)
 KERSRC ?= /lib/modules/$(KERVER)/build
+KERSRC=/export/disk1T/zoucao.zcdisk/cach/ck/
 
 obj-m := $(TARGET).o
 #KBUILD_CFLAGS
@@ -22,6 +23,7 @@ all:
 	make -C user_space
 	echo $(CUR_PATH) 
 	$(MAKE) -C $(KERSRC) M=$(PWD) modules
+	scp *.ko root@vm:~/ && scp user_space/test root@vm:~/  && ssh root@vm "rmmod misc.ko  && insmod misc.ko"
 		
 clean:
 	rm *.ko modules.order  Module.symvers *.mod.c *.ko.cmd *.o.cmd .tmp_versions/ -rf

@@ -18,6 +18,71 @@ static void help(void)
 	printf("kmem --vma_scan --pid scan the vma of current task\n");
 }
 
+static pages_buffer_order(unsigned long *buf, unsigned long size)
+{
+	int i , j;
+	unsigned long val;
+
+	for (i = 1; i < size; ++i) {
+		for (j = i; j >= 1; j--) {
+			if (buf[j] < buf[j-1]) {
+				val = buf[j-1];
+				buf[j-1] = buf[j];
+				buf[j] = val;
+			} else {
+				break;
+			}
+		}
+	}
+}
+
+static void dump_pages_buffer(struct mem_size_stats *mss)
+{
+	int i;
+#if 1
+	pages_buffer_order(mss->page_buffer, mss->page_index);
+	for (i = 0; i < mss->page_index; ++i) {
+		printf("%d:%lx\n",i, mss->page_buffer[i]);
+	}
+#else
+	printf("zz %s %08x \n",__func__, mss->page_buffer);
+#endif
+}
+
+static void dump_mss_info(struct mem_size_stats *mss)
+{
+
+	int i;
+
+#define PAGE_SIZE (4096)
+
+	printf("resident     :%-18ld",(unsigned long)mss->resident/PAGE_SIZE*4);
+	printf("shared_clean :%-18ld",(unsigned long)mss->shared_clean/PAGE_SIZE*4);
+	printf("shared_dirty :%-18ld",(unsigned long)mss->shared_dirty/PAGE_SIZE*4);
+	printf("private_clean:%-18ld",(unsigned long)mss->private_clean/PAGE_SIZE*4);
+	printf("private_dirty:%-18ld\n",(unsigned long)mss->private_dirty/PAGE_SIZE*4);
+	printf("referenced   :%-18ld",(unsigned long)mss->referenced/PAGE_SIZE*4);
+	printf("anonymous    :%-18ld",(unsigned long)mss->anonymous/PAGE_SIZE*4);
+	printf("lazyfree     :%-18ld",(unsigned long)mss->lazyfree/PAGE_SIZE*4);
+	printf("anonymous_thp:%-18ld",(unsigned long)mss->anonymous_thp/PAGE_SIZE*4);
+	printf("shmem_thp    :%-18ld\n",(unsigned long)mss->shmem_thp/PAGE_SIZE*4);
+	printf("swap           :%-18ld",(unsigned long)mss->swap/PAGE_SIZE*4);
+	printf("shared_hugetlb :%-18ld",(unsigned long)mss->shared_hugetlb/PAGE_SIZE*4);
+	printf("private_hugetlb:%-17ld",(unsigned long)mss->private_hugetlb/PAGE_SIZE*4);
+	printf("pss            :%-18ld",(unsigned long)mss->pss/PAGE_SIZE*4);
+	printf("pss_locked     :%-18ld",(unsigned long)mss->pss_locked/PAGE_SIZE*4);
+	printf("swap_pss       :%ld\n",(unsigned long)mss->swap_pss/PAGE_SIZE*4);
+
+	printf("order0/1/2/3/4/5/6/7/8/9/10/11 ");
+
+	for (i = 0; i < 11; ++i) {
+		printf("%d/", mss->page_order[i]);
+	}
+
+	printf("\n");
+	dump_pages_buffer(mss);
+}
+
 int kmem_usage(int argc, char **argv)
 {
 	static const struct option long_options[] = {
@@ -36,6 +101,12 @@ int kmem_usage(int argc, char **argv)
 	unsigned long numa_vm_stat[64];
 	unsigned long node_vm_stat[64];
 
+	if (argc == 1) { 
+		help();
+		return 0;
+	}
+
+	memset(&data.kmem_data.mss, 0, sizeof(struct mem_size_stats));
 	ioctl_data_init(&data);
 
 	data.type = IOCTL_USEKMEM;
@@ -45,19 +116,21 @@ int kmem_usage(int argc, char **argv)
 	data.kmem_data.node_len = 4*64;
 	data.kmem_data.numa_vm_state = numa_vm_stat;
 	data.kmem_data.numa_len = 4*64;
+	data.kmem_data.mss.page_buffer = malloc(4096*4096);
+
 
 	while (1) {
 		int option_index = -1;
+
 		c = getopt_long_only(argc, argv, "", long_options, &option_index);
 		if (c == -1) {
-			help();
 			break;
 		}
 
 		switch (option_index) {
 			case 0:
 				help();
-				break;
+				return 0;
 			case 1:
 				data.cmdcode = IOCTL_USEKMEM_GET;
 				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
@@ -81,9 +154,14 @@ int kmem_usage(int argc, char **argv)
 
 	if (data.cmdcode == IOCTL_USEKMEM_VMA_SCAN) {
 		data.pid = pid;
+		printf("zz %s page_buffer:%lx \n",__func__, data.kmem_data.mss.page_buffer);
 		ret = ioctl(misc_fd, sizeof(struct ioctl_data), &data);
-		printf("zz %s data.log_buf:%s \n",__func__, data.log_buf);
+		dump_mss_info(&data.kmem_data.mss);
+		//printf("zz %s data.log_buf:%s \n",__func__, data.log_buf);
 	}
 	
+	free(data.kmem_data.mss.page_buffer);
+
 	return ret;
 }
+

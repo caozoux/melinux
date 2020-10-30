@@ -8,6 +8,8 @@
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/swap.h>
+#include <linux/swapops.h>
+#include <linux/page_idle.h>
 #include <asm/tlb.h>
 
 #include "../template_iocmd.h"
@@ -15,14 +17,27 @@
 #include "../debug_ctrl.h"
 #include "mekernel.h"
 
+#define PSS_SHIFT 12
+
 atomic_long_t *orig_vm_zone_stat;
 atomic_long_t *orig_vm_numa_stat;
 atomic_long_t *orig_vm_node_stat;
 //int (*orig_zap_huge_pud)(struct mmu_gather *tlb, struct vm_area_struct *vma, pud_t *pud, unsigned long addr);
 struct page *(*orig__vm_normal_page)(struct vm_area_struct *vma, unsigned long addr, pte_t pte, bool with_public_device);
 void (*orig_arch_tlb_gather_mmu)(struct mmu_gather *tlb, struct mm_struct *mm, unsigned long start, unsigned long end);
+int (*orig_walk_page_vma)(struct vm_area_struct *vma, struct mm_walk *walk);
+int (*orig_swp_swapcount)(swp_entry_t entry);
+spinlock_t *(*orig___pmd_trans_huge_lock)(pmd_t *pmd, struct vm_area_struct *vma);
+struct page *(*orig_follow_trans_huge_pmd)(struct vm_area_struct *vma,
+                   unsigned long addr,
+                   pmd_t *pmd,
+                   unsigned int flags);
 
-         
+void pmd_clear_bad(pmd_t *pmd)
+{
+    pmd_ERROR(*pmd);
+    pmd_clear(pmd);
+}
 
 static void __maybe_unused mem_proc_show(void)
 {
@@ -119,165 +134,208 @@ static void kmem_dump_state(void)
 #endif
 }
 
-void pgd_clear_bad(pgd_t *pgd)
+static void smaps_account(struct mem_size_stats *mss, struct page *page,
+        bool compound, bool young, bool dirty, bool locked)
 {
-    pgd_ERROR(*pgd);
-    pgd_clear(pgd);
+    int i, nr = compound ? 1 << compound_order(page) : 1;
+    unsigned long size = nr * PAGE_SIZE;
+	unsigned long phys;
+
+	mss->page_order[compound_order(page)]++;
+
+	phys = page_to_phys(page);
+	copy_to_user(mss->page_buffer + mss->page_index, &phys, sizeof(unsigned long));
+
+	//printk("zz %s mss->page_buffer:%lx %lx %d\n",__func__, mss->page_buffer[mss->page_index], page_to_phys(page), mss->page_index);
+
+	mss->page_index++;
+
+    if (PageAnon(page)) {
+        mss->anonymous += size;
+        if (!PageSwapBacked(page) && !dirty && !PageDirty(page))
+            mss->lazyfree += size;
+    }
+
+    mss->resident += size;
+    /* Accumulate the size in pages that have been accessed. */
+    if (young || page_is_young(page) || PageReferenced(page))
+        mss->referenced += size;
+
+    /*
+     * page_count(page) == 1 guarantees the page is mapped exactly once.
+     * If any subpage of the compound page mapped with PTE it would elevate
+     * page_count().
+     */
+    if (page_count(page) == 1) {
+        if (dirty || PageDirty(page))
+            mss->private_dirty += size;
+        else
+            mss->private_clean += size;
+        mss->pss += (u64)size << PSS_SHIFT;
+        if (locked)
+            mss->pss_locked += (u64)size << PSS_SHIFT;
+        return;
+    }
+
+    for (i = 0; i < nr; i++, page++) {
+        int mapcount = page_mapcount(page);
+        unsigned long pss = (PAGE_SIZE << PSS_SHIFT);
+
+        if (mapcount >= 2) {
+            if (dirty || PageDirty(page))
+                mss->shared_dirty += PAGE_SIZE;
+            else
+                mss->shared_clean += PAGE_SIZE;
+            mss->pss += pss / mapcount;
+            if (locked)
+                mss->pss_locked += pss / mapcount;
+        } else {
+            if (dirty || PageDirty(page))
+                mss->private_dirty += PAGE_SIZE;
+            else
+                mss->private_clean += PAGE_SIZE;
+            mss->pss += pss;
+            if (locked)
+                mss->pss_locked += pss;
+        }
+    }
 }
 
-void p4d_clear_bad(p4d_t *p4d)
+static void smaps_pte_entry(pte_t *pte, unsigned long addr,
+        struct mm_walk *walk)
 {
-    p4d_ERROR(*p4d);
-    p4d_clear(p4d);
+    struct mem_size_stats *mss = walk->private;
+    struct vm_area_struct *vma = walk->vma;
+    bool locked = !!(vma->vm_flags & VM_LOCKED);
+    struct page *page = NULL;
+
+    if (pte_present(*pte)) {
+        page = orig__vm_normal_page(vma, addr, *pte, false);
+    } else if (is_swap_pte(*pte)) {
+        swp_entry_t swpent = pte_to_swp_entry(*pte);
+
+        if (!non_swap_entry(swpent)) {
+            int mapcount;
+
+            mss->swap += PAGE_SIZE;
+            mapcount = orig_swp_swapcount(swpent);
+            if (mapcount >= 2) {
+                u64 pss_delta = (u64)PAGE_SIZE << PSS_SHIFT;
+
+                do_div(pss_delta, mapcount);
+                mss->swap_pss += pss_delta;
+            } else {
+                mss->swap_pss += (u64)PAGE_SIZE << PSS_SHIFT;
+            }
+        } else if (is_migration_entry(swpent))
+            page = migration_entry_to_page(swpent);
+        else if (is_device_private_entry(swpent))
+            page = device_private_entry_to_page(swpent);
+    } else if (unlikely(IS_ENABLED(CONFIG_SHMEM) && mss->check_shmem_swap
+                            && pte_none(*pte))) {
+        page = find_get_entry(vma->vm_file->f_mapping,
+                        linear_page_index(vma, addr));
+        if (!page)
+            return;
+
+        if (radix_tree_exceptional_entry(page))
+            mss->swap += PAGE_SIZE;
+        else
+            put_page(page);
+
+        return;
+    }
+
+    if (!page)
+        return;
+
+    smaps_account(mss, page, false, pte_young(*pte), pte_dirty(*pte), locked);
 }
 
-void pud_clear_bad(pud_t *pud)
+static void smaps_pmd_entry(pmd_t *pmd, unsigned long addr,
+        struct mm_walk *walk)
 {
-    pud_ERROR(*pud);
-    pud_clear(pud);
+    struct mem_size_stats *mss = walk->private;
+    struct vm_area_struct *vma = walk->vma;
+    bool locked = !!(vma->vm_flags & VM_LOCKED);
+    struct page *page;
+
+    /* FOLL_DUMP will return -EFAULT on huge zero page */
+    page = orig_follow_trans_huge_pmd(vma, addr, pmd, FOLL_DUMP);
+    if (IS_ERR_OR_NULL(page))
+        return;
+    if (PageAnon(page))
+        mss->anonymous_thp += HPAGE_PMD_SIZE;
+    else if (PageSwapBacked(page))
+        mss->shmem_thp += HPAGE_PMD_SIZE;
+    else if (is_zone_device_page(page))
+        /* pass */;
+    else
+        VM_BUG_ON_PAGE(1, page);
+    smaps_account(mss, page, true, pmd_young(*pmd), pmd_dirty(*pmd), locked);
 }
 
-void pmd_clear_bad(pmd_t *pmd)
+static int smaps_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end,
+			 struct mm_walk *walk)
 {
-    pmd_ERROR(*pmd);
-    pmd_clear(pmd);
-}
-
-static int rss_page_cnt = 0;
-static unsigned long zap_pte_range(struct mmu_gather *tlb,
-                struct vm_area_struct *vma, pmd_t *pmd,
-                unsigned long addr, unsigned long end,
-                struct zap_details *details)
-{
-	struct mm_struct *mm = tlb->mm;
-	spinlock_t *ptl;
-	pte_t *start_pte;
+	struct vm_area_struct *vma = walk->vma;
 	pte_t *pte;
+	spinlock_t *ptl;
 
-	start_pte = pte_offset_map_lock(mm, pmd, addr, &ptl);
-    pte = start_pte;
-	do {
-		pte_t ptent = *pte;
+	if (is_swap_pmd(*pmd) || pmd_trans_huge(*pmd) || pmd_devmap(*pmd))
+       ptl = orig___pmd_trans_huge_lock(pmd, vma);
+    else
+       ptl = NULL;
 
-        if (pte_none(ptent))
-            continue;
+	if (ptl) {
+		if (pmd_present(*pmd))
+			smaps_pmd_entry(pmd, addr, walk);
+		spin_unlock(ptl);
+		goto out;
+	}
 
-        if (pte_present(ptent)) {
-            struct page *page;
-			page = orig__vm_normal_page(vma, addr, ptent, true);
-			if (unlikely(!page))
-				continue;
-			rss_page_cnt++;
-		}
-	} while (pte++, addr += PAGE_SIZE, addr != end);
-	pte_unmap_unlock(start_pte, ptl);
+	if (pmd_trans_unstable(pmd))
+		goto out;
 
-	return addr;
+	/*
+	* The mmap_sem held all the way back in m_start() is what
+	* keeps khugepaged out of here and from collapsing things
+	* in here.
+	*/
+	pte = pte_offset_map_lock(vma->vm_mm, pmd, addr, &ptl);
+	for (; addr != end; pte++, addr += PAGE_SIZE)
+		smaps_pte_entry(pte, addr, walk);
+	pte_unmap_unlock(pte - 1, ptl);
+out:
+	cond_resched();
+	return 0;
 }
 
-static inline unsigned long zap_pmd_range(struct mmu_gather *tlb,
-                struct vm_area_struct *vma, pud_t *pud,
-                unsigned long addr, unsigned long end,
-				struct zap_details *details)
+static void dump_mss_info(struct mem_size_stats *mss)
 {
-    pmd_t *pmd;
-    unsigned long next;
+	int i;
 
-    pmd = pmd_offset(pud, addr);
-    do {
-        next = pmd_addr_end(addr, end);
-        if (is_swap_pmd(*pmd) || pmd_trans_huge(*pmd) || pmd_devmap(*pmd)) {
-            //if (next - addr != HPAGE_PMD_SIZE)
-            //   __split_huge_pmd(vma, pmd, addr, false, NULL);
-            //else if (zap_huge_pmd(tlb, vma, pmd, addr))
-            //   goto next;
-            /* fall through */
-        }
-        /*
-         * Here there can be other concurrent MADV_DONTNEED or
-         * trans huge page faults running, and if the pmd is
-         * none or trans huge it can change under us. This is
-         * because MADV_DONTNEED holds the mmap_sem in read
-         * mode.
-         */
-        if (pmd_none_or_trans_huge_or_clear_bad(pmd))
-            goto next;
-        next = zap_pte_range(tlb, vma, pmd, addr, next, details);
-next:
-        cond_resched();
-    } while (pmd++, addr = next, addr != end);
+	printk("resident:%ld \n",(unsigned long)mss->resident/PAGE_SIZE*4);
+	printk("shared_clean:%ld \n",(unsigned long)mss->shared_clean/PAGE_SIZE*4);
+	printk("shared_dirty:%ld \n",(unsigned long)mss->shared_dirty/PAGE_SIZE*4);
+	printk("private_clean:%ld \n",(unsigned long)mss->private_clean/PAGE_SIZE*4);
+	printk("private_dirty:%ld \n",(unsigned long)mss->private_dirty/PAGE_SIZE*4);
+	printk("referenced:%ld \n",(unsigned long)mss->referenced/PAGE_SIZE*4);
+	printk("anonymous:%ld \n",(unsigned long)mss->anonymous/PAGE_SIZE*4);
+	printk("lazyfree:%ld \n",(unsigned long)mss->lazyfree/PAGE_SIZE*4);
+	printk("anonymous_thp:%ld \n",(unsigned long)mss->anonymous_thp/PAGE_SIZE*4);
+	printk("shmem_thp:%ld \n",(unsigned long)mss->shmem_thp/PAGE_SIZE*4);
+	printk("swap:%ld \n",(unsigned long)mss->swap/PAGE_SIZE*4);
+	printk("shared_hugetlb:%ld \n",(unsigned long)mss->shared_hugetlb/PAGE_SIZE*4);
+	printk("private_hugetlb:%ld \n",(unsigned long)mss->private_hugetlb/PAGE_SIZE*4);
+	printk("pss:%ld \n",(unsigned long)mss->pss/PAGE_SIZE*4);
+	printk("pss_locked:%ld \n",(unsigned long)mss->pss_locked/PAGE_SIZE*4);
+	printk("swap_pss:%ld \n",(unsigned long)mss->swap_pss/PAGE_SIZE*4);
 
-    return addr;
-}
-
-static inline unsigned long zap_pud_range(struct mmu_gather *tlb,
-                struct vm_area_struct *vma, p4d_t *p4d,
-                unsigned long addr, unsigned long end,
-				struct zap_details *details)
-{
-    pud_t *pud;
-    unsigned long next;
-
-    pud = pud_offset(p4d, addr);
-    do {
-        next = pud_addr_end(addr, end);
-        if (pud_trans_huge(*pud) || pud_devmap(*pud)) {
-            if (next - addr != HPAGE_PUD_SIZE) {
-                VM_BUG_ON_VMA(!rwsem_is_locked(&tlb->mm->mmap_sem), vma);
-            //   split_huge_pud(vma, pud, addr);
-			}
-            //} else if (zap_huge_pud(tlb, vma, pud, addr))
-            //   goto next;
-            /* fall through d*/
-        }
-        if (pud_none_or_clear_bad(pud))
-            continue;
-        next = zap_pmd_range(tlb, vma, pud, addr, next, details);
-next:
-        cond_resched();
-    } while (pud++, addr = next, addr != end);
-
-    return addr;
-}
-
-static unsigned long zap_p4d_range(struct mmu_gather *tlb,
-                struct vm_area_struct *vma, pgd_t *pgd,
-                unsigned long addr, unsigned long end,
-				struct zap_details *details)
-{
-    p4d_t *p4d;
-    unsigned long next;
-
-    p4d = p4d_offset(pgd, addr);
-    do {
-        next = p4d_addr_end(addr, end);
-        if (p4d_none_or_clear_bad(p4d))
-            continue;
-        next = zap_pud_range(tlb, vma, p4d, addr, next, details);
-    } while (p4d++, addr = next, addr != end);
-
-    return addr;
-}
-
-static void vma_scan_map_page_list(struct task_struct *task, struct vm_area_struct *p)
-{
-	struct vm_area_struct *vma = p;
-	unsigned long addr = vma->vm_start;
-	unsigned long end = vma->vm_end;
-	unsigned long next;
-	pgd_t *pgd;
-	struct mmu_gather tlb;
-
-	orig_arch_tlb_gather_mmu(&tlb, task->mm, addr, end);
-
-	pgd = pgd_offset(vma->vm_mm, addr);
-	do {
-		next = pgd_addr_end(addr, end);
-	    if (pgd_none_or_clear_bad(pgd))
-			continue;
-		next = zap_p4d_range(&tlb, vma, pgd, addr, next, NULL);
-	} while (pgd++, addr = next, addr != end);
-	//tlb_finish_mmu(&tlb, start, end)
+	for (i = 0; i < 11; ++i) {
+		printk("order %d %lx \n",(int)i, 	mss->page_order[i]);
+	}
+	printk("pages:%lx\n",	mss->page_index);
 }
 
 // it will scan all vma list of task
@@ -287,7 +345,12 @@ static void vma_scan(struct ioctl_data *data)
 	struct mm_struct *mm;
 	struct vm_area_struct *vma;
 	int index = 0, i ;
+	struct mem_size_stats mss;
 
+	memset(&mss, 0, sizeof(mss));
+	mss.page_buffer =  data->kmem_data.mss.page_buffer;
+
+	printk("zz %s page_buffer:%lx  %lx\n",__func__, data->kmem_data.mss.page_buffer, mss.page_buffer);
 
 	if (data->pid != -1)
 			task = get_taskstruct_by_pid(data->pid);
@@ -305,22 +368,34 @@ static void vma_scan(struct ioctl_data *data)
 
 	mm = task->mm;
 	printk("vma scan task name:%s\n", task->comm);
-	rss_page_cnt = 0;
 	down_read(&mm->mmap_sem);
 
 	for (vma = mm->mmap; vma; vma = vma->vm_next) {
+#if 0
 		data->log_buf += sprintf(data->log_buf, "%d: %lx~%lx\n", index++, vma->vm_start, vma->vm_end);
 		vma_scan_map_page_list(task, vma);
+#else
+		struct mm_walk smaps_walk = {
+			.pmd_entry = smaps_pte_range,
+			.mm = vma->vm_mm,
+		};
+		smaps_walk.private = &mss;
+
+		orig_walk_page_vma(vma, &smaps_walk);
+#endif
 	}
 
-	printk("zz %s rss_page_cnt:%d \n",__func__, (int)rss_page_cnt);
 	up_read(&mm->mmap_sem);
+	dump_mss_info(&mss);
+
+	copy_to_user(&data->kmem_data.mss, &mss, sizeof(struct mem_size_stats));
 
 }
 
 int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 	int ret = -1;
+
 	switch (data->cmdcode) {
 		case  IOCTL_USEKMEM_SHOW:
 			DEBUG("mem_readlock_test_start\n")
@@ -345,11 +420,18 @@ OUT:
 
 int kmem_unit_init(void)
 {
+	void *buf = kmalloc(PAGE_SIZE*3, GFP_KERNEL);
+	printk("page:%d order:%d a2\n", virt_to_page(buf), compound_order(virt_to_page(buf)));
+	kfree(buf);
 	LOOKUP_SYMS(vm_zone_stat);
 	LOOKUP_SYMS(vm_numa_stat);
 	LOOKUP_SYMS(vm_node_stat);
 	LOOKUP_SYMS(_vm_normal_page);
 	LOOKUP_SYMS(arch_tlb_gather_mmu);
+	LOOKUP_SYMS(walk_page_vma);
+	LOOKUP_SYMS(swp_swapcount);
+	LOOKUP_SYMS(__pmd_trans_huge_lock);
+	LOOKUP_SYMS(follow_trans_huge_pmd);
 	return 0;
 }
 

@@ -118,11 +118,34 @@ enum IOCTL_USEWORKQUEUE_SUB{
 	IOCTL_USEWORKQUEUE_PEFORMANCE_DELAY,
 };
 
+
+struct mem_size_stats {
+    unsigned long resident;
+    unsigned long shared_clean;
+    unsigned long shared_dirty;
+    unsigned long private_clean;
+    unsigned long private_dirty;
+    unsigned long referenced;
+    unsigned long anonymous;
+    unsigned long lazyfree;
+    unsigned long anonymous_thp;
+    unsigned long shmem_thp;
+    unsigned long swap;
+    unsigned long shared_hugetlb;
+    unsigned long private_hugetlb;
+    unsigned long pss;
+    unsigned long pss_locked;
+    unsigned long swap_pss;
+    int check_shmem_swap;
+	unsigned long page_order[11];
+	unsigned long *page_buffer;
+	unsigned long page_index;
+};
+
 struct ioctl_data {
 	enum ioctl_cmdtype type;
 	int pid;
 	union {
-		int normal;
 		struct kprobe_ioctl {
 			char *name;
 			int len;
@@ -153,6 +176,7 @@ struct ioctl_data {
 			unsigned long node_len;
 			unsigned long *numa_vm_state;
 			unsigned long numa_len;
+			struct mem_size_stats mss;
 		} kmem_data;
 		struct sched_ioctl {
 			int pid;
@@ -162,12 +186,13 @@ struct ioctl_data {
 				unsigned long sum_exec_runtime;
 				unsigned long vruntime;
 				unsigned long prev_sum_exec_runtime;
-
-			};
+			} task_info;
 		} sched_data;
 	};
 	int  cmdcode;
 	unsigned long args[5];
+	char *log_buf;
+	unsigned char *data_buf;
 };
 
 

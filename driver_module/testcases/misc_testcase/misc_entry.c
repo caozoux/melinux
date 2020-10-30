@@ -118,18 +118,22 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 {
 
 	int ret = 0;
-	struct ioctl_data data;
+	struct ioctl_data *data;
 	struct misc_private_data  *dev_data;
 	int i;
 
 	dev_data = (struct misc_private_data *) file->private_data;
+#if 0
 	if (copy_from_user(&data, (char __user *) arg, sizeof(struct ioctl_data))) {
 		dev_err(dev_data->dev, "cmd %d copy err\n", cmd);
 		ret = -EFAULT;	
 		goto OUT;
 	}
+#else
+		data = (struct ioctl_data*) arg;
+#endif
 
-	DEBUG("ioctl cmd:%d\n", data.type);
+	DEBUG("ioctl cmd:%d\n", data->type);
 #if 0
 
 	switch (data.type) {
@@ -167,8 +171,8 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 #else
 
 	for(i=0; unit_list[i].type; i++) {
-		if (unit_list[i].type == data.type) {
-			unit_list[i].ioctl(cmd, arg, &data);
+		if (unit_list[i].type == data->type) {
+			unit_list[i].ioctl(cmd, arg, data);
 			break;
 		}
 	}
