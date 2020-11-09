@@ -1,6 +1,10 @@
 #ifndef __TEMPLATE_IOCMD_H__
 #define __TEMPLATE_IOCMD_H__
 
+#ifndef u64
+typedef unsigned long U64;
+#endif
+
 enum ioctl_cmdtype {
 	IOCTL_LOCK =1,
 	IOCTL_MEM,
@@ -63,6 +67,7 @@ enum IOCTL_USEKMEM_SUB{
 	IOCTL_USEKMEM_ACTIVE_PAGE,
 	IOCTL_USEKMEM_INACTIVE_PAGE,
 	IOCTL_USEKMEM_VMA_SCAN,
+	IOCTL_USEKMEM_GET_PTE, //get memory addr pte value
 };
 
 enum IOCTL_USEEXT2_SUB{
@@ -176,6 +181,8 @@ struct ioctl_data {
 			unsigned long node_len;
 			unsigned long *numa_vm_state;
 			unsigned long numa_len;
+			unsigned long addr; //pte addr
+			unsigned long val; //if pte, it is pte value
 			struct mem_size_stats mss;
 		} kmem_data;
 		struct sched_ioctl {

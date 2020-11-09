@@ -1,6 +1,8 @@
 #ifndef __MEKERNEL_H__
 #define __MEKERNEL_H__
 
+#include <misctest_lib.h>
+
 void task_file_enum(struct task_struct *task);
 void medentry_dump_full_patch(struct dentry *dentry);
 void merequest_dump_full_patch(struct request *req);
@@ -19,4 +21,9 @@ void virtual_put_new_device(struct device *dev);
 
 void bio_dump_data(struct bio *bio);
 struct task_struct *get_taskstruct_by_pid(int pid);
+
+//kmem
+pte_t *get_pte(unsigned long addr, struct mm_struct *mm);
+
 #endif
+

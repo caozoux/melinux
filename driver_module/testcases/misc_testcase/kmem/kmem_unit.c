@@ -140,13 +140,14 @@ static void smaps_account(struct mem_size_stats *mss, struct page *page,
     int i, nr = compound ? 1 << compound_order(page) : 1;
     unsigned long size = nr * PAGE_SIZE;
 	unsigned long phys;
+	int ret;
 
 	mss->page_order[compound_order(page)]++;
 
 	phys = page_to_phys(page);
-	copy_to_user(mss->page_buffer + mss->page_index, &phys, sizeof(unsigned long));
-
-	//printk("zz %s mss->page_buffer:%lx %lx %d\n",__func__, mss->page_buffer[mss->page_index], page_to_phys(page), mss->page_index);
+	ret = copy_to_user(mss->page_buffer + mss->page_index, &phys, sizeof(unsigned long));
+	if (!ret)
+		return;
 
 	mss->page_index++;
 
@@ -335,22 +336,19 @@ static void dump_mss_info(struct mem_size_stats *mss)
 	for (i = 0; i < 11; ++i) {
 		printk("order %d %lx \n",(int)i, 	mss->page_order[i]);
 	}
-	printk("pages:%lx\n",	mss->page_index);
 }
 
 // it will scan all vma list of task
-static void vma_scan(struct ioctl_data *data)
+static int vma_scan(struct ioctl_data *data)
 {
 	struct task_struct *task;
 	struct mm_struct *mm;
 	struct vm_area_struct *vma;
-	int index = 0, i ;
+	int i;
 	struct mem_size_stats mss;
 
 	memset(&mss, 0, sizeof(mss));
 	mss.page_buffer =  data->kmem_data.mss.page_buffer;
-
-	printk("zz %s page_buffer:%lx  %lx\n",__func__, data->kmem_data.mss.page_buffer, mss.page_buffer);
 
 	if (data->pid != -1)
 			task = get_taskstruct_by_pid(data->pid);
@@ -359,7 +357,7 @@ static void vma_scan(struct ioctl_data *data)
 
 	if (task == NULL) {	
 		printk("error vma scan not find task struct\n");
-		return;
+		return 0;
 	}
 
 	for (i = 0; i < NR_MM_COUNTERS; i++) {
@@ -367,7 +365,6 @@ static void vma_scan(struct ioctl_data *data)
  	}
 
 	mm = task->mm;
-	printk("vma scan task name:%s\n", task->comm);
 	down_read(&mm->mmap_sem);
 
 	for (vma = mm->mmap; vma; vma = vma->vm_next) {
@@ -388,13 +385,14 @@ static void vma_scan(struct ioctl_data *data)
 	up_read(&mm->mmap_sem);
 	dump_mss_info(&mss);
 
-	copy_to_user(&data->kmem_data.mss, &mss, sizeof(struct mem_size_stats));
+	return copy_to_user(&data->kmem_data.mss, &mss, sizeof(struct mem_size_stats));
 
 }
 
 int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 	int ret = -1;
+	pte_t *pte;
 
 	switch (data->cmdcode) {
 		case  IOCTL_USEKMEM_SHOW:
@@ -405,6 +403,13 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 		case  IOCTL_USEKMEM_VMA_SCAN:
 			DEBUG("mem vma scan\n")
 			vma_scan(data);
+			break;
+
+		case  IOCTL_USEKMEM_GET_PTE:
+			DEBUG("mem pte get\n")
+			pte = get_pte(data->kmem_data.addr, current->mm);
+			data->kmem_data.val = *((u64*) pte);
+			dump_pte_info(pte);
 			break;
 
 		case  IOCTL_USERCU_READTEST_END:
@@ -420,9 +425,6 @@ OUT:
 
 int kmem_unit_init(void)
 {
-	void *buf = kmalloc(PAGE_SIZE*3, GFP_KERNEL);
-	printk("page:%d order:%d a2\n", virt_to_page(buf), compound_order(virt_to_page(buf)));
-	kfree(buf);
 	LOOKUP_SYMS(vm_zone_stat);
 	LOOKUP_SYMS(vm_numa_stat);
 	LOOKUP_SYMS(vm_node_stat);

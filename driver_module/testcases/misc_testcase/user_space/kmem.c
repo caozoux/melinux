@@ -16,6 +16,7 @@ static void help(void)
 {
 	printf("kmem --dump  get the vm_state of zone/none/numa\n");
 	printf("kmem --vma_scan --pid scan the vma of current task\n");
+	printf("kmem --pte addr  get the addr pte\n");
 }
 
 static pages_buffer_order(unsigned long *buf, unsigned long size)
@@ -83,25 +84,31 @@ static void dump_mss_info(struct mem_size_stats *mss)
 	dump_pages_buffer(mss);
 }
 
+static const struct option long_options[] = {
+	{"help",     no_argument, 0,  0 },
+	{"dump",     required_argument, 0,  0 },
+	{"output",     required_argument, 0,  0 },
+	{"vma_scan",   no_argument, 0,  0 },
+	{"pid",   required_argument, 0,  0 },
+	{"pte",   no_argument, 0,  0 },
+	{"extern",   required_argument, 0,  0 },
+	{0,0,0,0}
+};
+
 int kmem_usage(int argc, char **argv)
 {
-	static const struct option long_options[] = {
-		{"help",     no_argument, 0,  0 },
-		{"dump",     required_argument, 0,  0 },
-		{"output",     required_argument, 0,  0 },
-		{"vma_scan",   no_argument, 0,  0 },
-		{"pid",   required_argument, 0,  0 },
-		{0,0,0,0}};
-	int c;
 	struct ioctl_data data;
 	int  __attribute__ ((unused)) ret = 0;
+	int c;
 	char pidstr[128];
 	int  pid = -1; 
 	unsigned long zone_vm_stat[64];
 	unsigned long numa_vm_stat[64];
 	unsigned long node_vm_stat[64];
+	unsigned long extern_arg;
+	void *buf;
 
-	if (argc == 1) { 
+	if (argc <= 1) { 
 		help();
 		return 0;
 	}
@@ -147,6 +154,14 @@ int kmem_usage(int argc, char **argv)
 				strncpy(pidstr, optarg, 128);
 				pid = atoi(pidstr);
 				break;
+			case 5:
+				data.cmdcode = IOCTL_USEKMEM_GET_PTE;
+				break;
+
+			case 6:
+				extern_arg = strtoul(optarg, 0, 0);
+				break;
+
 			default:
 				break;
 		}
@@ -158,6 +173,21 @@ int kmem_usage(int argc, char **argv)
 		ret = ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 		dump_mss_info(&data.kmem_data.mss);
 		//printf("zz %s data.log_buf:%s \n",__func__, data.log_buf);
+	} else if (data.cmdcode == IOCTL_USEKMEM_GET_PTE) { 
+
+				if (extern_arg == NULL)
+					buf = malloc(4096);
+				else
+					buf = extern_arg;
+
+				//memset(buf, 0, 4096);
+				data.cmdcode = IOCTL_USEKMEM_GET_PTE;
+				data.kmem_data.addr =  buf;
+				ret = ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+				if (!ret)
+					printf("%lx pte %lx\n", buf, data.kmem_data.val);
+				if (extern_arg == NULL)
+					free(buf);
 	}
 	
 	free(data.kmem_data.mss.page_buffer);

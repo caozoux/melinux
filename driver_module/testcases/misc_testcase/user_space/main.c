@@ -228,14 +228,12 @@ static int usage_help(int argc, char **argv)
 		} else if (option_index == 1) {
 			
 		}
-
 	}
 #else
 	char *help[2]  = { "help", NULL};
 	usage_limit_help();
 	for (i = 0; i < sizeof(all_funcs) / sizeof(struct memisc_func); i++) {
 			if (strcmp("help", all_funcs[i].name) != 0) {
-				printf("zz %s name:%s \n",__func__, all_funcs[i].name);
 				all_funcs[i].func(argc - 1, help);
 			}
 	}
