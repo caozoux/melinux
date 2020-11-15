@@ -42,11 +42,6 @@ void usage_limit_help()
 	printf("          6:   hw irqtrylock \n");
 	printf("       -r rcu:      hw lock \n");
 	printf("       -m mem:      test mem\n");
-	printf("       -e tree      tree test\n");
-	printf("          radix add index  raidixtree add inode\n");
-	printf("          radix del index  raidixtree del inode\n");
-	printf("          radix get index  raidixtree get inode\n");
-	printf("          radix dump index raidixtree dump inode\n");
 	printf("       -q workqueue:      test workqueue\n");
 	printf("          1 timemisc:   run workqueue\n");
 	printf("          2 timemisc:   run workqueue spinlock\n");
@@ -57,38 +52,6 @@ void usage_limit_help()
 	printf("       -a atomic    atomic performance\n");
 	printf("       mem:         -o  dump    show the page pgd pud pmd pte info\n");
 	printf("       mem:         -o  vmmax   test the max vmlloc support \n");
-}
-
-static int raidix_test(int fd ,struct ioctl_data *data, char *ch1, char *ch2, char *ch3)
-{
-		int index;
-
-		data->type = IOCTL_USERAIDIXTREE;
-
-		if (ch1 == NULL || ch2 == NULL
-				||ch3 == NULL)
-			return 1;
-
-		index = atoi(ch3);
-		data->raidix_data.index = index;
-
-		if (!strcmp(ch1,"radix")) {
-			if (!strcmp(ch2,"add")) {
-				data->cmdcode = IOCTL_USERAIDIXTREE_ADD;
-			} else if (!strcmp(ch1,"del")) {
-				data->cmdcode = IOCTL_USERAIDIXTREE_DEL;
-			} else if (!strcmp(ch1,"get")) {
-				data->cmdcode = IOCTL_USERAIDIXTREE_GET;
-			} else if (!strcmp(ch1,"dump")) {
-				data->cmdcode = IOCTL_USERAIDIXTREE_DUMP;
-			} else {
-				return 1;
-			}
-		} else if (!strcmp(ch1,"rbtree")) {
-		} else {
-			return 1;
-		}
-		return ioctl(fd, sizeof(struct ioctl_data), data);
 }
 
 static int hardlock_test(int fd, struct ioctl_data *data)
@@ -109,16 +72,17 @@ static int atomic_test(int fd ,struct ioctl_data *data)
 	return ioctl(fd, sizeof(struct ioctl_data), data);
 }
 
-
 static int normal_usage(int argc, char **argv)
 {
 	struct ioctl_data data;
 	char ch;
 	int ret;
 	char name[128];
-    while((ch=getopt(argc,argv,"hsw:m:k:a"))!=-1)
+
+    while ((ch = getopt(argc, argv, "hsw:m:k:a")) != -1)
   	{
 		switch (ch) {
+
 			case 'h':
 				usage_limit_help();
 				break;
@@ -204,6 +168,7 @@ static struct memisc_func all_funcs[] = {
 	{"workqueue", workqueue_usage},
 	{"rcu", rcu_usage},
 	{"kprobe", kprobe_usage},
+	{"radixtree", radixtree_usage},
 };
 
 static int usage_help(int argc, char **argv)

@@ -11,6 +11,7 @@ int rcu_usage(int argc, char **argv);
 int kprobe_usage(int argc, char **argv);
 int lock_usage(int argc, char **argv);
 int workqueue_usage(int argc, char **argv);
+int radixtree_usage(int argc, char **argv);
 
 #endif
 

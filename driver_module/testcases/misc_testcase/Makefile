@@ -11,9 +11,10 @@ obj-m := $(TARGET).o
 #KBUILD_CFLAGS
 ccflags-y += -I$(PWD)/include -I$(PWD)/$(PRIV_INC) -I$(PWD)/../ -I$(PWD)/lib -Wuninitialized
 
-$(TARGET)-objs := misc_entry.o page_test.o rcu_test.o kprobe_entry.o showstack.o workqueue_test.o delay.o lock_unit.o msr_arm.o raidtree_test.o block/ext2_test.o atomic_entry.o devbusdrv_unit.o  hw/pci/pci_unit.o statickey_unit.o sched_unit.o cpu_unit.o block_unit.o cpu_unit.o ktime_unit.o
+$(TARGET)-objs := misc_entry.o page_test.o rcu_test.o kprobe_entry.o showstack.o workqueue_test.o delay.o lock_unit.o msr_arm.o radixtree_unit.o block/ext2_test.o atomic_entry.o devbusdrv_unit.o  hw/pci/pci_unit.o statickey_unit.o sched_unit.o cpu_unit.o block_unit.o cpu_unit.o ktime_unit.o
 
 $(TARGET)-objs += ./lib/page.o
+$(TARGET)-objs += ./lib/raidtree.o
 
 ifdef CONFIG_ARM64
 $(TARGET)-objs += arm64/gic/gic_entry.o arm64/gic/gic_virtual_device.o

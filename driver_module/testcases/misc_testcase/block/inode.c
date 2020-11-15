@@ -18,7 +18,6 @@
 #include <linux/rcupdate.h>
 #include <linux/delay.h>
 #include <linux/blkdev.h>
-
 #include <asm/stacktrace.h>
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
@@ -30,6 +29,12 @@ void dump_inode_data(struct inode *inode, int leve)
 {
 	//struct address_space    *i_mapping = inode->i_mapping;
 	//struct file_lock    *i_flock;//文件锁链表
-	printk("node:%d flag:%x size:%d", inode->i_ino, inode->i_flags, inode->i_size);
+	printk("node:%ld flag:%x size:%lld", inode->i_ino, inode->i_flags, inode->i_size);
+}
+
+void inode_mapping_dump(struct inode *inode)
+{
+	struct address_space *mapping = inode->i_mapping;
+	struct radix_tree_root *radix = &mapping->i_pages;
 }
 

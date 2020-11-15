@@ -164,9 +164,10 @@ struct ioctl_data {
 		struct raidixtree_ioctl {
 			// radixtree index
 			int index; 
+			int count;
 			void *buf; 
 			int buf_len; 
-		} raidix_data;
+		} radix_data;
 		struct ext2fs_ioctl {
 			// radixtree index
 			char blk_name[128]; 

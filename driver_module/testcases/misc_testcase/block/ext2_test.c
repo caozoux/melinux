@@ -37,6 +37,7 @@ struct super_block *get_block_by_name(char *name)
 
 	return NULL;	
 }
+
 int ext2test_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
 	struct super_block *sb, *p = NULL;

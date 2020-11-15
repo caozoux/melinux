@@ -79,4 +79,5 @@ FUNC_UNIT(arm64gic);
 FUNC_UNIT(cpu);
 FUNC_UNIT(ktime);
 FUNC_UNIT(page);
+FUNC_UNIT(radixtree);
 #endif

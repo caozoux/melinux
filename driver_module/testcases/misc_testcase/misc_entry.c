@@ -73,6 +73,7 @@ struct misc_uint_item unit_list[] =
 	MISC_UNIT(cpu, IOCTL_USEBLOCK),
 	MISC_UNIT(ktime, IOCTL_USEKTIME),
 	MISC_UNIT(page, IOCTL_USEMEM),
+	MISC_UNIT(radixtree, IOCTL_USERAIDIXTREE),
 #ifdef CONFIG_ARM64
 	//MISC_UNIT(arm64gic, IOCTL_USEBLOCK),
 #endif
