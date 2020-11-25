@@ -87,7 +87,7 @@ int radixtree_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioct
 				return -EINVAL;
 
 			while(count--)
-				ret = radix_tree_insert(&rxtree_misc_data->root, page_test_index++, p);
+				ret = radix_tree_insert(&rxtree_misc_data->root, data->radix_data.index++, p);
 
 			if (ret)
 				printk("rxtree insert failed \n");

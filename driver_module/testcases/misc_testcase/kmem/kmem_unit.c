@@ -379,6 +379,7 @@ static int vma_scan(struct ioctl_data *data)
 		smaps_walk.private = &mss;
 
 		orig_walk_page_vma(vma, &smaps_walk);
+		vma_pte_dump(vma, vma->vm_start, 512);
 #endif
 	}
 
