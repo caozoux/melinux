@@ -31,7 +31,6 @@
 #include "xattr.h"
 #include "acl.h"
 
-#include <trace/events/ext4.h>
 
 /*
  * ialloc.c contains the inodes allocation and deallocation routines

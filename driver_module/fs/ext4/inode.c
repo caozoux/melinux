@@ -46,8 +46,6 @@
 #include "acl.h"
 #include "truncate.h"
 
-#include <trace/events/ext4.h>
-
 #define MPAGE_DA_EXTENT_TAIL 0x01
 
 static __u32 ext4_inode_csum(struct inode *inode, struct ext4_inode *raw,
@@ -2682,6 +2680,15 @@ out:
 	return err;
 }
 
+static int dump_writepages(struct address_space *mapping,
+			   struct writeback_control *wbc)
+{
+	struct inode *inode = mapping->host;
+
+
+	return 0;
+}
+
 static int ext4_writepages(struct address_space *mapping,
 			   struct writeback_control *wbc)
 {
@@ -2698,6 +2705,8 @@ static int ext4_writepages(struct address_space *mapping,
 	struct blk_plug plug;
 	bool give_up_on_write = false;
 
+	dump_writepages(mapping, wbc);
+	dump_stack();
 	if (unlikely(ext4_forced_shutdown(EXT4_SB(inode->i_sb))))
 		return -EIO;
 
@@ -2986,6 +2995,46 @@ static int ext4_da_write_credits(struct inode *inode, loff_t pos, unsigned len)
 	return 2;
 }
 
+static void ext4_bh_dump(struct page *page, loff_t pos, unsigned len,
+				  get_block_t *get_block)
+{
+	unsigned from = pos & (PAGE_SIZE - 1);
+	unsigned to = from + len;
+	struct inode *inode = page->mapping->host;
+	unsigned block_start, block_end;
+	sector_t block;
+	int err = 0;
+	unsigned blocksize = inode->i_sb->s_blocksize;
+	unsigned bbits;
+	struct buffer_head *bh, *head, *wait[2], **wait_bh = wait;
+	bool decrypt = false;
+
+	if (!page)
+		return;
+
+	if (!page_has_buffers(page)) {
+		printk("page no buffers\n");
+		return;
+	}
+
+	head = page_buffers(page);
+	bbits = ilog2(blocksize);
+	block = (sector_t)page->index << (PAGE_SHIFT - bbits);
+
+#if 0
+	for (bh = head, block_start = 0; bh != head | !block_start;
+	    block++, block_start = block_end, bh = bh->b_this_page) {
+		block_end = block_start + blocksize;
+	}
+#else
+	for (bh = head, block_start = 0; bh != head;
+	    bh = bh->b_this_page) {
+	}
+	
+#endif
+
+}
+
 static int ext4_da_write_begin(struct file *file, struct address_space *mapping,
 			       loff_t pos, unsigned len, unsigned flags,
 			       struct page **pagep, void **fsdata)
@@ -2996,6 +3045,8 @@ static int ext4_da_write_begin(struct file *file, struct address_space *mapping,
 	struct inode *inode = mapping->host;
 	handle_t *handle;
 
+	ext4_bh_dump(page, pos, len, NULL);
+	//dump_stack();
 	if (unlikely(ext4_forced_shutdown(EXT4_SB(inode->i_sb))))
 		return -EIO;
 
@@ -3082,6 +3133,7 @@ retry_journal:
 		return ret;
 	}
 
+	ext4_bh_dump(page, pos, len, NULL);
 	*pagep = page;
 	return ret;
 }
@@ -3121,6 +3173,7 @@ static int ext4_da_write_end(struct file *file,
 	unsigned long start, end;
 	int write_mode = (int)(unsigned long)fsdata;
 
+	
 	if (write_mode == FALL_BACK_TO_NONDELALLOC)
 		return ext4_write_end(file, mapping, pos,
 				      len, copied, page, fsdata);

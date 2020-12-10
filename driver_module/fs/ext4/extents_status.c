@@ -15,7 +15,6 @@
 #include <linux/seq_file.h>
 #include "ext4.h"
 
-#include <trace/events/ext4.h>
 
 /*
  * According to previous discussion in Ext4 Developer Workshop, we

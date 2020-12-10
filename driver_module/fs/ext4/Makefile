@@ -1,4 +1,4 @@
-KERSRC := /lib/modules/`uname -r`/build
+KERSRC ?= /lib/modules/`uname -r`/build
 PWD = $(shell pwd)  
 
 TARGET := ext4_test

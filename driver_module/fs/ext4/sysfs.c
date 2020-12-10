@@ -38,7 +38,7 @@ typedef enum {
 	ptr_ext4_super_block_offset,
 } attr_ptr_t;
 
-static const char proc_dirname[] = "fs/ext4";
+static const char proc_dirname[] = "fs/ext4v2";
 static struct proc_dir_entry *ext4_proc_root;
 
 struct ext4_attr {

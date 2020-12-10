@@ -21,7 +21,6 @@
 #include "ext4_jbd2.h"
 #include "mballoc.h"
 
-#include <trace/events/ext4.h>
 
 static unsigned ext4_num_base_meta_clusters(struct super_block *sb,
 					    ext4_group_t block_group);

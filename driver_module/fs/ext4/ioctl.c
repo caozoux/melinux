@@ -24,7 +24,6 @@
 #include "ext4.h"
 #include <linux/fsmap.h>
 #include "fsmap.h"
-#include <trace/events/ext4.h>
 
 /**
  * Swap memory between @a and @b for @len bytes.
