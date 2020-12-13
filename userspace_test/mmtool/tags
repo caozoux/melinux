@@ -1,0 +1,128 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BUFSIZE	TaskScan.h	35;"	d
+DBG	mmpagecomman.h	6;"	d
+DBG	mmpagecomman.h	8;"	d
+DEBUG	TaskScan.h	26;"	d
+DumpTaskList	TaskScan.h	/^	void DumpTaskList(int SkipKer)$/;"	f	class:TaskManage	access:public	signature:(int SkipKer)
+ERR	mmpagecomman.h	13;"	d
+GetTaskItem	TaskScan.h	/^	TaskItem *GetTaskItem(int pid)$/;"	f	class:TaskManage	access:public	signature:(int pid)
+HUGE_PAGE_NR	PageMange.h	28;"	d
+INFO	mmpagecomman.h	11;"	d
+KPF_BYTES	PageMange.h	29;"	d
+KerPageScan	PageMange.h	/^	int KerPageScan(void)$/;"	f	class:MachinePageManage	access:public	signature:(void)
+LFLAGS	Makefile	/^LFLAGS := -lstdc++ -lcurses -lprocps$/;"	m
+MachineKerPageFlags	PageMange.h	/^	void MachineKerPageFlags(void)$/;"	f	class:MachinePageManage	access:public	signature:(void)
+MachinePageManage	PageMange.h	/^	MachinePageManage()$/;"	f	class:MachinePageManage	access:public	signature:()
+MachinePageManage	PageMange.h	/^class MachinePageManage {$/;"	c
+MachinePageManage::KerPageScan	PageMange.h	/^	int KerPageScan(void)$/;"	f	class:MachinePageManage	access:public	signature:(void)
+MachinePageManage::MachineKerPageFlags	PageMange.h	/^	void MachineKerPageFlags(void)$/;"	f	class:MachinePageManage	access:public	signature:(void)
+MachinePageManage::MachinePageManage	PageMange.h	/^	MachinePageManage()$/;"	f	class:MachinePageManage	access:public	signature:()
+MachinePageManage::mKerFlagFd	PageMange.h	/^	int mKerFlagFd;$/;"	m	class:MachinePageManage	access:private
+MachinePageManage::mMachineMap	PageMange.cpp	/^void *MachinePageManage::mMachineMap = NULL;$/;"	m	class:MachinePageManage	file:
+MachinePageManage::mMachineMap	PageMange.h	/^	static void 	*mMachineMap;$/;"	m	class:MachinePageManage	access:public
+MachinePageManage::mNrBuddy	PageMange.h	/^    int mNrBuddy;$/;"	m	class:MachinePageManage	access:private
+MachinePageManage::mNrMovable	PageMange.h	/^	int mNrMovable;$/;"	m	class:MachinePageManage	access:private
+MachinePageManage::mNrSlab	PageMange.h	/^	int mNrSlab;$/;"	m	class:MachinePageManage	access:private
+MachinePageManage::mPageFlagsBuf	PageMange.cpp	/^void *MachinePageManage::mPageFlagsBuf = NULL;$/;"	m	class:MachinePageManage	file:
+MachinePageManage::mPageFlagsBuf	PageMange.h	/^	static uint64_t *mPageFlagsBuf;$/;"	m	class:MachinePageManage	access:public
+MachinePageManage::mPageFlagsSize	PageMange.cpp	/^uint64_t MachinePageManage::mPageFlagsSize = 0;$/;"	m	class:MachinePageManage	file:
+MachinePageManage::mPageFlagsSize	PageMange.h	/^	static uint64_t  mPageFlagsSize;$/;"	m	class:MachinePageManage	access:public
+MachinePageManage::~MachinePageManage	PageMange.h	/^	~MachinePageManage()$/;"	f	class:MachinePageManage	access:public	signature:()
+OBJS	Makefile	/^OBJS := main.o  PageMange.o  TaskScan.o$/;"	m
+PAGEITEMSIZE	PageMange.h	30;"	d
+PAGEMAP_MASK	TaskScan.h	32;"	d
+PAGE_SHIT	TaskScan.h	39;"	d
+PAGE_SIZE	TaskScan.h	40;"	d
+PFN_NUM	TaskScan.h	224;"	d
+PROCMAP_SZ	TaskScan.h	31;"	d
+PROC_ONLY_FLAGS	TaskScan.h	36;"	d
+PROT_SZ	TaskScan.h	34;"	d
+ScanTask	TaskScan.h	/^	int ScanTask(void)$/;"	f	class:TaskManage	access:public	signature:(void)
+TARGET	Makefile	/^TARGET := pageCompact$/;"	m
+TaskItem	TaskScan.h	/^	TaskItem(proc_t *proc) {$/;"	f	class:TaskItem	access:public	signature:(proc_t *proc)
+TaskItem	TaskScan.h	/^class TaskItem {$/;"	c
+TaskItem::TaskItem	TaskScan.h	/^	TaskItem(proc_t *proc) {$/;"	f	class:TaskItem	access:public	signature:(proc_t *proc)
+TaskItem::TaskPageScan	TaskScan.h	/^	int TaskPageScan(void) $/;"	f	class:TaskItem	access:public	signature:(void)
+TaskItem::cmd	TaskScan.h	/^	char cmd[1024];$/;"	m	class:TaskItem	access:private
+TaskItem::dump	TaskScan.h	/^	void dump(int SkipKer)$/;"	f	class:TaskItem	access:public	signature:(int SkipKer)
+TaskItem::get_memory_map	TaskScan.h	/^	int get_memory_map(pid_t pid, struct procmap **p_procmap)$/;"	f	class:TaskItem	access:public	signature:(pid_t pid, struct procmap **p_procmap)
+TaskItem::mPageMapeFd	TaskScan.h	/^	int mPageMapeFd;$/;"	m	class:TaskItem	access:private
+TaskItem::mProc	TaskScan.h	/^	proc_t mProc;$/;"	m	class:TaskItem	access:private
+TaskItem::rss	TaskScan.h	/^	unsigned long rss;$/;"	m	class:TaskItem	access:private
+TaskItem::ruser	TaskScan.h	/^	char ruser[128];$/;"	m	class:TaskItem	access:private
+TaskItem::tid	TaskScan.h	/^	int tid;$/;"	m	class:TaskItem	access:public
+TaskItem::vsize	TaskScan.h	/^	unsigned long vsize;$/;"	m	class:TaskItem	access:private
+TaskItem::~TaskItem	TaskScan.h	/^	~TaskItem()$/;"	f	class:TaskItem	access:public	signature:()
+TaskManage	TaskScan.h	/^	TaskManage()$/;"	f	class:TaskManage	access:public	signature:()
+TaskManage	TaskScan.h	/^class TaskManage {$/;"	c
+TaskManage::DumpTaskList	TaskScan.h	/^	void DumpTaskList(int SkipKer)$/;"	f	class:TaskManage	access:public	signature:(int SkipKer)
+TaskManage::GetTaskItem	TaskScan.h	/^	TaskItem *GetTaskItem(int pid)$/;"	f	class:TaskManage	access:public	signature:(int pid)
+TaskManage::ScanTask	TaskScan.h	/^	int ScanTask(void)$/;"	f	class:TaskManage	access:public	signature:(void)
+TaskManage::TaskManage	TaskScan.h	/^	TaskManage()$/;"	f	class:TaskManage	access:public	signature:()
+TaskManage::buf	TaskScan.cpp	/^proc_t TaskManage::buf;$/;"	m	class:TaskManage	file:
+TaskManage::buf	TaskScan.h	/^	static proc_t buf;$/;"	m	class:TaskManage	access:private
+TaskManage::mPidList	TaskScan.h	/^	unsigned long mPidList[4096];$/;"	m	class:TaskManage	access:private
+TaskManage::mTaskList	TaskScan.h	/^	std::list<TaskItem> mTaskList;$/;"	m	class:TaskManage	access:private
+TaskManage::~TaskManage	TaskScan.h	/^	~TaskManage()$/;"	f	class:TaskManage	access:public	signature:()
+TaskPageScan	TaskScan.h	/^	int TaskPageScan(void) $/;"	f	class:TaskItem	access:public	signature:(void)
+WARN	mmpagecomman.h	12;"	d
+__MMPAGECOMMON_H__	mmpagecomman.h	3;"	d
+__PAGEMANAGE_H__	PageMange.h	2;"	d
+__TAKSSCAN_H__	TaskScan.h	2;"	d
+buf	TaskScan.cpp	/^proc_t TaskManage::buf;$/;"	m	class:TaskManage	file:
+buf	TaskScan.h	/^	static proc_t buf;$/;"	m	class:TaskManage	access:private
+cmd	TaskScan.h	/^	char cmd[1024];$/;"	m	class:TaskItem	access:private
+dump	TaskScan.h	/^	void dump(int SkipKer)$/;"	f	class:TaskItem	access:public	signature:(int SkipKer)
+flag	PageMange.h	/^	unsigned long flag;$/;"	m	struct:pageitem	access:public
+fname	TaskScan.h	/^    char fname[PATH_MAX];   \/* File name. *\/$/;"	m	struct:procmap	access:public
+get_memory_map	TaskScan.h	/^	int get_memory_map(pid_t pid, struct procmap **p_procmap)$/;"	f	class:TaskItem	access:public	signature:(pid_t pid, struct procmap **p_procmap)
+info	PageMange.h	/^	struct pageinfo *info;$/;"	m	struct:pageitem	typeref:struct:pageitem::pageinfo	access:public
+ino	TaskScan.h	/^    uint32_t ino;           \/* Not used. *\/$/;"	m	struct:procmap	access:public
+mKerFlagFd	PageMange.h	/^	int mKerFlagFd;$/;"	m	class:MachinePageManage	access:private
+mMachineMap	PageMange.cpp	/^void *MachinePageManage::mMachineMap = NULL;$/;"	m	class:MachinePageManage	file:
+mMachineMap	PageMange.h	/^	static void 	*mMachineMap;$/;"	m	class:MachinePageManage	access:public
+mNrBuddy	PageMange.h	/^    int mNrBuddy;$/;"	m	class:MachinePageManage	access:private
+mNrMovable	PageMange.h	/^	int mNrMovable;$/;"	m	class:MachinePageManage	access:private
+mNrSlab	PageMange.h	/^	int mNrSlab;$/;"	m	class:MachinePageManage	access:private
+mPageFlagsBuf	PageMange.cpp	/^void *MachinePageManage::mPageFlagsBuf = NULL;$/;"	m	class:MachinePageManage	file:
+mPageFlagsBuf	PageMange.h	/^	static uint64_t *mPageFlagsBuf;$/;"	m	class:MachinePageManage	access:public
+mPageFlagsSize	PageMange.cpp	/^uint64_t MachinePageManage::mPageFlagsSize = 0;$/;"	m	class:MachinePageManage	file:
+mPageFlagsSize	PageMange.h	/^	static uint64_t  mPageFlagsSize;$/;"	m	class:MachinePageManage	access:public
+mPageMapeFd	TaskScan.h	/^	int mPageMapeFd;$/;"	m	class:TaskItem	access:private
+mPidList	TaskScan.h	/^	unsigned long mPidList[4096];$/;"	m	class:TaskManage	access:private
+mProc	TaskScan.h	/^	proc_t mProc;$/;"	m	class:TaskItem	access:private
+mTaskList	TaskScan.h	/^	std::list<TaskItem> mTaskList;$/;"	m	class:TaskManage	access:private
+main	main.cpp	/^int main(int argc, char *argv[])$/;"	f	signature:(int argc, char *argv[])
+maj	TaskScan.h	/^    uint32_t maj;           \/* Not used. *\/$/;"	m	struct:procmap	access:public
+min	TaskScan.h	/^    uint32_t min;           \/* Not used. *\/$/;"	m	struct:procmap	access:public
+min	TaskScan.h	41;"	d
+pageitem	PageMange.h	/^struct pageitem {$/;"	s
+pageitem::flag	PageMange.h	/^	unsigned long flag;$/;"	m	struct:pageitem	access:public
+pageitem::info	PageMange.h	/^	struct pageinfo *info;$/;"	m	struct:pageitem	typeref:struct:pageitem::pageinfo	access:public
+pageitem::priv	PageMange.h	/^	void *priv;$/;"	m	struct:pageitem	access:public
+pgoff	TaskScan.h	/^    uint64_t pgoff;         \/* Not used. *\/$/;"	m	struct:procmap	access:public
+priv	PageMange.h	/^	void *priv;$/;"	m	struct:pageitem	access:public
+procmap	TaskScan.h	/^struct procmap {$/;"	s
+procmap::fname	TaskScan.h	/^    char fname[PATH_MAX];   \/* File name. *\/$/;"	m	struct:procmap	access:public
+procmap::ino	TaskScan.h	/^    uint32_t ino;           \/* Not used. *\/$/;"	m	struct:procmap	access:public
+procmap::maj	TaskScan.h	/^    uint32_t maj;           \/* Not used. *\/$/;"	m	struct:procmap	access:public
+procmap::min	TaskScan.h	/^    uint32_t min;           \/* Not used. *\/$/;"	m	struct:procmap	access:public
+procmap::pgoff	TaskScan.h	/^    uint64_t pgoff;         \/* Not used. *\/$/;"	m	struct:procmap	access:public
+procmap::prot	TaskScan.h	/^    char prot[PROT_SZ];     \/* Not used. *\/$/;"	m	struct:procmap	access:public
+procmap::va_end	TaskScan.h	/^    uint64_t va_end;        \/* End virtual address of this region. *\/$/;"	m	struct:procmap	access:public
+procmap::va_start	TaskScan.h	/^    uint64_t va_start;      \/* Start virtual address of this region. *\/$/;"	m	struct:procmap	access:public
+prot	TaskScan.h	/^    char prot[PROT_SZ];     \/* Not used. *\/$/;"	m	struct:procmap	access:public
+rss	TaskScan.h	/^	unsigned long rss;$/;"	m	class:TaskItem	access:private
+ruser	TaskScan.h	/^	char ruser[128];$/;"	m	class:TaskItem	access:private
+tid	TaskScan.h	/^	int tid;$/;"	m	class:TaskItem	access:public
+va_end	TaskScan.h	/^    uint64_t va_end;        \/* End virtual address of this region. *\/$/;"	m	struct:procmap	access:public
+va_start	TaskScan.h	/^    uint64_t va_start;      \/* Start virtual address of this region. *\/$/;"	m	struct:procmap	access:public
+vsize	TaskScan.h	/^	unsigned long vsize;$/;"	m	class:TaskItem	access:private
+~MachinePageManage	PageMange.h	/^	~MachinePageManage()$/;"	f	class:MachinePageManage	access:public	signature:()
+~TaskItem	TaskScan.h	/^	~TaskItem()$/;"	f	class:TaskItem	access:public	signature:()
+~TaskManage	TaskScan.h	/^	~TaskManage()$/;"	f	class:TaskManage	access:public	signature:()
