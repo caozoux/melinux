@@ -25,6 +25,7 @@ struct task_struct *get_taskstruct_by_pid(int pid);
 //kmem
 pte_t *get_pte(unsigned long addr, struct mm_struct *mm);
 void vma_pte_dump(struct vm_area_struct *vma, u64 start_addr, u64 nr_page);
+void dump_page_info(struct page *page);
 
 #endif
 

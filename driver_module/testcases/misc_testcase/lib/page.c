@@ -55,3 +55,8 @@ void dump_pte_info(unsigned long pte)
 	);
 }
 
+void dump_page_info(struct page *page)
+{
+
+}
+

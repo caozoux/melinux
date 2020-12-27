@@ -17,6 +17,7 @@ static void help(void)
 	printf("kmem --dump  get the vm_state of zone/none/numa\n");
 	printf("kmem --vma_scan --pid scan the vma of current task\n");
 	printf("kmem --pte addr  get the addr pte\n");
+	printf("kmem --page_attr --extern_arg size  dump page flags\n");
 }
 
 static pages_buffer_order(unsigned long *buf, unsigned long size)
@@ -92,6 +93,7 @@ static const struct option long_options[] = {
 	{"pid",   required_argument, 0,  0 },
 	{"pte",   no_argument, 0,  0 },
 	{"extern",   required_argument, 0,  0 },
+	{"page_attr",   required_argument, 0,  0 },
 	{0,0,0,0}
 };
 
@@ -162,6 +164,11 @@ int kmem_usage(int argc, char **argv)
 				extern_arg = strtoul(optarg, 0, 0);
 				break;
 
+			case 7:
+				data.cmdcode = IOCTL_USEKMEM_PAGE_ATTR;
+				data.kmem_data.pageattr_data.start_pfn = atoi(optarg);
+				break;
+
 			default:
 				break;
 		}
@@ -169,25 +176,28 @@ int kmem_usage(int argc, char **argv)
 
 	if (data.cmdcode == IOCTL_USEKMEM_VMA_SCAN) {
 		data.pid = pid;
-		printf("zz %s page_buffer:%lx \n",__func__, data.kmem_data.mss.page_buffer);
+		printf("zz %s page_buffer:%lx cmdcode:%lx\n",__func__, data.kmem_data.mss.page_buffer, data.cmdcode);
 		ret = ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 		dump_mss_info(&data.kmem_data.mss);
 		//printf("zz %s data.log_buf:%s \n",__func__, data.log_buf);
 	} else if (data.cmdcode == IOCTL_USEKMEM_GET_PTE) { 
 
-				if (extern_arg == NULL)
-					buf = malloc(4096);
-				else
-					buf = extern_arg;
+		if (extern_arg == NULL)
+			buf = malloc(4096);
+		else
+			buf = extern_arg;
 
-				//memset(buf, 0, 4096);
-				data.cmdcode = IOCTL_USEKMEM_GET_PTE;
-				data.kmem_data.addr =  buf;
-				ret = ioctl(misc_fd, sizeof(struct ioctl_data), &data);
-				if (!ret)
-					printf("%lx pte %lx\n", buf, data.kmem_data.val);
-				if (extern_arg == NULL)
-					free(buf);
+		//memset(buf, 0, 4096);
+		data.cmdcode = IOCTL_USEKMEM_GET_PTE;
+		data.kmem_data.addr =  buf;
+		ret = ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+		if (!ret)
+			printf("%lx pte %lx\n", buf, data.kmem_data.val);
+		if (extern_arg == NULL)
+			free(buf);
+	} else if (data.cmdcode == IOCTL_USEKMEM_PAGE_ATTR) { 
+		data.kmem_data.pageattr_data.size = extern_arg;
+		ret = ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 	}
 	
 	free(data.kmem_data.mss.page_buffer);

@@ -10,18 +10,17 @@
 #include <linux/swap.h>
 #include <linux/swapops.h>
 #include <linux/page_idle.h>
+#include <linux/version.h>
 #include <asm/tlb.h>
 
 #include "../template_iocmd.h"
 #include "../misc_ioctl.h"
 #include "../debug_ctrl.h"
 #include "mekernel.h"
+#include "kmemlocal.h"
 
 #define PSS_SHIFT 12
 
-atomic_long_t *orig_vm_zone_stat;
-atomic_long_t *orig_vm_numa_stat;
-atomic_long_t *orig_vm_node_stat;
 //int (*orig_zap_huge_pud)(struct mmu_gather *tlb, struct vm_area_struct *vma, pud_t *pud, unsigned long addr);
 struct page *(*orig__vm_normal_page)(struct vm_area_struct *vma, unsigned long addr, pte_t pte, bool with_public_device);
 void (*orig_arch_tlb_gather_mmu)(struct mmu_gather *tlb, struct mm_struct *mm, unsigned long start, unsigned long end);
@@ -37,101 +36,6 @@ void pmd_clear_bad(pmd_t *pmd)
 {
     pmd_ERROR(*pmd);
     pmd_clear(pmd);
-}
-
-static void __maybe_unused mem_proc_show(void)
-{
-	struct sysinfo i;
-	si_meminfo(&i);
-	si_swapinfo(&i);
-
-	printk("MemTotal:       %ld", i.totalram);
-	printk("MemFree:        %ld", i.freeram);
-	printk("Buffers:        %ld", i.bufferram);
-	printk("SwapTotal:      %ld", i.totalswap);
-	printk("SwapFree:       %ld", i.freeswap);
-	printk("Shmem:          %ld", i.sharedram);
-
-}
-
-#ifdef CONFIG_NUMA
-static void kmem_dump_numa_item(void)
-{
-	printk("NUMA_HIT: %ld\n", atomic_long_read(&orig_vm_numa_stat[NUMA_HIT]));
-	printk("NUMA_MISS: %ld\n", atomic_long_read(&orig_vm_numa_stat[NUMA_MISS]));
-	printk("NUMA_FOREIGN: %ld\n", atomic_long_read(&orig_vm_numa_stat[NUMA_FOREIGN]));
-	printk("NUMA_INTERLEAVE_HIT: %ld\n", atomic_long_read(&orig_vm_numa_stat[NUMA_INTERLEAVE_HIT]));
-	printk("NUMA_LOCAL: %ld\n", atomic_long_read(&orig_vm_numa_stat[NUMA_LOCAL]));
-	printk("NUMA_OTHER: %ld\n", atomic_long_read(&orig_vm_numa_stat[NUMA_OTHER]));
-	printk("NR_VM_NUMA_STAT_ITEMS: %ld\n", atomic_long_read(&orig_vm_numa_stat[NR_VM_NUMA_STAT_ITEMS]));
-}
-#endif
-
-static void kmem_dump_node_item(atomic_long_t *vm_stat)
-{
-	printk("NR_LRU_BASE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_LRU_BASE]));
-	printk("NR_INACTIVE_ANON = NR_LRU_BASE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_INACTIVE_ANON]));
-	printk("NR_ACTIVE_ANON: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_ACTIVE_ANON]));
-	printk("NR_INACTIVE_FILE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_INACTIVE_FILE]));
-	printk("NR_ACTIVE_FILE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_ACTIVE_FILE]));
-	printk("NR_UNEVICTABLE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_UNEVICTABLE]));
-	printk("NR_SLAB_RECLAIMABLE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_SLAB_RECLAIMABLE]));
-	printk("NR_SLAB_UNRECLAIMABLE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_SLAB_UNRECLAIMABLE]));
-	printk("NR_ISOLATED_ANON: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_ISOLATED_ANON]));
-	printk("NR_ISOLATED_FILE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_ISOLATED_FILE]));
-	printk("WORKINGSET_REFAULT: %ld\n", atomic_long_read(&orig_vm_node_stat[WORKINGSET_REFAULT]));
-	printk("WORKINGSET_ACTIVATE: %ld\n", atomic_long_read(&orig_vm_node_stat[WORKINGSET_ACTIVATE]));
-	printk("WORKINGSET_NODERECLAIM: %ld\n", atomic_long_read(&orig_vm_node_stat[WORKINGSET_NODERECLAIM]));
-	printk("NR_ANON_MAPPED: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_ANON_MAPPED]));
-	printk("NR_FILE_MAPPED: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_FILE_MAPPED]));
-	printk("NR_FILE_PAGES: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_FILE_PAGES]));
-	printk("NR_FILE_DIRTY: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_FILE_DIRTY]));
-	printk("NR_WRITEBACK: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_WRITEBACK]));
-	printk("NR_WRITEBACK_TEMP: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_WRITEBACK_TEMP]));
-	printk("NR_SHMEM: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_SHMEM]));
-	printk("NR_SHMEM_THPS: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_SHMEM_THPS]));
-	printk("NR_SHMEM_PMDMAPPED: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_SHMEM_PMDMAPPED]));
-	printk("NR_ANON_THPS: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_ANON_THPS]));
-	printk("NR_VMSCAN_WRITE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_VMSCAN_WRITE]));
-	printk("NR_VMSCAN_IMMEDIATE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_VMSCAN_IMMEDIATE]));
-	printk("NR_DIRTIED: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_DIRTIED]));
-	printk("NR_WRITTEN: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_WRITTEN]));
-	//printk("NR_INDIRECTLY_RECLAIMABLE_BYTES: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_INDIRECTLY_RECLAIMABLE_BYTES]));
-	printk("NR_VM_NODE_STAT_ITEMS: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_VM_NODE_STAT_ITEMS]));
-}
-
-static void kmem_dump_zone_item(atomic_long_t *vm_stat)
-{
-	//struct zone *zone;
-	//for_each_populated_zone(zone)
-	printk("NR_FREE_PAGES: %ld\n", atomic_long_read(&vm_stat[NR_FREE_PAGES]));
-	printk("NR_vm_stat_LRU_BASE: %ld\n", atomic_long_read(&vm_stat[NR_ZONE_LRU_BASE]));
-	printk("NR_vm_stat_INACTIVE_ANON: %ld\n", atomic_long_read(&vm_stat[NR_ZONE_INACTIVE_ANON]));
-	printk("NR_vm_stat_ACTIVE_ANON: %ld\n", atomic_long_read(&vm_stat[NR_ZONE_ACTIVE_ANON]));
-	printk("NR_vm_stat_INACTIVE_FILE: %ld\n", atomic_long_read(&vm_stat[NR_ZONE_INACTIVE_FILE]));
-	printk("NR_vm_stat_ACTIVE_FILE: %ld\n", atomic_long_read(&vm_stat[NR_ZONE_ACTIVE_FILE]));
-	printk("NR_vm_stat_UNEVICTABLE: %ld\n", atomic_long_read(&vm_stat[NR_ZONE_UNEVICTABLE]));
-	printk("NR_vm_stat_WRITE_PENDING: %ld\n", atomic_long_read(&vm_stat[NR_ZONE_WRITE_PENDING]));
-	printk("NR_MLOCK: %ld\n", atomic_long_read(&vm_stat[NR_MLOCK]));
-	printk("NR_PAGETABLE: %ld\n", atomic_long_read(&vm_stat[NR_PAGETABLE]));
-	printk("NR_KERNEL_STACK_KB: %ld\n", atomic_long_read(&vm_stat[NR_KERNEL_STACK_KB]));
-	printk("NR_BOUNCE: %ld\n", atomic_long_read(&vm_stat[NR_BOUNCE]));
-	printk("NR_ZSPAGES: %ld\n", atomic_long_read(&vm_stat[NR_ZSPAGES]));
-	printk("NR_FREE_CMA_PAGES: %ld\n", atomic_long_read(&vm_stat[NR_FREE_CMA_PAGES]));
-	printk("NR_VM_vm_stat_STAT_ITEMS: %ld\n", atomic_long_read(&vm_stat[NR_VM_ZONE_STAT_ITEMS]));
-}
-
-static void kmem_dump_state(void)
-{
-	//struct zone zone; 
-	//zone.vm_stat = orig_vm_zone_stat;
-	//struct zone *zone;
-	//for_each_populated_zone(zone)
-	kmem_dump_zone_item(orig_vm_zone_stat);
-	kmem_dump_node_item(orig_vm_node_stat);
-#ifdef CONFIG_NUMA
-	kmem_dump_numa_item();
-#endif
 }
 
 static void smaps_account(struct mem_size_stats *mss, struct page *page,
@@ -205,6 +109,7 @@ static void smaps_account(struct mem_size_stats *mss, struct page *page,
 static void smaps_pte_entry(pte_t *pte, unsigned long addr,
         struct mm_walk *walk)
 {
+#if LINUX_VERSION_CODE >  KERNEL_VERSION(4,19,0)
     struct mem_size_stats *mss = walk->private;
     struct vm_area_struct *vma = walk->vma;
     bool locked = !!(vma->vm_flags & VM_LOCKED);
@@ -251,6 +156,7 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
         return;
 
     smaps_account(mss, page, false, pte_young(*pte), pte_dirty(*pte), locked);
+#endif
 }
 
 static void smaps_pmd_entry(pmd_t *pmd, unsigned long addr,
@@ -350,6 +256,7 @@ static int vma_scan(struct ioctl_data *data)
 	memset(&mss, 0, sizeof(mss));
 	mss.page_buffer =  data->kmem_data.mss.page_buffer;
 
+	printk("zz %s data->pid:%08x \n",__func__, (int)data->pid);
 	if (data->pid != -1)
 			task = get_taskstruct_by_pid(data->pid);
 	else
@@ -361,7 +268,7 @@ static int vma_scan(struct ioctl_data *data)
 	}
 
 	for (i = 0; i < NR_MM_COUNTERS; i++) {
-			printk("name %s type:%d rss:%d \n", task->comm, i, task->rss_stat.count[i]);
+		printk("name %s type:%d rss:%d \n", task->comm, i, task->rss_stat.count[i]);
  	}
 
 	mm = task->mm;
@@ -378,8 +285,9 @@ static int vma_scan(struct ioctl_data *data)
 		};
 		smaps_walk.private = &mss;
 
-		orig_walk_page_vma(vma, &smaps_walk);
-		vma_pte_dump(vma, vma->vm_start, 512);
+		printk("zz %s vm_start:%lx vm_end:%lx \n",__func__, (unsigned long)vma->vm_start, (unsigned long)vma->vm_end);
+		//orig_walk_page_vma(vma, &smaps_walk);
+		vma_pte_dump(vma, vma->vm_start, (vma->vm_end - vma->vm_start)>>PAGE_SHIFT);
 #endif
 	}
 
@@ -387,13 +295,84 @@ static int vma_scan(struct ioctl_data *data)
 	dump_mss_info(&mss);
 
 	return copy_to_user(&data->kmem_data.mss, &mss, sizeof(struct mem_size_stats));
+}
 
+static void dump_kernel_page_attr(struct ioctl_data *data, u64 start_pfn, u64 size)
+{
+	struct page *page;
+	int i;
+
+	for (i = 0; i < size; ++i) {
+		page = pfn_to_page(start_pfn + i);
+		printk("page:%llx-%llx page_flags:%llx\n", (u64)start_pfn + i, (u64)page, (u64)page->flags);
+	}
+}
+
+//#define __START_KERNEL_map_test  (0xffffffff8000000UL)
+#define __START_KERNEL_map_test  _AC(0xffffffff80000000, UL)
+
+static inline unsigned long __mephys_addr_nodebug(unsigned long x)
+{
+	 unsigned long y = x - __START_KERNEL_map;
+	 printk("zz %s %d %llx\n", __func__, __LINE__, x - __START_KERNEL_map_test);
+	 printk("zz %s x:%llx y:%llx %llx\n",__func__, (unsigned long)x, (unsigned long)y, __START_KERNEL_map);
+	 printk("zz %s __START_KERNEL_map:%lx phys_base:%lx PAGE_OFFSET:%lx page_offset_base:%lx vmemmap_base::%llx \n",__func__, (unsigned long)__START_KERNEL_map, (unsigned long)phys_base, (unsigned long)PAGE_OFFSET, (unsigned long)page_offset_base, vmemmap_base);
+	 printk("zz %s a:%llx b:%llx c:%llx  %llx %llx\n",__func__, x, x - __START_KERNEL_map, y + phys_base, __START_KERNEL_map - PAGE_OFFSET, y + __START_KERNEL_map - PAGE_OFFSET);
+	 x = y + ((x > y) ? phys_base : (__START_KERNEL_map - PAGE_OFFSET));
+
+	 return x;
+}
+
+static void page_test(void)
+{
+	struct zone *zone;
+	void *buf;
+	u64 pfn;
+	struct page *page;
+	struct per_cpu_pages *pcp;
+	struct pglist_data *__pgdat;
+
+	buf = kmalloc(PAGE_SIZE * 4 , GFP_KERNEL);
+	page = virt_to_page(buf);
+	//page = (struct page *) 0xffffea5d145eb300;
+	zone = page_zone(page);
+	pcp = &this_cpu_ptr(zone->pageset)->pcp;
+
+#if 1
+	//page = pfn_to_page(0x2ddd2e);
+	pfn = page_to_pfn(page);
+
+	//__pgdat = NODE_DATA(page_to_nid(page));
+	printk("zz %s page:%lx phys:%lx %llx %llx pfn:%lx\n",__func__, (unsigned long)page, virt_to_phys(page)
+			,  __mephys_addr_nodebug(page), phys_base, pfn);
+	dump_page_info(page);
+
+#if 0
+	printk("%llx: %llx %llx buddy:%d Comp:%d LRU:%d map:%llx order:%llx count:%d head:%lx free:%lx pcp:%lx\n", page_to_pfn(page), page->page_type, page->flags, PageBuddy(page),
+			 PageCompound(page), PageLRU(page), page_mapping(page), page_private(page), page_count(page), page_to_pfn(compound_head(page)), page->index
+			 ,pcp->count);
+#endif
+	//trace_printk("+\n");
+	//atomic_set(&page->_refcount, 1);
+	//put_page(page);
+	//kfree(buf);
+
+#if 0
+	printk("%llx: %llx %llx buddy:%d Comp:%d LRU:%d map:%llx order:%llx count:%d head:%lx free:%lx pcp:%lx\n", page_to_pfn(page), page->page_type, page->flags, PageBuddy(page),
+			 PageCompound(page), PageLRU(page), page_mapping(page), page_private(page), page_count(page), page_to_pfn(compound_head(page)), page->index
+			 ,pcp->count);
+#endif
+#else
+	kfree(buf);
+#endif
 }
 
 int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 	int ret = -1;
 	pte_t *pte;
+
+	printk("zz %s %d cmdcode:%lx\n", __func__, __LINE__, data->cmdcode);
 
 	switch (data->cmdcode) {
 		case  IOCTL_USEKMEM_SHOW:
@@ -402,6 +381,7 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 			break;
 
 		case  IOCTL_USEKMEM_VMA_SCAN:
+			printk("zz %s %d \n", __func__, __LINE__);
 			DEBUG("mem vma scan\n")
 			vma_scan(data);
 			break;
@@ -417,6 +397,13 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 			DEBUG("mem_readlock_test_stop\n")
 			//mem_readlock_test_stop();
 			break;
+
+		case IOCTL_USEKMEM_PAGE_ATTR:
+			DEBUG("kmem page attr\n")
+			dump_kernel_page_attr(data, data->kmem_data.pageattr_data.start_pfn,
+					data->kmem_data.pageattr_data.size);
+			break;
+
 		default:
 			goto OUT;
 	}
@@ -435,6 +422,12 @@ int kmem_unit_init(void)
 	LOOKUP_SYMS(swp_swapcount);
 	LOOKUP_SYMS(__pmd_trans_huge_lock);
 	LOOKUP_SYMS(follow_trans_huge_pmd);
+	LOOKUP_SYMS(isolate_migratepages_block);
+	{
+		page_test();
+		//struct ioctl_data data;	
+		//zone_dump_info(&data);
+	}
 	return 0;
 }
 

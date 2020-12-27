@@ -68,6 +68,7 @@ enum IOCTL_USEKMEM_SUB{
 	IOCTL_USEKMEM_INACTIVE_PAGE,
 	IOCTL_USEKMEM_VMA_SCAN,
 	IOCTL_USEKMEM_GET_PTE, //get memory addr pte value
+	IOCTL_USEKMEM_PAGE_ATTR,
 };
 
 enum IOCTL_USEEXT2_SUB{
@@ -149,6 +150,7 @@ struct mem_size_stats {
 
 struct ioctl_data {
 	enum ioctl_cmdtype type;
+	int  cmdcode;
 	int pid;
 	union {
 		struct kprobe_ioctl {
@@ -185,6 +187,20 @@ struct ioctl_data {
 			unsigned long addr; //pte addr
 			unsigned long val; //if pte, it is pte value
 			struct mem_size_stats mss;
+			struct zone_data {
+				unsigned long       *pageblock_flags;
+				unsigned long       zone_start_pfn;
+				unsigned long       managed_pages;
+				unsigned long       spanned_pages;
+				unsigned long       present_pages;
+				unsigned long       nr_isolate_pageblock;
+				unsigned long       compact_cached_free_pfn;
+				unsigned long       compact_cached_migrate_pfn[2];
+			} zonedata;
+			struct page_attr {
+				unsigned long start_pfn;
+				unsigned long size;
+			}pageattr_data;
 		} kmem_data;
 		struct sched_ioctl {
 			int pid;
@@ -197,7 +213,6 @@ struct ioctl_data {
 			} task_info;
 		} sched_data;
 	};
-	int  cmdcode;
 	unsigned long args[5];
 	char *log_buf;
 	unsigned char *data_buf;

@@ -131,7 +131,7 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 		goto OUT;
 	}
 
-	DEBUG("ioctl cmd:%d\n", data.type);
+	DEBUG("ioctl cmd:%d cmdcode:%lx\n", data.type, data.cmdcode);
 
 	for(i=0; unit_list[i].type; i++) {
 		if (unit_list[i].type == data.type) {

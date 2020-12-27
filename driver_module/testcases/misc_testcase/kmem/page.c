@@ -49,6 +49,9 @@ pte_t *get_pte(unsigned long addr, struct mm_struct *mm)
 void vma_pte_dump(struct vm_area_struct *vma, u64 start_addr, u64 nr_page)
 {
 	unsigned long addr = vma->vm_start, end = addr + nr_page * PAGE_SIZE;
+	struct page *page;
+	u64 pfn;
+
     pgd_t *pgd;
     p4d_t *p4d;
     pud_t *pud;
@@ -60,25 +63,29 @@ void vma_pte_dump(struct vm_area_struct *vma, u64 start_addr, u64 nr_page)
     p4d = p4d_offset(pgd, addr);
     pud = pud_offset(p4d, addr);
 
-	printk("zz %s addr:%lx end:%lx \n",__func__, addr, end);
 	for (addr = vma->vm_start; addr < end; addr += PAGE_SIZE) {
-		if (pud_huge(*pud)) {
-			printk("zz %s pud:%llx \n", __func__, (u64)pmd);
-			return (pte_t*)pud;
+		if (pud_huge(*pud) || pud_none(*pud)) {
+			//printk("zz %s pud:%llx \n", __func__, (u64)pmd);
+			return;
+			//return (pte_t*)pud;
 		}
 
 		pmd = pmd_offset(pud, addr);
 
-		if (pmd_huge(*pmd)) {
-			printk("zz %s pdm:%llx \n", __func__, (u64)pmd);
+		if (pmd_huge(*pmd) || pmd_none(*pmd)) {
+			//printk("zz %s pdm:%llx \n", __func__, (u64)pmd);
 			continue;
 		}
 
 		pte = pte_offset_map(pmd, addr);
 
-		if (vma->vm_start == 0x400000) {
-			if ((u64) pte & 1UL<<48)
-				printk("addr:%llx pte:%llx %llx\n", addr, (u64)pte, *((u64*)pte));
+		//if (*((u64*)pte) != 0 ) {
+		//if (*((u64*)pte) != 0) {
+		if (!pte_none(*pte) && *((u64*)pte) != 0) {
+
+			pfn = pte_pfn(*pte);
+			page = pfn_to_page(pfn);
+			printk("addr:%llx pte:%llx %llx pageflags:%llx-%llx\n", addr, (u64)pte, *((u64*)pte), pfn, (u64)page->flags);
 		}
 	}
 }

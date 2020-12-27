@@ -25,6 +25,7 @@
 #include "debug_ctrl.h"
 #include "medelay.h"
 #include "mekernel.h"
+#include "block/blocklocal.h"
 
 typedef void (*virtio_hook)(struct blk_mq_hw_ctx *hctx, const struct blk_mq_queue_data *bd);
 
@@ -76,6 +77,7 @@ int block_unit_init(void)
 	}
 	
 	scan_block_dev_disk();
+	file_readwrite_test();
 	return 0;
 }
 

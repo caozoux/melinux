@@ -4,7 +4,7 @@ TARGET := misc
 
 KERVER =$(shell uname -r)
 KERSRC ?= /lib/modules/$(KERVER)/build
-KERSRC=/export/disk1T/zoucao.zcdisk/cach/ck/
+KERSRC ?=/export/disk1T/zoucao.zcdisk/cach/ck/
 
 obj-m := $(TARGET).o
 
@@ -21,8 +21,9 @@ $(TARGET)-objs += arm64/gic/gic_entry.o arm64/gic/gic_virtual_device.o
 endif
 
 $(TARGET)-objs += kernel/task.o kernel/dentry.o kernel/virtual_bus.o  
-$(TARGET)-objs += block/request.o  block/block_disck.o block/inode.o  block/bio.o block/buffer_head.o
-$(TARGET)-objs += kmem/kmem_unit.o kmem/page.o
+$(TARGET)-objs += block/request.o  block/block_disck.o block/inode.o  block/bio.o block/buffer_head.o block/readwrite.o
+$(TARGET)-objs += kmem/kmem_unit.o kmem/page.o kmem/zone.o
+
 
 all:
 	make -C user_space
