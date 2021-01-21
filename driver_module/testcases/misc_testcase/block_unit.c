@@ -55,6 +55,10 @@ int block_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_dat
 			task_file_enum(current);
 			break;
 
+		case IOCTL_USEBLOCK_FILE_DROP_CACHE:
+			 printk("zz %s filename:%s \n",__func__, data->block_data.filename);
+			drop_inode_page_cache(data->block_data.filename);
+			break;
 		default:
 			break;
 	}
@@ -76,8 +80,8 @@ int block_unit_init(void)
 		pr_info("hook virtio_queue_rq_hook\n");
 	}
 	
-	scan_block_dev_disk();
-	file_readwrite_test();
+	//scan_block_dev_disk();
+	//file_readwrite_test();
 	return 0;
 }
 

@@ -1,0 +1,1 @@
+perf stat -d -d -d -e idle-cycles-backend,idle-cycles-frontend,cycles,instructions,branch-misses,branch-load-misses,branch-loads,cs,migrations,cpu-clock

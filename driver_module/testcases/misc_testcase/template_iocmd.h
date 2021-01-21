@@ -53,6 +53,7 @@ enum IOCTL_USEBLOCK_SUB{
 	IOCTL_USEBLOCK_NONE = 0,
 	IOCTL_USEBLOCK_INDOE,
 	IOCTL_USEBLOCK_FILE,
+	IOCTL_USEBLOCK_FILE_DROP_CACHE,
 };
 
 enum IOCTL_USEKMEM_SUB{
@@ -212,6 +213,9 @@ struct ioctl_data {
 				unsigned long prev_sum_exec_runtime;
 			} task_info;
 		} sched_data;
+		struct block_ioctl {
+			char filename[256];
+		} block_data;
 	};
 	unsigned long args[5];
 	char *log_buf;

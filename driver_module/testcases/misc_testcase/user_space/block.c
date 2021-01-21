@@ -15,6 +15,7 @@ extern int misc_fd;
 static void block_help(void)
 {
 	printf("block --file 0 enum task file fd\n");
+	printf("block --drop_cache $filename drop all cache\n");
 }
 
 static int block_file(int fd ,struct ioctl_data *data, char *arg)
@@ -37,6 +38,7 @@ int block_usage(int argc, char **argv)
 		{"help",     no_argument, 0,  0 },
 		{"file",     required_argument, 0,  0 },
 		{"inode",     required_argument, 0,  0 },
+		{"drop_cache",     required_argument, 0,  0 },
 		{0,0,0,0}};
 	int c;
 	struct ioctl_data data;
@@ -48,7 +50,7 @@ int block_usage(int argc, char **argv)
 		int option_index = -1;
 		c = getopt_long_only(argc, argv, "", long_options, &option_index);
 		if ( c == -1) {
-			//block_help();
+			block_help();
 			break;
 		}
 		switch (option_index) {
@@ -63,6 +65,11 @@ int block_usage(int argc, char **argv)
 			case 2:
 				data.cmdcode = IOCTL_USEBLOCK_INDOE;
 				return ioctl(misc_fd, sizeof(struct ioctl_data), data);
+				break;
+			case 3:
+				data.cmdcode = IOCTL_USEBLOCK_FILE_DROP_CACHE;
+				memcpy(data.block_data.filename, optarg, strlen(optarg));
+				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 				break;
 			default:
 				break;

@@ -26,6 +26,9 @@ struct page *(*orig__vm_normal_page)(struct vm_area_struct *vma, unsigned long a
 void (*orig_arch_tlb_gather_mmu)(struct mmu_gather *tlb, struct mm_struct *mm, unsigned long start, unsigned long end);
 int (*orig_walk_page_vma)(struct vm_area_struct *vma, struct mm_walk *walk);
 int (*orig_swp_swapcount)(swp_entry_t entry);
+struct page * (*orig___alloc_pages_direct_compact)(gfp_t gfp_mask, unsigned int order,
+  unsigned int alloc_flags, const struct alloc_context *ac,
+  enum compact_priority prio, int *compact_result);
 spinlock_t *(*orig___pmd_trans_huge_lock)(pmd_t *pmd, struct vm_area_struct *vma);
 struct page *(*orig_follow_trans_huge_pmd)(struct vm_area_struct *vma,
                    unsigned long addr,
@@ -304,7 +307,24 @@ static void dump_kernel_page_attr(struct ioctl_data *data, u64 start_pfn, u64 si
 
 	for (i = 0; i < size; ++i) {
 		page = pfn_to_page(start_pfn + i);
-		printk("page:%llx-%llx page_flags:%llx\n", (u64)start_pfn + i, (u64)page, (u64)page->flags);
+
+		if (PageCompound(page))
+			page = compound_head(page);
+
+		printk("pfn:%lx flags:%lx recount:%d mapcout:%d mapping:%d compound:%d isBuddy:%d isCompad:%d isLRU:%d moveable:%d order:%d\n"
+				, start_pfn + i
+				, page->flags
+				, page_count(page)
+				, page_mapcount(page)
+				, page_mapping(page)
+				, PageCompound(page)
+				, PageBuddy(page)
+				, compound_order(page)
+				, PageLRU(page)
+				, __PageMovable(page)
+				, PageBuddy(page) ? page_private(page) : compound_order(page)
+				//, PageBuddy(page) ? page_private(page) : compound_order(page)
+				);
 	}
 }
 
