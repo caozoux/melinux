@@ -17,7 +17,7 @@ static void help(void)
 	printf("kmem --dump  get the vm_state of zone/none/numa\n");
 	printf("kmem --vma_scan --pid scan the vma of current task\n");
 	printf("kmem --pte addr  get the addr pte\n");
-	printf("kmem --page_attr --extern_arg size  dump page flags\n");
+	printf("kmem --page_attr $pfn --extern size  dump page flags\n");
 }
 
 static pages_buffer_order(unsigned long *buf, unsigned long size)
