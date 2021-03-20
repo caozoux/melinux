@@ -76,6 +76,7 @@ dca_class = class_create(THIS_MODULE, "dca");
 int devbusdrvtest_unit_exit(void)
 {
 	virtual_test_bus_exit();
+	return 0;
 }
 
 

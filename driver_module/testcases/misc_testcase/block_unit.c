@@ -14,6 +14,7 @@
 #include <linux/reboot.h>
 #include <linux/uaccess.h>
 #include <linux/notifier.h>
+#include <linux/version.h>
 #include <linux/interrupt.h>
 #include <linux/rcupdate.h>
 #include <linux/delay.h>
@@ -68,7 +69,9 @@ int block_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_dat
 
 int block_unit_init(void)
 {
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	LOOKUP_SYMS(all_bdevs);
+#endif
 	LOOKUP_SYMS(bdev_lock);
 	LOOKUP_SYMS(bdi_list);
 

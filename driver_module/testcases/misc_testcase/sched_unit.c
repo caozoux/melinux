@@ -10,6 +10,7 @@
 #include <linux/kthread.h>
 #include <linux/notifier.h>
 #include <linux/interrupt.h>
+#include <linux/version.h>
 #include <linux/delay.h>
 #include <linux/timekeeper_internal.h>
 
@@ -35,7 +36,9 @@ int sched_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_dat
 	struct  task_struct *task;
 	switch (data->cmdcode) {
 		case IOCTL_USESCHED_TASK_GET:
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 				task = orig_find_process_by_pid(data->sched_data.pid);
+#endif
 				//info.exec_start;
 				//info.sum_exec_runtime;
 				//info.vruntime;
@@ -55,7 +58,9 @@ int sched_unit_init(void)
 	u64 nsecs;
 
 	LOOKUP_SYMS(tk_core);
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	LOOKUP_SYMS(find_process_by_pid);
+#endif
 	tk = &orig_tk_core->timekeeper;
 	base = tk->tkr_mono.base;
 	nsecs = tk->tkr_mono.xtime_nsec;

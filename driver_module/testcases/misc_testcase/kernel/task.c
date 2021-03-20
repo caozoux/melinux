@@ -13,6 +13,7 @@
 #include <linux/notifier.h>
 #include <linux/interrupt.h>
 #include <linux/delay.h>
+#include <linux/version.h>
 #include <linux/fdtable.h>
 
 #include <asm/stacktrace.h>
@@ -40,15 +41,19 @@ void task_file_enum(struct task_struct *task)
 	unsigned int fd;
 	struct files_struct *files;
 	struct dentry *dentry;
-	//files = get_files_struct(current);
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
+	files = get_files_struct(current);
+#else
 	files = task->files;;
+#endif
 
 	if (!files)
 		return;
 	for(fd = 0; fd <files_fdtable(files)->max_fds; fd++) {
 		struct file *f;
 		char name[10+1];
-		f = fcheck_files(files, fd);
+		//f = fcheck_files(files, fd);
+		f = files_lookup_fd_rcu(files,fd);
 		if (!f)
 			continue;
 		printk("zz %s fd:%08x \n",__func__, (int)fd);

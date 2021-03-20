@@ -10,6 +10,7 @@
 #include <linux/icmp.h>
 #include <linux/ip.h>
 #include <linux/mm.h>
+#include <linux/version.h>
 #include <melib.h>
 
 #include "template_iocmd.h"
@@ -21,6 +22,7 @@ struct rxtree_misc_data {
 } *rxtree_misc_data;
 
 RADIX_TREE(roottest, GFP_ATOMIC);
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 static int rxtree_misc_dump(struct radix_tree_root *root)
 {
 	struct radix_tree_node *node = root->rnode, *node_iter, **slot;
@@ -63,6 +65,12 @@ static int rxtree_misc_dump(struct radix_tree_root *root)
 #endif
 	return 0;
 }
+#else
+static int rxtree_misc_dump(struct radix_tree_root *root)
+{
+	return 0;
+}
+#endif
 
 int radixtree_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
@@ -73,7 +81,9 @@ int radixtree_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioct
 	int count = data->radix_data.count;
 	int index;
 
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	rx_node = rxtree_misc_data->root.rnode;
+#endif
 
 	switch (data->cmdcode) {
 		case  IOCTL_USERAIDIXTREE_ADD:
@@ -116,7 +126,9 @@ int radixtree_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioct
 			break;
 
 		case  IOCTL_USERAIDIXTREE_DUMP:
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 			radixtree_page_scan(rxtree_misc_data->root.rnode, 0);
+#endif
 			break;
 
 		default:

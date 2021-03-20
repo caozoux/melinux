@@ -51,7 +51,7 @@ void drop_inode_page_cache(char *filename)
 
 	filp = filp_open(filename, O_RDWR , 0600);
 	if (!filp) {
-		pr_warning("open %s failed\n", filename);
+		pr_warn("open %s failed\n", filename);
 		return;
 	}
 

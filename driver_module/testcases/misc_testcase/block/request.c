@@ -17,6 +17,7 @@
 #include <linux/interrupt.h>
 #include <linux/rcupdate.h>
 #include <linux/delay.h>
+#include <linux/version.h>
 #include <linux/blkdev.h>
 #include <linux/bio.h>
 
@@ -46,10 +47,13 @@ void request_flag_dump(struct request *req)
 	{
 		printk("     REQ_OP_DISCARD	/* discard sectors */	\n");
 	}
+
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	if (req_op(req) == REQ_OP_ZONE_REPORT)
 	{
 		printk("     REQ_OP_ZONE_REPORT/* get zone information */	\n");
 	}
+#endif
 	if (req_op(req) == REQ_OP_SECURE_ERASE)
 	{
 		printk("     REQ_OP_SECURE_ERASE/* securely erase sectors */	\n");
@@ -167,7 +171,11 @@ static void dump_request(struct request *req)
 	printk("sector:%ld bi_size:%lx bi_idx:%d bi_bvec_done:%lx\n"
 			, bio_next->bi_iter.bi_sector
 			, bio_next->bi_iter.bi_size
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 			, bio_next->bi_iter.bi_done
+#else
+			, 0
+#endif
 			, bio_next->bi_iter.bi_bvec_done);
 	for_each_bio(bio_next) {
 		bio_for_each_segment(iv, bio_next, iter) {
