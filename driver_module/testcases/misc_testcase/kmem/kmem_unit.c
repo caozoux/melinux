@@ -343,6 +343,48 @@ static inline unsigned long __mephys_addr_nodebug(unsigned long x)
 	 return x;
 }
 
+static void buddy_test(void)
+{
+	void *buf;
+	u64 pfn;
+	struct page *page;
+	int i;
+
+	buf = kmalloc(PAGE_SIZE, GFP_KERNEL);
+	page = virt_to_page(buf);
+
+	printk("show kmalloc order 0\n");
+	page_info_show(page);
+	kfree(buf);
+	printk("show kfree order 0\n");
+	page_info_show(page);
+
+	buf = kmalloc(PAGE_SIZE*4, GFP_KERNEL);
+	page = virt_to_page(buf);
+
+	printk("show kmalloc order 2\n");
+	get_page(page);
+	for (i = 0; i < 4; ++i) {
+		page_info_show(page + i);
+	}
+	kfree(buf);
+	printk("show kfree order 2\n");
+	for (i = 0; i < 4; ++i)
+		page_info_show(page + i);
+
+	printk("show alloce page order 2\n");
+	//page = alloc_pages(__GFP_MOVABLE | GFP_HIGHUSER | __GFP_ZERO | __GFP_THISNODE | __GFP_NORETRY, 2);
+	page = alloc_pages(__GFP_MOVABLE | GFP_HIGHUSER | __GFP_ZERO | __GFP_THISNODE | __GFP_NORETRY, 2);
+	for (i = 0; i < 4; ++i) {
+		page_info_show(page + i);
+	}
+	__free_pages(page, 2);
+	printk("show free page order 2\n");
+	for (i = 0; i < 4; ++i) {
+		page_info_show(page + i);
+	}
+}
+
 static void page_test(void)
 {
 	struct zone *zone;
@@ -351,40 +393,23 @@ static void page_test(void)
 	struct page *page;
 	struct per_cpu_pages *pcp;
 	struct pglist_data *__pgdat;
+	int i;
 
+	printk("test kmalloc 16K start\n");
 	buf = kmalloc(PAGE_SIZE * 4 , GFP_KERNEL);
 	page = virt_to_page(buf);
-	//page = (struct page *) 0xffffea5d145eb300;
 	zone = page_zone(page);
 	pcp = &this_cpu_ptr(zone->pageset)->pcp;
-
-#if 1
-	//page = pfn_to_page(0x2ddd2e);
 	pfn = page_to_pfn(page);
-
-	//__pgdat = NODE_DATA(page_to_nid(page));
-	printk("zz %s page:%lx phys:%lx %llx %llx pfn:%lx\n",__func__, (unsigned long)page, virt_to_phys(page)
-			,  __mephys_addr_nodebug(page), phys_base, pfn);
-	dump_page_info(page);
-
-#if 0
-	printk("%llx: %llx %llx buddy:%d Comp:%d LRU:%d map:%llx order:%llx count:%d head:%lx free:%lx pcp:%lx\n", page_to_pfn(page), page->page_type, page->flags, PageBuddy(page),
-			 PageCompound(page), PageLRU(page), page_mapping(page), page_private(page), page_count(page), page_to_pfn(compound_head(page)), page->index
-			 ,pcp->count);
-#endif
-	//trace_printk("+\n");
-	//atomic_set(&page->_refcount, 1);
-	//put_page(page);
-	//kfree(buf);
-
-#if 0
-	printk("%llx: %llx %llx buddy:%d Comp:%d LRU:%d map:%llx order:%llx count:%d head:%lx free:%lx pcp:%lx\n", page_to_pfn(page), page->page_type, page->flags, PageBuddy(page),
-			 PageCompound(page), PageLRU(page), page_mapping(page), page_private(page), page_count(page), page_to_pfn(compound_head(page)), page->index
-			 ,pcp->count);
-#endif
-#else
+	page_info_show(page);
 	kfree(buf);
-#endif
+	printk("test kmalloc 16K end\n");
+
+	printk("test alloc_pages_exact 16K start +\n");
+	buf = alloc_pages_exact(PAGE_SIZE * 4, __GFP_ZERO);
+	page = virt_to_page(buf);
+	page_info_show(page);
+	printk("test alloc_pages_exact 16K end -\n");
 }
 
 int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
@@ -396,32 +421,38 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 
 	switch (data->cmdcode) {
 		case  IOCTL_USEKMEM_SHOW:
-			DEBUG("mem_readlock_test_start\n")
+			DEBUG("mem_readlock_test_start\n");
 			kmem_dump_state();
 			break;
 
 		case  IOCTL_USEKMEM_VMA_SCAN:
 			printk("zz %s %d \n", __func__, __LINE__);
-			DEBUG("mem vma scan\n")
+			DEBUG("mem vma scan\n");
 			vma_scan(data);
 			break;
 
 		case  IOCTL_USEKMEM_GET_PTE:
-			DEBUG("mem pte get\n")
+			DEBUG("mem pte get\n");
 			pte = get_pte(data->kmem_data.addr, current->mm);
 			data->kmem_data.val = *((u64*) pte);
 			dump_pte_info(pte);
 			break;
 
 		case  IOCTL_USERCU_READTEST_END:
-			DEBUG("mem_readlock_test_stop\n")
+			DEBUG("mem_readlock_test_stop\n");
 			//mem_readlock_test_stop();
 			break;
 
 		case IOCTL_USEKMEM_PAGE_ATTR:
-			DEBUG("kmem page attr\n")
+			DEBUG("kmem page attr\n");
 			dump_kernel_page_attr(data, data->kmem_data.pageattr_data.start_pfn,
 					data->kmem_data.pageattr_data.size);
+			break;
+
+		case IOCTL_USEKMEM_TESTBUDDY:
+			DEBUG("kmem buddy page\n");
+			buddy_test();
+			page_test();
 			break;
 
 		default:
@@ -443,11 +474,6 @@ int kmem_unit_init(void)
 	LOOKUP_SYMS(__pmd_trans_huge_lock);
 	LOOKUP_SYMS(follow_trans_huge_pmd);
 	LOOKUP_SYMS(isolate_migratepages_block);
-	{
-		page_test();
-		//struct ioctl_data data;	
-		//zone_dump_info(&data);
-	}
 	return 0;
 }
 

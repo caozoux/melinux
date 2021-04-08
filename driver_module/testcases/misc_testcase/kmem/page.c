@@ -90,3 +90,13 @@ void vma_pte_dump(struct vm_area_struct *vma, u64 start_addr, u64 nr_page)
 	}
 }
 
+void page_info_show(struct page *page)
+{
+	printk("pfn:%llx virt:%llx %llx %llx buddy:%d Comp:%d LRU:%d map:%llx order:%llx count:%d head:%lx free:%lx \n",
+			page_to_pfn(page), page_to_virt(page), page->page_type, page->flags, PageBuddy(page),
+			PageCompound(page), PageLRU(page), page_mapping(page), page_private(page),
+			page_count(page), page_to_pfn(compound_head(page)), page->index
+		   );
+
+}
+
