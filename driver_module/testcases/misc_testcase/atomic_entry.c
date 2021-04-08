@@ -62,7 +62,7 @@ static void atm_sig_test(struct work_struct *work)
 }
 
 //mutilpe thread test
-static void atm_per_cpu_test(struct work_struct *work)
+static unsigned long long atm_per_cpu_test(struct work_struct *work)
 {
 	unsigned long k;
 	unsigned long count, flags;
@@ -161,5 +161,6 @@ int atomic_unit_exit(void)
 	destroy_workqueue(atm_dt->sigtestworkqueue);
 	destroy_workqueue(atm_dt->workqueue);
 	kfree(atm_dt);
+	return 0;
 }
 

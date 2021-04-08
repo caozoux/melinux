@@ -10,7 +10,7 @@
 #include <linux/swap.h>
 #include <linux/swapops.h>
 #include <linux/page_idle.h>
-#include <asm/tlb.h>
+//#include <asm/tlb.h>
 
 #include "../template_iocmd.h"
 #include "../misc_ioctl.h"

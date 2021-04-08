@@ -12,6 +12,7 @@
 #include <linux/of.h>
 #include <linux/kthread.h>
 #include <linux/reboot.h>
+#include <linux/version.h>
 #include <linux/uaccess.h>
 #include <linux/notifier.h>
 #include <linux/interrupt.h>
@@ -93,6 +94,7 @@ static void  dump_disk_info(struct gendisk *disk)
 
 void scan_block_dev_disk(void)
 {
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	struct block_device *bdev;
 	spin_lock(orig_bdev_lock);
 	list_for_each_entry(bdev, orig_all_bdevs, bd_list) { 	
@@ -105,5 +107,6 @@ void scan_block_dev_disk(void)
 		}
 	}
 	spin_unlock(orig_bdev_lock);
+#endif
 }
 

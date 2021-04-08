@@ -13,6 +13,7 @@
 #include <linux/kthread.h>
 #include <linux/reboot.h>
 #include <linux/uaccess.h>
+#include <linux/version.h>
 #include <linux/notifier.h>
 #include <linux/interrupt.h>
 #include <linux/rcupdate.h>
@@ -56,11 +57,13 @@ void radixtree_page_scan(struct radix_tree_node *node, unsigned long index)
 	unsigned long i;
 	node = entry_to_node(node);
 
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	printk("radix node: %p offset %d indices %lu-%lu parent %p tags %lx %lx %lx shift %d count %d exceptional %d\n",
 			node, node->offset, index, index | node_maxindex(node),
 			node->parent,
 			node->tags[0][0], node->tags[1][0], node->tags[2][0],
 			node->shift, node->count, node->exceptional);
+#endif
 
 	for (i = 0; i < RADIX_TREE_MAP_SIZE; i++) {
 		unsigned long first = index | (i << node->shift);

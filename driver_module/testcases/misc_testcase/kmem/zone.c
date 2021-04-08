@@ -9,8 +9,8 @@
 #include <linux/delay.h>
 #include <linux/swap.h>
 #include <linux/swapops.h>
+#include <linux/version.h>
 #include <linux/page_idle.h>
-#include <asm/tlb.h>
 
 #include "../template_iocmd.h"
 #include "../misc_ioctl.h"
@@ -115,12 +115,16 @@ static void kmem_dump_node_item(atomic_long_t *vm_stat)
 	printk("NR_INACTIVE_FILE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_INACTIVE_FILE]));
 	printk("NR_ACTIVE_FILE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_ACTIVE_FILE]));
 	printk("NR_UNEVICTABLE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_UNEVICTABLE]));
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	printk("NR_SLAB_RECLAIMABLE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_SLAB_RECLAIMABLE]));
 	printk("NR_SLAB_UNRECLAIMABLE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_SLAB_UNRECLAIMABLE]));
+#endif
 	printk("NR_ISOLATED_ANON: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_ISOLATED_ANON]));
 	printk("NR_ISOLATED_FILE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_ISOLATED_FILE]));
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	printk("WORKINGSET_REFAULT: %ld\n", atomic_long_read(&orig_vm_node_stat[WORKINGSET_REFAULT]));
 	printk("WORKINGSET_ACTIVATE: %ld\n", atomic_long_read(&orig_vm_node_stat[WORKINGSET_ACTIVATE]));
+#endif
 	printk("WORKINGSET_NODERECLAIM: %ld\n", atomic_long_read(&orig_vm_node_stat[WORKINGSET_NODERECLAIM]));
 	printk("NR_ANON_MAPPED: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_ANON_MAPPED]));
 	printk("NR_FILE_MAPPED: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_FILE_MAPPED]));
@@ -215,7 +219,9 @@ void zone_dump_info(struct ioctl_data *data)
 	for_each_populated_zone(zone) {
 		//zdata->pageblock_flags = zone->pageblock_flags;
 		zdata->zone_start_pfn = zone->zone_start_pfn;
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 		zdata->managed_pages = zone->managed_pages;
+#endif
 		zdata->spanned_pages = zone->spanned_pages;
 		zdata->present_pages = zone->present_pages;
 		zdata->nr_isolate_pageblock = zone->nr_isolate_pageblock;

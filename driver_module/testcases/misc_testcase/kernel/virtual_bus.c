@@ -92,6 +92,7 @@ int virtual_test_bus_init(void)
 	dbd_dt->dev.bus = &virme_bus_type;
 	dbd_dt->dev.release = virtual_test_device_release;
 	device_add(&dbd_dt->dev);
+	return 0;
 }
 
 int virtual_test_bus_exit(void)
@@ -103,4 +104,5 @@ int virtual_test_bus_exit(void)
 	idr_destroy(&dbd_dt->metest_idr);
     	bus_unregister(&virme_bus_type);
     	kfree(dbd_dt);
+	return 0;
 }

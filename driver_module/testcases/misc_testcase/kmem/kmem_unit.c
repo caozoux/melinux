@@ -11,7 +11,7 @@
 #include <linux/swapops.h>
 #include <linux/page_idle.h>
 #include <linux/version.h>
-#include <asm/tlb.h>
+//#include <asm/tlb.h>
 
 #include "../template_iocmd.h"
 #include "../misc_ioctl.h"
@@ -41,6 +41,7 @@ void pmd_clear_bad(pmd_t *pmd)
     pmd_clear(pmd);
 }
 
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 static void smaps_account(struct mem_size_stats *mss, struct page *page,
         bool compound, bool young, bool dirty, bool locked)
 {
@@ -221,6 +222,7 @@ out:
 	return 0;
 }
 
+
 static void dump_mss_info(struct mem_size_stats *mss)
 {
 	int i;
@@ -299,6 +301,12 @@ static int vma_scan(struct ioctl_data *data)
 
 	return copy_to_user(&data->kmem_data.mss, &mss, sizeof(struct mem_size_stats));
 }
+#else
+static int vma_scan(struct ioctl_data *data)
+{
+	return 0;
+}
+#endif
 
 static void dump_kernel_page_attr(struct ioctl_data *data, u64 start_pfn, u64 size)
 {
@@ -467,9 +475,11 @@ int kmem_unit_init(void)
 	LOOKUP_SYMS(vm_zone_stat);
 	LOOKUP_SYMS(vm_numa_stat);
 	LOOKUP_SYMS(vm_node_stat);
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	LOOKUP_SYMS(_vm_normal_page);
 	LOOKUP_SYMS(arch_tlb_gather_mmu);
 	LOOKUP_SYMS(walk_page_vma);
+#endif
 	LOOKUP_SYMS(swp_swapcount);
 	LOOKUP_SYMS(__pmd_trans_huge_lock);
 	LOOKUP_SYMS(follow_trans_huge_pmd);

@@ -17,6 +17,7 @@
 #include <linux/interrupt.h>
 #include <linux/rcupdate.h>
 #include <linux/delay.h>
+#include <linux/version.h>
 #include <linux/blkdev.h>
 
 #include <asm/stacktrace.h>
@@ -26,11 +27,6 @@
 #include "medelay.h"
 #include "mekernel.h"
 
-static bio_vec(struct bio *bio)
-{
-
-}
-
 void bio_dump_data(struct bio *bio)
 {
 	struct bvec_iter iter;
@@ -39,12 +35,20 @@ void bio_dump_data(struct bio *bio)
 	bi_vecs = bio->bi_io_vec;
 
 	printk("bi_phys_segments:%lx bi_vcnt:%d bi_max_vecs:%d bi_size:%x bi_idx:%d bi_done:%x bi_bvec_dong:%x op:%lx\n"
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 			, bio->bi_phys_segments
+#else
+			,0
+#endif
 			, bio->bi_vcnt
 			, bio->bi_max_vecs
 			, bio->bi_iter.bi_size
 			, bio->bi_iter.bi_idx
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 			, bio->bi_iter.bi_done
+#else
+			,0
+#endif
 			, bio->bi_iter.bi_bvec_done
 			, bio_op(bio)
 		 	);
