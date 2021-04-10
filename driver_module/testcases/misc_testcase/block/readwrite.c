@@ -123,3 +123,9 @@ failed:
 	filp_close(file, NULL);
 
 }
+
+void readhead_test(void)
+{
+
+}
+

@@ -18,6 +18,8 @@ static void help(void)
 	printf("kmem --vma_scan --pid scan the vma of current task\n");
 	printf("kmem --pte addr  get the addr pte\n");
 	printf("kmem --page_attr $pfn --extern size  dump page flags\n");
+	printf("kmem --buddypagetest   dump page flags\n");
+	printf("kmem --full_page_scan  full page scan\n");
 }
 
 static pages_buffer_order(unsigned long *buf, unsigned long size)
@@ -94,6 +96,8 @@ static const struct option long_options[] = {
 	{"pte",   no_argument, 0,  0 },
 	{"extern",   required_argument, 0,  0 },
 	{"page_attr",   required_argument, 0,  0 },
+	{"buddypagetest",   no_argument, 0,  0 },
+	{"full_page_scan",   no_argument, 0,  0 },
 	{0,0,0,0}
 };
 
@@ -168,6 +172,14 @@ int kmem_usage(int argc, char **argv)
 				data.cmdcode = IOCTL_USEKMEM_PAGE_ATTR;
 				data.kmem_data.pageattr_data.start_pfn = atoi(optarg);
 				break;
+
+			case 8:
+				data.cmdcode = IOCTL_USEKMEM_TESTBUDDY;
+				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+
+			case 9:
+				data.cmdcode = IOCTL_USEKMEM_FULL_PAGE_SCAN;
+				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 
 			default:
 				break;

@@ -12,6 +12,7 @@
 #include <linux/miscdevice.h>
 #include <linux/interrupt.h>
 #include <linux/syscore_ops.h>
+#include <linux/crc32.h>
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
 #include "debug_ctrl.h"
@@ -81,6 +82,11 @@ struct misc_uint_item unit_list[] =
 };
 
 static struct misc_private_data *misc_data;
+
+void crc32_test(void *buf, unsigned long size)
+{
+	crc32_le(0, buf, size);
+}
 
 static int misc_template_open(struct inode *inode, struct file * file)
 {

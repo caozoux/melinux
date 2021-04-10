@@ -420,6 +420,34 @@ static void page_test(void)
 	printk("test alloc_pages_exact 16K end -\n");
 }
 
+/* full page scan will scan the whole of node pgdat page attr
+ * we will use pgdata_list to scan for supporting numa machine,
+ * uma machine onyl one pgdata
+ */
+static void full_page_scan(void)
+{
+	pg_data_t *pgdat;
+	unsigned long start_pfn, end_pfn;
+	unsigned long pfn;
+
+	unsigned long anon_page, map_page, free_page, others_page;
+
+	for_each_online_pgdat(pgdat) {
+		end_pfn = pgdat_end_pfn(pgdat);
+		start_pfn = pgdat->node_start_pfn;
+		pfn = start_pfn;
+		printk("zz %s start_pfn:%08x end_pfn:%08x \n",__func__, (int)start_pfn, (int)end_pfn);
+		while(pfn < end_pfn) {
+			struct page *page = pfn_to_page(pfn);
+			if (PageAnon(page))
+				anon_page++;
+			if (PageAnon(page))
+				anon_page++;
+			pfn++;
+		}
+	}
+}
+
 int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 	int ret = -1;
@@ -461,6 +489,11 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 			DEBUG("kmem buddy page\n");
 			buddy_test();
 			page_test();
+			break;
+
+		case IOCTL_USEKMEM_FULL_PAGE_SCAN:
+			DEBUG("full page scan\n");
+			full_page_scan();
 			break;
 
 		default:
