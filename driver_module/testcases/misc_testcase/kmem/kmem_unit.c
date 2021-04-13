@@ -496,6 +496,26 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 			full_page_scan();
 			break;
 
+		case IOCTL_USEKMEM_SLUB_CREATE:
+			DEBUG("slub create\n");
+			full_page_scan();
+			break;
+
+		case IOCTL_USEKMEM_SLUB_REMOVE:
+			DEBUG("slub remove\n");
+			full_page_scan();
+			break;
+
+		case IOCTL_USEKMEM_SLUB_ADD:
+			DEBUG("slub add\n");
+			full_page_scan();
+			break;
+
+		case IOCTL_USEKMEM_SLUB_DEC:
+			DEBUG("slub dec\n");
+			full_page_scan();
+			break;
+
 		default:
 			goto OUT;
 	}

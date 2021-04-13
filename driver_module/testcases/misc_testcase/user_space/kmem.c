@@ -98,6 +98,10 @@ static const struct option long_options[] = {
 	{"page_attr",   required_argument, 0,  0 },
 	{"buddypagetest",   no_argument, 0,  0 },
 	{"full_page_scan",   no_argument, 0,  0 },
+	{"slub_create",   required_argument, 0,  0 },
+	{"slub_remove",   required_argument, 0,  0 },
+	{"slub_add",   required_argument, 0,  0 },
+	{"slub_dec",   required_argument, 0,  0 },
 	{0,0,0,0}
 };
 
@@ -179,6 +183,22 @@ int kmem_usage(int argc, char **argv)
 
 			case 9:
 				data.cmdcode = IOCTL_USEKMEM_FULL_PAGE_SCAN;
+				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+
+			case 10:
+				data.cmdcode = IOCTL_USEKMEM_SLUB_CREATE;
+				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+
+			case 11:
+				data.cmdcode = IOCTL_USEKMEM_SLUB_REMOVE;
+				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+
+			case 12:
+				data.cmdcode = IOCTL_USEKMEM_SLUB_ADD;
+				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+
+			case 13:
+				data.cmdcode = IOCTL_USEKMEM_SLUB_DEC;
 				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 
 			default:

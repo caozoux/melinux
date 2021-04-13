@@ -11,5 +11,8 @@ extern unsigned long (*orig_isolate_migratepages_block)(struct compact_control *
 void compatc_zone_order(struct zone *zone, int order, gfp_t gfp_mask, unsigned int alloc_flags, int classzone_idx);
 void zone_dump_info(struct ioctl_data *data);
 void page_info_show(struct page *page);
+void kmemcache_remove(struct kmem_kmemcache_data *data);
+int kmemcache_create(char *name, int size);
+int kmem_kmemcache_create_objs(char *name, int size, int is_free);
 #endif
 
