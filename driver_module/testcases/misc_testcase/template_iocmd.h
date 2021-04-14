@@ -72,11 +72,6 @@ enum IOCTL_USEKMEM_SUB{
 	IOCTL_USEKMEM_PAGE_ATTR,
 	IOCTL_USEKMEM_TESTBUDDY,
 	IOCTL_USEKMEM_FULL_PAGE_SCAN,
-	IOCTL_USEKMEM_SLUB,
-};
-
-enum IOCTL_USEKMEM_SLUB{
-	IOCTL_USEKMEM_SLUB_NONE = 0,
 	IOCTL_USEKMEM_SLUB_CREATE,
 	IOCTL_USEKMEM_SLUB_REMOVE,
 	IOCTL_USEKMEM_SLUB_ADD,
@@ -190,6 +185,10 @@ struct ioctl_data {
 			int buf_len;
 		} ext2_data;
 		struct kmem_ioctl {
+			char name[128];
+			unsigned long extern1; //it is a extern val1
+			unsigned long extern2; //it is a extern val2
+			unsigned long extern3; //it is a extern val3
 			unsigned long *zone_vm_state;
 			unsigned long zone_len;
 			unsigned long *node_vm_state;
@@ -209,10 +208,16 @@ struct ioctl_data {
 				unsigned long       compact_cached_free_pfn;
 				unsigned long       compact_cached_migrate_pfn[2];
 			} zonedata;
-			struct page_attr {
-				unsigned long start_pfn;
-				unsigned long size;
-			}pageattr_data;
+			union {
+				struct slub_control {
+					int slub_size;
+					unsigned long count;
+				} slub_ctrl;
+				struct page_attr {
+					unsigned long start_pfn;
+					unsigned long size;
+				}pageattr_data;
+			}
 		} kmem_data;
 		struct sched_ioctl {
 			int pid;

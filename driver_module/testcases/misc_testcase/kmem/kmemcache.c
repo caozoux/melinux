@@ -31,7 +31,7 @@ struct kmem_kmemcache_data {
 	struct kmem_cache *kmem_cache;
 };
 
-void kmemcache_remove(struct kmem_kmemcache_data *data)
+void kmem_kmemcache_remove(struct kmem_kmemcache_data *data)
 {
 	struct kmem_cache *s = data->kmem_cache;
 	if (!s)
@@ -48,7 +48,7 @@ failed:
 
 };
 
-int kmemcache_create(char *name, int size)
+int kmem_kmemcache_create(char *name, int size)
 {
 	int i;
 	struct kmem_kmemcache_data *data;

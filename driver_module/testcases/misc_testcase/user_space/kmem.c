@@ -186,8 +186,8 @@ int kmem_usage(int argc, char **argv)
 				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 
 			case 10:
-				data.cmdcode = IOCTL_USEKMEM_SLUB_CREATE;
-				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+				strncpy(data.kmem.slub_ctrl.name, 128, optarg);
+				break;
 
 			case 11:
 				data.cmdcode = IOCTL_USEKMEM_SLUB_REMOVE;
