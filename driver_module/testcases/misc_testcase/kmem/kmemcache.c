@@ -25,15 +25,36 @@ struct kmem_kmemcache_item {
 	struct list_head list;
 	void *data;
 };
+
 struct kmem_kmemcache_data {
 	struct list_head list;
 	struct list_head item_list;
+	char name[128];
 	struct kmem_cache *kmem_cache;
 };
 
-void kmem_kmemcache_remove(struct kmem_kmemcache_data *data)
+struct kmem_kmemcache_data *kmem_kmemcache_get_item(char *name)
 {
-	struct kmem_cache *s = data->kmem_cache;
+	struct kmem_kmemcache_data *data;
+	list_for_each_entry(data, &kmem_kmemcache_list, list) {
+		struct kmem_cache *s = data->kmem_cache;
+		if (!strcmp(name, s->name))
+			return data;
+	}
+	return NULL;
+}
+
+void kmem_kmemcache_remove(char *name)
+{
+
+	struct kmem_kmemcache_data *data;
+	struct kmem_cache *s;
+
+	data = kmem_kmemcache_get_item(name);
+	if (!data)
+		return -EINVAL;
+
+	s = data->kmem_cache;
 	if (!s)
 		return;
 
@@ -57,30 +78,22 @@ int kmem_kmemcache_create(char *name, int size)
 		return -EINVAL;
 
 	INIT_LIST_HEAD(&data->list);
+	INIT_LIST_HEAD(&data->item_list);
+	strcpy(data->name, name);
 
-	data->kmem_cache = kmem_cache_create(name, size, 0,
-						   SLAB_HWCACHE_ALIGN,
+	data->kmem_cache = kmem_cache_create(data->name, size, 0,
+						   SLAB_HWCACHE_ALIGN | SLAB_POISON,
 						   NULL);
 	if (!data->kmem_cache)
 		goto out;
 
-	list_add_tail(&kmem_kmemcache_list, &data->list);
+	list_add_tail(&data->list, &kmem_kmemcache_list);
+	DEBUG("slub create:%s %lx %s\n", data->kmem_cache->name, data->kmem_cache, data->name);
 	return 0;
 
 out:
 	kfree(data);
 	return -EINVAL;
-}
-
-struct kmem_kmemcache_data *kmem_kmemcache_get_item(char *name)
-{
-	struct kmem_kmemcache_data *data;
-	list_for_each_entry(data, &kmem_kmemcache_list, list) {
-		struct kmem_cache *s = data->kmem_cache;
-		if (!strcmp(name, s->name))
-			return data;
-	}
-	return NULL;
 }
 
 int kmem_kmemcache_create_objs(char *name, int size, int is_free)
@@ -89,21 +102,26 @@ int kmem_kmemcache_create_objs(char *name, int size, int is_free)
 	struct kmem_cache *s;
 	int i;
 	struct kmem_kmemcache_item *item;
+	struct list_head *list;
 
 	data = kmem_kmemcache_get_item(name);
-	if (!data)
+	if (!data) {
+		pr_warn("%s get failed\n", name);
 		return -EINVAL;
-		
+	}
+
 	s = data->kmem_cache;
+
+	DEBUG("slub %lx size:%d\n", data->kmem_cache->name, size);
 
 	if (is_free) {
 		i = 0;
-		list_for_each_entry(item, &data->item_list, list) {
-			list_del(&item->list);
+		while((!list_empty(&data->item_list)) && i < size) {
+			list = data->item_list.next;	
+			item = container_of(list, struct kmem_kmemcache_item, list);
+			list_del(list);
 			kmem_cache_free(s, item);
 			i++;
-			if (i >= size)
-				break;
 		}
 	} else {
 		for (i = 0; i < size; ++i) {
@@ -112,7 +130,7 @@ int kmem_kmemcache_create_objs(char *name, int size, int is_free)
 				continue;
 
 			INIT_LIST_HEAD(&item->list);
-			list_add_tail(&data->item_list, &item->list);
+			list_add_tail(&item->list, &data->item_list);
 		}
 	}
 }

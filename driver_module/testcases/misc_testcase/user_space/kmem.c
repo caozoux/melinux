@@ -20,6 +20,8 @@ static void help(void)
 	printf("kmem --page_attr $pfn --extern size  dump page flags\n");
 	printf("kmem --buddypagetest   dump page flags\n");
 	printf("kmem --full_page_scan  full page scan\n");
+	printf("kmem --slub_op $name   kmemcache operation\n");
+	printf("     --slub_op $name   --op_name \"create/remove/add/dec\"	--extern ${size}  slub operation\n");
 }
 
 static pages_buffer_order(unsigned long *buf, unsigned long size)
@@ -98,10 +100,8 @@ static const struct option long_options[] = {
 	{"page_attr",   required_argument, 0,  0 },
 	{"buddypagetest",   no_argument, 0,  0 },
 	{"full_page_scan",   no_argument, 0,  0 },
-	{"slub_create",   required_argument, 0,  0 },
-	{"slub_remove",   required_argument, 0,  0 },
-	{"slub_add",   required_argument, 0,  0 },
-	{"slub_dec",   required_argument, 0,  0 },
+	{"slub_op",   required_argument, 0,  0 },
+	{"op_name",   required_argument, 0,  0 },
 	{0,0,0,0}
 };
 
@@ -117,6 +117,7 @@ int kmem_usage(int argc, char **argv)
 	unsigned long node_vm_stat[64];
 	unsigned long extern_arg;
 	void *buf;
+	char op_name[128];
 
 	if (argc <= 1) { 
 		help();
@@ -186,20 +187,14 @@ int kmem_usage(int argc, char **argv)
 				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 
 			case 10:
-				strncpy(data.kmem.slub_ctrl.name, 128, optarg);
+				data.cmdcode = IOCTL_USEKMEM_SLUB_OP;
+				//strncpy(data.kmem_data.name, 128, optarg);
+				strcpy(data.kmem_data.name, optarg);
 				break;
 
 			case 11:
-				data.cmdcode = IOCTL_USEKMEM_SLUB_REMOVE;
-				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
-
-			case 12:
-				data.cmdcode = IOCTL_USEKMEM_SLUB_ADD;
-				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
-
-			case 13:
-				data.cmdcode = IOCTL_USEKMEM_SLUB_DEC;
-				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+				strcpy(op_name, optarg);
+				break;
 
 			default:
 				break;
@@ -213,7 +208,6 @@ int kmem_usage(int argc, char **argv)
 		dump_mss_info(&data.kmem_data.mss);
 		//printf("zz %s data.log_buf:%s \n",__func__, data.log_buf);
 	} else if (data.cmdcode == IOCTL_USEKMEM_GET_PTE) { 
-
 		if (extern_arg == NULL)
 			buf = malloc(4096);
 		else
@@ -230,8 +224,25 @@ int kmem_usage(int argc, char **argv)
 	} else if (data.cmdcode == IOCTL_USEKMEM_PAGE_ATTR) { 
 		data.kmem_data.pageattr_data.size = extern_arg;
 		ret = ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+	} else if (data.cmdcode == IOCTL_USEKMEM_SLUB_OP) { 
+		if (!strcmp(op_name, "create")) {
+			data.kmem_data.slub_ctrl.slub_size = extern_arg;
+			data.kmem_data.slub_ctrl.op = SLUB_OP_CREATE;
+		} else if (!strcmp(op_name, "remove")) {
+			data.kmem_data.slub_ctrl.op = SLUB_OP_REMOVE;
+		} else if (!strcmp(op_name, "add")) {
+			data.kmem_data.slub_ctrl.op = SLUB_OP_ADD;
+			data.kmem_data.slub_ctrl.count = extern_arg;
+		} else if (!strcmp(op_name, "dec")) {
+			data.kmem_data.slub_ctrl.op = SLUB_OP_DEC;
+			data.kmem_data.slub_ctrl.count = extern_arg;
+		} else {
+			return -1;
+		}
+		ret = ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 	}
 	
+			data.kmem_data.slub_ctrl.op = extern_arg;
 	free(data.kmem_data.mss.page_buffer);
 
 	return ret;

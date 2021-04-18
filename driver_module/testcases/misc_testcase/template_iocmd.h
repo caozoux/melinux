@@ -56,6 +56,14 @@ enum IOCTL_USEBLOCK_SUB{
 	IOCTL_USEBLOCK_FILE_DROP_CACHE,
 };
 
+enum SLUB_OP {
+	SLUB_OP_NONE = 0,
+	SLUB_OP_CREATE,
+	SLUB_OP_REMOVE,
+	SLUB_OP_ADD,
+	SLUB_OP_DEC
+};
+
 enum IOCTL_USEKMEM_SUB{
 	IOCTL_USEKMEM_NONE = 0,
 	//list all date of /proc/meminfo
@@ -72,10 +80,7 @@ enum IOCTL_USEKMEM_SUB{
 	IOCTL_USEKMEM_PAGE_ATTR,
 	IOCTL_USEKMEM_TESTBUDDY,
 	IOCTL_USEKMEM_FULL_PAGE_SCAN,
-	IOCTL_USEKMEM_SLUB_CREATE,
-	IOCTL_USEKMEM_SLUB_REMOVE,
-	IOCTL_USEKMEM_SLUB_ADD,
-	IOCTL_USEKMEM_SLUB_DEC,
+	IOCTL_USEKMEM_SLUB_OP,
 };
 
 enum IOCTL_USEEXT2_SUB{
@@ -159,6 +164,7 @@ struct ioctl_data {
 	enum ioctl_cmdtype type;
 	int  cmdcode;
 	int pid;
+	char name[128];
 	union {
 		struct kprobe_ioctl {
 			char *name;
@@ -210,6 +216,7 @@ struct ioctl_data {
 			} zonedata;
 			union {
 				struct slub_control {
+					enum SLUB_OP op;
 					int slub_size;
 					unsigned long count;
 				} slub_ctrl;

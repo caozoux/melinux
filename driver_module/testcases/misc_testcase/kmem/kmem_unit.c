@@ -496,22 +496,25 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 			full_page_scan();
 			break;
 
-		case IOCTL_USEKMEM_SLUB_CREATE:
-			DEBUG("slub create\n");
+		case IOCTL_USEKMEM_SLUB_OP:
+			if (data->kmem_data.slub_ctrl.op == SLUB_OP_CREATE) {
+				DEBUG("slub create\n");
+				ret = kmem_kmemcache_create(data->kmem_data.name, data->kmem_data.slub_ctrl.slub_size);
+			} else if (data->kmem_data.slub_ctrl.op == SLUB_OP_REMOVE) {
+				DEBUG("slub remove\n");
+				kmem_kmemcache_remove(data->kmem_data.name);
+			} else if (data->kmem_data.slub_ctrl.op == SLUB_OP_ADD) {
+				DEBUG("slub add\n");
+				ret = kmem_kmemcache_create_objs(data->kmem_data.name, data->kmem_data.slub_ctrl.count, 0);
+			} else if (data->kmem_data.slub_ctrl.op == SLUB_OP_DEC) {
+				DEBUG("slub dec\n");
+				ret = kmem_kmemcache_create_objs(data->kmem_data.name, data->kmem_data.slub_ctrl.count, 1);
+			} else {
+				pr_warn("kmem slub operation not support\n");
+			}
 			//ret = kmemcache_create(, );
 			break;
 
-		case IOCTL_USEKMEM_SLUB_REMOVE:
-			DEBUG("slub remove\n");
-			break;
-
-		case IOCTL_USEKMEM_SLUB_ADD:
-			DEBUG("slub add\n");
-			break;
-
-		case IOCTL_USEKMEM_SLUB_DEC:
-			DEBUG("slub dec\n");
-			break;
 
 		default:
 			goto OUT;
