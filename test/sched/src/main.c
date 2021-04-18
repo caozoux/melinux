@@ -10,7 +10,7 @@
 
 #define MAX_TRHEAD  (128)
 
-static unsigned long run_val = 1UL<<27;
+static unsigned long run_val = 1UL<<20;
 unsigned long run_cnt;
 unsigned long sleep_cnt;
 unsigned long thread_cnt;
@@ -30,8 +30,20 @@ void *threadFunc(void *param)
 	struct timezone tz;
 	unsigned long val = 0;
 	struct thread_data *data = (struct thread_data *)param;
+	int local_run = run_cnt;
     gettimeofday (&tvpre , &tz);
-	while(val++<run_val);
+	while(local_run-->0) {
+		int local_loop_cnt = loop_cnt;
+
+		while(local_loop_cnt-->0) {
+			val = 0;
+			while(val++<run_val);
+		}
+
+		if (sleep_cnt)
+			usleep(sleep_cnt*1000);
+
+	}
     gettimeofday (&tvafter , &tz);
 	data->run_val_ms = (tvafter.tv_sec-tvpre.tv_sec)*1000+(tvafter.tv_usec-tvpre.tv_usec)/1000;
     printf("花费时间:%d ms\n", (tvafter.tv_sec-tvpre.tv_sec)*1000+(tvafter.tv_usec-tvpre.tv_usec)/1000);
@@ -51,6 +63,9 @@ int main(int argc, char *argv[])
 	int i;
 
 	thread_cnt = 1;
+	run_cnt = 1;
+	sleep_cnt = 0;
+	loop_cnt = 4;
 
 	if (argc < 2) {
 		help();
@@ -69,11 +84,12 @@ int main(int argc, char *argv[])
 			{"threads",	required_argument,	0,	't'},
 			{"run_cnt",required_argument,	0,	'r'},
 			{"sleep_cnt",required_argument,	0,	's'},
+			{"loop_cnt",required_argument,	0,	'l'},
 			{0,0,0,0}
 		};
 	
 		int option_index = 0;
-		choice = getopt_long( argc, argv, "vh",
+		choice = getopt_long( argc, argv, "vht:r:s:l:",
 					long_options, &option_index);
 	
 		if (choice == -1)

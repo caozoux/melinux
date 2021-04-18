@@ -1,6 +1,6 @@
 
 LFLAGS := -lstdc++ -lpthread
-TAGRET := ext4dump
+TAGRET := sched_test
 
 OUT_PATH := OUT
 TAGRET := $(OUT_PATH)/$(TAGRET)
