@@ -121,7 +121,7 @@ static void kmem_dump_node_item(atomic_long_t *vm_stat)
 #endif
 	printk("NR_ISOLATED_ANON: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_ISOLATED_ANON]));
 	printk("NR_ISOLATED_FILE: %ld\n", atomic_long_read(&orig_vm_node_stat[NR_ISOLATED_FILE]));
-#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(4,19,0)
 	printk("WORKINGSET_REFAULT: %ld\n", atomic_long_read(&orig_vm_node_stat[WORKINGSET_REFAULT]));
 	printk("WORKINGSET_ACTIVATE: %ld\n", atomic_long_read(&orig_vm_node_stat[WORKINGSET_ACTIVATE]));
 #endif

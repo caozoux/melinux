@@ -1,5 +1,4 @@
 #include <linux/init.h>
-#include <linux/module.h>
 #include <linux/err.h>
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -13,6 +12,7 @@
 #include <linux/interrupt.h>
 #include <linux/syscore_ops.h>
 #include <linux/crc32.h>
+#include <linux/module.h>
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
 #include "debug_ctrl.h"
