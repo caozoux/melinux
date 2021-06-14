@@ -75,6 +75,8 @@ struct misc_uint_item unit_list[] =
 	MISC_UNIT(ktime, IOCTL_USEKTIME),
 	MISC_UNIT(page, IOCTL_USEMEM),
 	MISC_UNIT(radixtree, IOCTL_USERAIDIXTREE),
+	MISC_UNIT(krbtree, IOCTL_USEKRBTREE),
+	MISC_UNIT(pci, IOCTL_PCI),
 #ifdef CONFIG_ARM64
 	//MISC_UNIT(arm64gic, IOCTL_USEBLOCK),
 #endif
@@ -137,7 +139,7 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 		goto OUT;
 	}
 
-	DEBUG("ioctl cmd:%d cmdcode:%lx\n", data.type, data.cmdcode);
+	DEBUG("ioctl cmd:%d cmdcode:%x\n", data.type, data.cmdcode);
 
 	for(i=0; unit_list[i].type; i++) {
 		if (unit_list[i].type == data.type) {

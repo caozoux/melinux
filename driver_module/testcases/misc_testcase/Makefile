@@ -23,7 +23,9 @@ endif
 $(TARGET)-objs += kernel/task.o kernel/dentry.o kernel/virtual_bus.o  
 $(TARGET)-objs += block/request.o  block/block_disck.o block/inode.o  block/bio.o block/buffer_head.o block/readwrite.o
 $(TARGET)-objs += kmem/kmem_unit.o kmem/page.o kmem/zone.o kmem/kmemcache.o
-$(TARGET)-objs += ksched/ksched_unit.o 
+$(TARGET)-objs += ksched/ksched_unit.o  ksched/ksched_debug.o 
+$(TARGET)-objs += ktree/ktree_rbtree_unit.o
+$(TARGET)-objs += pci/pci_unit.o
 
 
 all:

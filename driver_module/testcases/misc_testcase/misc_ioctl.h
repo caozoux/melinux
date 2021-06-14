@@ -70,6 +70,10 @@ int devbusdrvtest_unit_exit(void);
 int devbusdrvtest_unit_init(void);
 int devbusdrvtest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
 
+int krbtree_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
+int krbtree_unit_init(void);
+int krbtree_unit_exit(void);
+
 FUNC_UNIT(hwpci);
 FUNC_UNIT(statickey);
 FUNC_UNIT(sched);
@@ -80,4 +84,6 @@ FUNC_UNIT(cpu);
 FUNC_UNIT(ktime);
 FUNC_UNIT(page);
 FUNC_UNIT(radixtree);
+FUNC_UNIT(rbtree);
+FUNC_UNIT(pci);
 #endif

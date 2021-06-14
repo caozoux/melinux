@@ -18,8 +18,22 @@
 #include <asm/stacktrace.h>
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
+#include "kschedlocal.h"
 #include "debug_ctrl.h"
 #include "medelay.h"
+
+static char group_path[PATH_MAX];
+static DEFINE_SPINLOCK(sched_debug_lock);
+
+#define SPLIT_NS(x) nsec_high(x), nsec_low(x)
+#define P_RQ(x)  printk("  .%-30s: %ld\n", #x, (long)(rq->x));
+
+static unsigned long nsec_low(unsigned long long nsec)
+{
+	if ((long long)nsec < 0)
+		nsec = -nsec;
+	return do_div(nsec, 1000000);
+}
 
 /*
  * Ease the printing of nsec fields:
@@ -36,6 +50,148 @@ static long long nsec_high(unsigned long long nsec)
 	return nsec;
 }
 
+#if 0
+static char *task_group_path(struct task_group *tg)
+{
+	if (autogroup_path(tg, group_path, PATH_MAX))
+		return group_path;
+
+	cgroup_path(tg->css.cgroup, group_path, PATH_MAX);
+
+	return group_path;
+}
+#endif
+
+void
+print_task(struct rq *rq, struct task_struct *p)
+{
+#if 0
+	if (rq->curr == p)
+		printk(">R");
+	else
+		printk(" %c", task_state_to_char(p));
+#endif
+
+	printk(" %c%15s %5d %9Ld.%06ld %9Ld %5d %9Ld.%06ld %9Ld.%06ld %9Ld.%06ld",
+		rq->curr == p ?  'R' :  task_state_to_char(p),
+		p->comm, task_pid_nr(p),
+		SPLIT_NS(p->se.vruntime),
+		(long long)(p->nvcsw + p->nivcsw),
+		p->prio,
+		SPLIT_NS(p->se.statistics.wait_sum),
+		SPLIT_NS(p->se.sum_exec_runtime),
+		SPLIT_NS(p->se.statistics.sum_sleep_runtime)
+		);
+
+#if 0
+	printk("%9Ld.%06ld %9Ld.%06ld %9Ld.%06ld",
+		SPLIT_NS(schedstat_val_or_zero(p->se.statistics.wait_sum)),
+		SPLIT_NS(p->se.sum_exec_runtime),
+		SPLIT_NS(schedstat_val_or_zero(p->se.statistics.sum_sleep_runtime)));
+#endif
+
+#if 0
+#ifdef CONFIG_NUMA_BALANCING
+	printk(" %d %d", task_node(p), task_numa_group_id(p));
+#endif
+#ifdef CONFIG_CGROUP_SCHED
+	printk(" %s", task_group_path(task_group(p)));
+#endif
+#endif
+}
+
+void print_rq(struct rq *rq, int rq_cpu)
+{
+	struct task_struct *g, *p;
+
+	printk("\n");
+	printk("runnable tasks:\n");
+	printk(" S           task   PID         tree-key  switches  prio"
+		   "     wait-time             sum-exec        sum-sleep\n");
+	printk("-------------------------------------------------------"
+		   "----------------------------------------------------\n");
+
+	rcu_read_lock();
+	for_each_process_thread(g, p) {
+		if (task_cpu(p) != rq_cpu)
+			continue;
+
+		print_task(rq, p);
+	}
+	rcu_read_unlock();
+}
+
+void ksched_print_cpu(int cpu)
+{
+	struct rq *rq = cpu_rq(cpu);
+	unsigned long flags;
+
+	{
+		unsigned int freq = cpu_khz ? : 1;
+
+		printk("cpu#%d, %u.%03u MHz\n",
+			   cpu, freq / 1000, (freq % 1000));
+	}
+
+	P_RQ(nr_running);
+	printk("  .%-30s: %lu\n", "load", rq->load.weight);
+	P_RQ(nr_switches);
+	P_RQ(nr_load_updates);
+	P_RQ(nr_uninterruptible);
+	P_RQ(next_balance);
+	printk("  .%-30s: %ld\n", "curr->pid", (long)(task_pid_nr(rq->curr)));
+	P_RQ(clock);
+	P_RQ(clock_task);
+	P_RQ(cpu_load[0]);
+	P_RQ(cpu_load[1]);
+	P_RQ(cpu_load[2]);
+	P_RQ(cpu_load[3]);
+	P_RQ(cpu_load[4]);
+
+	P_RQ(avg_idle);
+	P_RQ(max_idle_balance_cost);
+
+	P_RQ(yld_count);
+	P_RQ(sched_count);
+	P_RQ(sched_goidle);
+	P_RQ(ttwu_count);
+	P_RQ(ttwu_local);
+
+
+	print_rq(rq, cpu);
+#if 0
+	spin_lock_irqsave(&sched_debug_lock, flags);
+	{
+		struct cfs_rq *cfs_rq;
+
+		rcu_read_lock();
+		for_each_leaf_cfs_rq(cpu_rq(cpu), cfs_rq)
+			ksched_print_cfs_rq(cpu, cfs_rq); 
+		rcu_read_unlock(); 
+	}
+
+	{
+		rt_rq_iter_t iter;
+		struct rt_rq *rt_rq;
+
+		rcu_read_lock();
+		for_each_rt_rq(rt_rq, iter, cpu_rq(cpu))
+			ksched_print_rt_rq(cpu, rt_rq);
+		rcu_read_unlock(); 
+	}
+
+	ksched_print_dl_rq(cpu, &cpu_rq(cpu)->dl);
+
+	print_rq(rq, cpu);
+	spin_unlock_irqrestore(&sched_debug_lock, flags);
+	printk("\n");
+#endif
+
+}
+
+
+
+#if 0
 static unsigned long nsec_low(unsigned long long nsec)
 {
 	if ((long long)nsec < 0)
@@ -107,11 +263,11 @@ print_task(struct rq *rq, struct task_struct *p)
 		SPLIT_NS(schedstat_val_or_zero(p->se.statistics.sum_sleep_runtime)));
 
 	printk(" %d %d", task_node(p), task_numa_group_id(p));
-	printk(" %s", task_group_path(task_group(p)));
+	printk(" %s", task_cgroup_path(task_group(p)));
 	printk("\n");
 }
 
-static void print_rq(struct seq_file *m, struct rq *rq, int rq_cpu)
+static void print_rq(struct rq *rq, int rq_cpu)
 {
 	struct task_struct *g, *p;
 
@@ -127,12 +283,12 @@ static void print_rq(struct seq_file *m, struct rq *rq, int rq_cpu)
 		if (task_cpu(p) != rq_cpu)
 			continue;
 
-		print_task(m, rq, p);
+		print_task(rq, p);
 	}
 	rcu_read_unlock();
 }
 
-void print_cfs_rq(struct seq_file *m, int cpu, struct cfs_rq *cfs_rq)
+static void ksched_print_cfs_rq(int cpu, struct cfs_rq *cfs_rq)
 {
 	s64 MIN_vruntime = -1, min_vruntime, max_vruntime = -1,
 		spread, rq0_min_vruntime, spread0;
@@ -194,19 +350,16 @@ void print_cfs_rq(struct seq_file *m, int cpu, struct cfs_rq *cfs_rq)
 	printk("  .%-30s: %d\n", "throttle_count",
 			cfs_rq->throttle_count);
 
-	print_cfs_group_stats(m, cpu, cfs_rq->tg);
+	print_cfs_group_stats(cpu, cfs_rq->tg);
 }
 
-void print_rt_rq(struct seq_file *m, int cpu, struct rt_rq *rt_rq)
+void ksched_print_rt_rq(int cpu, struct rt_rq *rt_rq)
 {
 	printk("\n");
 	printk("rt_rq[%d]:%s\n", cpu, task_group_path(rt_rq->tg));
 
-#define P(x) \
 	printk("  .%-30s: %Ld\n", #x, (long long)(rt_rq->x))
-#define PU(x) \
 	printk("  .%-30s: %lu\n", #x, (unsigned long)(rt_rq->x))
-#define PN(x) \
 	printk("  .%-30s: %Ld.%06ld\n", #x, SPLIT_NS(rt_rq->x))
 
 	PU(rt_nr_running);
@@ -217,7 +370,7 @@ void print_rt_rq(struct seq_file *m, int cpu, struct rt_rq *rt_rq)
 
 }
 
-void print_dl_rq(struct seq_file *m, int cpu, struct dl_rq *dl_rq)
+void ksched_print_dl_rq(int cpu, struct dl_rq *dl_rq)
 {
 	struct dl_bw *dl_bw;
 
@@ -235,7 +388,7 @@ void print_dl_rq(struct seq_file *m, int cpu, struct dl_rq *dl_rq)
 
 }
 
-static void print_cpu(struct seq_file *m, int cpu)
+void ksched_print_cpu(int cpu)
 {
 	struct rq *rq = cpu_rq(cpu);
 	unsigned long flags;
@@ -247,44 +400,49 @@ static void print_cpu(struct seq_file *m, int cpu)
 			   cpu, freq / 1000, (freq % 1000));
 	}
 
-#define P(x)								\
-do {									\
-	if (sizeof(rq->x) == 4)						\
-		printk("  .%-30s: %ld\n", #x, (long)(rq->x));	\
-	else								\
-		printk("  .%-30s: %Ld\n", #x, (long long)(rq->x));\
-} while (0)
 
-	printk("  .%-30s: %Ld.%06ld\n", #x, SPLIT_NS(rq->x))
+	printk("nr_running:%lx \n",(unsigned long)rq->nr_running);
+	printk("nr_switches:%lx \n",(unsigned long)rq->nr_switches);
+	printk("nr_load_updates:%lx \n",(unsigned long)rq->nr_load_updates);
+	printk("nr_uninterruptible:%lx \n",(unsigned long)rq->nr_uninterruptible);
+	printk("next_balance:%lx \n",(unsigned long)rq->next_balance);
+	printk("clock:%lx \n",(unsigned long)rq->clock);
+	printk("clock_task:%lx \n",(unsigned long)rq->clock_task);
+	printk("avg_idle:%lx \n",(unsigned long)rq->avg_idle);
+	printk("max_idle_balance_cost:%lx \n",(unsigned long)rq->max_idle_balance_cost);
 
-	P(nr_running);
-	P(nr_switches);
-	P(nr_load_updates);
-	P(nr_uninterruptible);
-	PN(next_balance);
-	printk("  .%-30s: %ld\n", "curr->pid", (long)(task_pid_nr(rq->curr)));
-	PN(clock);
-	PN(clock_task);
-
-#define P64(n) printk("  .%-30s: %Ld\n", #n, rq->n);
-	P64(avg_idle);
-	P64(max_idle_balance_cost);
-
-#define P(n) printk("  .%-30s: %d\n", #n, schedstat_val(rq->n));
 	if (schedstat_enabled()) {
-		P(yld_count);
-		P(sched_count);
-		P(sched_goidle);
-		P(ttwu_count);
-		P(ttwu_local);
+		P(rq->yld_count);
+		P(rq->sched_count);
+		P(rq->sched_goidle);
+		P(rq->ttwu_count);
+		P(rq->ttwu_local);
 	}
 
 	spin_lock_irqsave(&sched_debug_lock, flags);
-	print_cfs_stats(m, cpu);
-	print_rt_stats(m, cpu);
-	print_dl_stats(m, cpu);
+	{
+		struct cfs_rq *cfs_rq;
 
-	print_rq(m, rq, cpu);
+		rcu_read_lock();
+		for_each_leaf_cfs_rq(cpu_rq(cpu), cfs_rq)
+			ksched_print_cfs_rq(cpu, cfs_rq); 
+		rcu_read_unlock(); 
+	}
+
+	{
+		rt_rq_iter_t iter;
+		struct rt_rq *rt_rq;
+
+		rcu_read_lock();
+		for_each_rt_rq(rt_rq, iter, cpu_rq(cpu))
+			ksched_print_rt_rq(cpu, rt_rq);
+		rcu_read_unlock(); 
+	}
+
+	ksched_print_dl_rq(cpu, &cpu_rq(cpu)->dl);
+
+	print_rq(rq, cpu);
 	spin_unlock_irqrestore(&sched_debug_lock, flags);
 	printk("\n");
 }
+#endif

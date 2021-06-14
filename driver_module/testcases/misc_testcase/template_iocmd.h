@@ -25,6 +25,8 @@ enum ioctl_cmdtype {
 	IOCTL_USEBLOCK,
 	IOCTL_USEKTIME,
 	IOCTL_USESCHED,
+	IOCTL_USEKRBTREE,
+	IOCTL_PCI,
 };
 
 enum IOCTL_TYPE {
@@ -136,6 +138,12 @@ enum IOCTL_USEWORKQUEUE_SUB{
 	IOCTL_USEWORKQUEUE_PEFORMANCE_DELAY,
 };
 
+enum IOCTL_PCI_SUB {
+	IOCTL_PCI_ENUM, //enmualte all pci device
+	IOCTL_PCI_DUMPINFO, //get pci device info
+	IOCTL_PCI_ENABLE, //enable pci device
+	IOCTL_PCI_DISABLE, //disable pci device
+};
 
 struct mem_size_stats {
     unsigned long resident;
@@ -224,8 +232,9 @@ struct ioctl_data {
 					unsigned long start_pfn;
 					unsigned long size;
 				}pageattr_data;
-			}
+			};
 		} kmem_data;
+
 		struct sched_ioctl {
 			int pid;
 			struct u_task_info {
@@ -239,6 +248,9 @@ struct ioctl_data {
 		struct block_ioctl {
 			char filename[256];
 		} block_data;
+		struct pci_ioctl {
+			
+		} pci_data;
 	};
 	unsigned long args[5];
 	char *log_buf;
