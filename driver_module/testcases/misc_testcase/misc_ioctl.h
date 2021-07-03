@@ -44,6 +44,7 @@ int workqueue_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioct
 
 int locktest_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
 int locktest_unit_init(void);
+int locktest_unit_exit(void);
 
 int msr_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
 int msr_unit_init(void);
@@ -74,6 +75,11 @@ int krbtree_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_d
 int krbtree_unit_init(void);
 int krbtree_unit_exit(void);
 
+int efi_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
+int efi_unit_init(void);
+int efi_unit_exit(void);
+
+FUNC_UNIT(locktest);
 FUNC_UNIT(hwpci);
 FUNC_UNIT(statickey);
 FUNC_UNIT(sched);
@@ -86,4 +92,5 @@ FUNC_UNIT(page);
 FUNC_UNIT(radixtree);
 FUNC_UNIT(rbtree);
 FUNC_UNIT(pci);
+FUNC_UNIT(efi);
 #endif

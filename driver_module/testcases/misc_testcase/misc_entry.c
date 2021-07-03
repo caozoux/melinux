@@ -58,6 +58,7 @@ struct misc_private_data {
 
 struct misc_uint_item unit_list[] =
 {
+	MISC_UNIT(locktest, IOCTL_LOCK),
 	MISC_UNIT(kmem, IOCTL_USEKMEM),
 	MISC_UNIT(atomic, IOCTL_USEATOMIC),
 	MISC_UNIT(devbusdrvtest, IOCTL_USEDEVBUSDRV),
@@ -77,6 +78,7 @@ struct misc_uint_item unit_list[] =
 	MISC_UNIT(radixtree, IOCTL_USERAIDIXTREE),
 	MISC_UNIT(krbtree, IOCTL_USEKRBTREE),
 	MISC_UNIT(pci, IOCTL_PCI),
+	MISC_UNIT(efi, IOCTL_PCI),
 #ifdef CONFIG_ARM64
 	//MISC_UNIT(arm64gic, IOCTL_USEBLOCK),
 #endif

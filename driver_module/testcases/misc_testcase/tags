@@ -1,0 +1,1022 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+AARCH64_INSN_LSL_12	msr_arm.c	48;"	d	file:
+AARCH64_INSN_N_BIT	msr_arm.c	47;"	d	file:
+AARCH64_INSN_SF_BIT	msr_arm.c	46;"	d	file:
+AARCH64_MRS_INSN	msr_arm.h	31;"	d
+AARCH64_MSR_INSN	msr_arm.h	32;"	d
+AARCH64_SYS_INSN	msr_arm.h	33;"	d
+AF	lib/page.c	25;"	d	file:
+AP	lib/page.c	27;"	d	file:
+APTABLE	lib/page.c	15;"	d	file:
+ARRT_MARCO	misc_entry.c	20;"	d	file:
+ARRT_MARCO_READ	misc_entry.c	22;"	d	file:
+ARRT_MARCO_WRITE	misc_entry.c	30;"	d	file:
+ATTR	lib/page.c	29;"	d	file:
+BIN	mrs-tool/Makefile	/^BIN	= rsysreg wsysreg$/;"	m
+CC	mrs-tool/Makefile	/^CC       = gcc -Wall$/;"	m
+CFLAGS	mrs-tool/Makefile	/^CFLAGS   = -g -O0 -fomit-frame-pointer -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -I .\/$/;"	m
+CPU_FREQ	delay.c	8;"	d	file:
+CRm_mask	mrs-tool/sysreg.h	44;"	d
+CRm_shift	mrs-tool/sysreg.h	43;"	d
+CRn_mask	mrs-tool/sysreg.h	42;"	d
+CRn_shift	mrs-tool/sysreg.h	41;"	d
+CT	lib/page.c	20;"	d	file:
+CUR_PATH	Makefile	/^CUR_PATH = $(shell pwd)$/;"	m
+DEBUG	debug_ctrl.h	10;"	d
+DEBUG	debug_ctrl.h	15;"	d
+DEBUGLEVE	debug_ctrl.h	4;"	d
+DEV_NAME	user_space/block_main.c	12;"	d	file:
+DEV_NAME	user_space/main.c	14;"	d	file:
+DMB	lib/page.c	21;"	d	file:
+ERR	debug_ctrl.h	13;"	d
+ERR	debug_ctrl.h	18;"	d
+FUNC_UNIT	misc_ioctl.h	14;"	d
+GIC_DATA_MAKS	arm64/gic/gic_entry.c	34;"	d	file:
+GP	lib/page.c	22;"	d	file:
+INFO	debug_ctrl.h	11;"	d
+INFO	debug_ctrl.h	16;"	d
+INSN_REG_MASK	msr_arm.h	34;"	d
+IOCTL_HARDLOCK	template_iocmd.h	/^	IOCTL_HARDLOCK,$/;"	e	enum:ioctl_cmdtype
+IOCTL_HARDLOCK_IRQLOCK	template_iocmd.h	/^	IOCTL_HARDLOCK_IRQLOCK,$/;"	e	enum:IOCTL_HARDLOCK_SUB
+IOCTL_HARDLOCK_IRQTRYLOCK	template_iocmd.h	/^	IOCTL_HARDLOCK_IRQTRYLOCK$/;"	e	enum:IOCTL_HARDLOCK_SUB
+IOCTL_HARDLOCK_IRQUNLOCK	template_iocmd.h	/^	IOCTL_HARDLOCK_IRQUNLOCK,$/;"	e	enum:IOCTL_HARDLOCK_SUB
+IOCTL_HARDLOCK_LOCK	template_iocmd.h	/^	IOCTL_HARDLOCK_LOCK,$/;"	e	enum:IOCTL_HARDLOCK_SUB
+IOCTL_HARDLOCK_NONE	template_iocmd.h	/^	IOCTL_HARDLOCK_NONE = 0,$/;"	e	enum:IOCTL_HARDLOCK_SUB
+IOCTL_HARDLOCK_SUB	template_iocmd.h	/^enum IOCTL_HARDLOCK_SUB {$/;"	g
+IOCTL_HARDLOCK_TRYLOCK	template_iocmd.h	/^	IOCTL_HARDLOCK_TRYLOCK,$/;"	e	enum:IOCTL_HARDLOCK_SUB
+IOCTL_HARDLOCK_UNLOCK	template_iocmd.h	/^	IOCTL_HARDLOCK_UNLOCK,$/;"	e	enum:IOCTL_HARDLOCK_SUB
+IOCTL_LOCK	template_iocmd.h	/^	IOCTL_LOCK =1,$/;"	e	enum:ioctl_cmdtype
+IOCTL_MEM	template_iocmd.h	/^	IOCTL_MEM,$/;"	e	enum:ioctl_cmdtype
+IOCTL_PCI	template_iocmd.h	/^	IOCTL_PCI,$/;"	e	enum:ioctl_cmdtype
+IOCTL_PCI_DISABLE	template_iocmd.h	/^	IOCTL_PCI_DISABLE, \/\/disable pci device$/;"	e	enum:IOCTL_PCI_SUB
+IOCTL_PCI_DUMPINFO	template_iocmd.h	/^	IOCTL_PCI_DUMPINFO, \/\/get pci device info$/;"	e	enum:IOCTL_PCI_SUB
+IOCTL_PCI_ENABLE	template_iocmd.h	/^	IOCTL_PCI_ENABLE, \/\/enable pci device$/;"	e	enum:IOCTL_PCI_SUB
+IOCTL_PCI_ENUM	template_iocmd.h	/^	IOCTL_PCI_ENUM, \/\/enmualte all pci device$/;"	e	enum:IOCTL_PCI_SUB
+IOCTL_PCI_SUB	template_iocmd.h	/^enum IOCTL_PCI_SUB {$/;"	g
+IOCTL_SOFTLOCK	template_iocmd.h	/^	IOCTL_SOFTLOCK,$/;"	e	enum:ioctl_cmdtype
+IOCTL_TYPE	template_iocmd.h	/^enum IOCTL_TYPE {$/;"	g
+IOCTL_TYPE_VMALLOC_MAX	template_iocmd.h	/^	IOCTL_TYPE_VMALLOC_MAX=1,$/;"	e	enum:IOCTL_TYPE
+IOCTL_USEATOMIC	template_iocmd.h	/^	IOCTL_USEATOMIC,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USEATOMIC_NONE	template_iocmd.h	/^	IOCTL_USEATOMIC_NONE = 0,$/;"	e	enum:IOCTL_USEATOMIC_SUB
+IOCTL_USEATOMIC_PERFORMANCE	template_iocmd.h	/^	IOCTL_USEATOMIC_PERFORMANCE,$/;"	e	enum:IOCTL_USEATOMIC_SUB
+IOCTL_USEATOMIC_SUB	template_iocmd.h	/^enum IOCTL_USEATOMIC_SUB {$/;"	g
+IOCTL_USEBLOCK	template_iocmd.h	/^	IOCTL_USEBLOCK,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USEBLOCK_FILE	template_iocmd.h	/^	IOCTL_USEBLOCK_FILE,$/;"	e	enum:IOCTL_USEBLOCK_SUB
+IOCTL_USEBLOCK_FILE_DROP_CACHE	template_iocmd.h	/^	IOCTL_USEBLOCK_FILE_DROP_CACHE,$/;"	e	enum:IOCTL_USEBLOCK_SUB
+IOCTL_USEBLOCK_INDOE	template_iocmd.h	/^	IOCTL_USEBLOCK_INDOE,$/;"	e	enum:IOCTL_USEBLOCK_SUB
+IOCTL_USEBLOCK_NONE	template_iocmd.h	/^	IOCTL_USEBLOCK_NONE = 0,$/;"	e	enum:IOCTL_USEBLOCK_SUB
+IOCTL_USEBLOCK_SUB	template_iocmd.h	/^enum IOCTL_USEBLOCK_SUB{$/;"	g
+IOCTL_USEDEVBUSDRV	template_iocmd.h	/^	IOCTL_USEDEVBUSDRV,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USEEXT2	template_iocmd.h	/^	IOCTL_USEEXT2,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USEEXT2_ENUM_SUPBLOCK	template_iocmd.h	/^	IOCTL_USEEXT2_ENUM_SUPBLOCK,$/;"	e	enum:IOCTL_USEEXT2_SUB
+IOCTL_USEEXT2_GET_BLOCK	template_iocmd.h	/^	IOCTL_USEEXT2_GET_BLOCK,$/;"	e	enum:IOCTL_USEEXT2_SUB
+IOCTL_USEEXT2_NONE	template_iocmd.h	/^	IOCTL_USEEXT2_NONE = 0,$/;"	e	enum:IOCTL_USEEXT2_SUB
+IOCTL_USEEXT2_SUB	template_iocmd.h	/^enum IOCTL_USEEXT2_SUB{$/;"	g
+IOCTL_USEHWPCI	template_iocmd.h	/^	IOCTL_USEHWPCI,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USEKMEM	template_iocmd.h	/^	IOCTL_USEKMEM,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USEKMEM_ACTIVE_ANON_PAGE	template_iocmd.h	/^	IOCTL_USEKMEM_ACTIVE_ANON_PAGE,$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKMEM_ACTIVE_PAGE	template_iocmd.h	/^	IOCTL_USEKMEM_ACTIVE_PAGE,$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKMEM_CACHE	template_iocmd.h	/^	IOCTL_USEKMEM_CACHE,$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKMEM_FULL_PAGE_SCAN	template_iocmd.h	/^	IOCTL_USEKMEM_FULL_PAGE_SCAN,$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKMEM_GET	template_iocmd.h	/^	IOCTL_USEKMEM_GET,$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKMEM_GET_PTE	template_iocmd.h	/^	IOCTL_USEKMEM_GET_PTE, \/\/get memory addr pte value$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKMEM_INACTIVE_ANON_PAGE	template_iocmd.h	/^	IOCTL_USEKMEM_INACTIVE_ANON_PAGE,$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKMEM_INACTIVE_PAGE	template_iocmd.h	/^	IOCTL_USEKMEM_INACTIVE_PAGE,$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKMEM_NONE	template_iocmd.h	/^	IOCTL_USEKMEM_NONE = 0,$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKMEM_PAGE_ATTR	template_iocmd.h	/^	IOCTL_USEKMEM_PAGE_ATTR,$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKMEM_SHOW	template_iocmd.h	/^	IOCTL_USEKMEM_SHOW,$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKMEM_SLUB_OP	template_iocmd.h	/^	IOCTL_USEKMEM_SLUB_OP,$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKMEM_SUB	template_iocmd.h	/^enum IOCTL_USEKMEM_SUB{$/;"	g
+IOCTL_USEKMEM_SWAPCACHE	template_iocmd.h	/^	IOCTL_USEKMEM_SWAPCACHE,$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKMEM_TESTBUDDY	template_iocmd.h	/^	IOCTL_USEKMEM_TESTBUDDY,$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKMEM_VMA_SCAN	template_iocmd.h	/^	IOCTL_USEKMEM_VMA_SCAN,$/;"	e	enum:IOCTL_USEKMEM_SUB
+IOCTL_USEKPROBE	template_iocmd.h	/^	IOCTL_USEKPROBE,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USEKRBTREE	template_iocmd.h	/^	IOCTL_USEKRBTREE,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USEKRPOBE_FUNC_DUMP	template_iocmd.h	/^	IOCTL_USEKRPOBE_FUNC_DUMP,$/;"	e	enum:IOCTL_USEKRPOBE_SUB
+IOCTL_USEKRPOBE_NONE	template_iocmd.h	/^	IOCTL_USEKRPOBE_NONE = 0,$/;"	e	enum:IOCTL_USEKRPOBE_SUB
+IOCTL_USEKRPOBE_SUB	template_iocmd.h	/^enum IOCTL_USEKRPOBE_SUB {$/;"	g
+IOCTL_USEKTIME	template_iocmd.h	/^	IOCTL_USEKTIME,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USEKTIME_DEV_SCAN	template_iocmd.h	/^	IOCTL_USEKTIME_DEV_SCAN,$/;"	e	enum:IOCTL_USEKTIME_SUB
+IOCTL_USEKTIME_FILE	template_iocmd.h	/^	IOCTL_USEKTIME_FILE,$/;"	e	enum:IOCTL_USEKTIME_SUB
+IOCTL_USEKTIME_NONE	template_iocmd.h	/^	IOCTL_USEKTIME_NONE = 0,$/;"	e	enum:IOCTL_USEKTIME_SUB
+IOCTL_USEKTIME_SUB	template_iocmd.h	/^enum IOCTL_USEKTIME_SUB{$/;"	g
+IOCTL_USEMEM	template_iocmd.h	/^	IOCTL_USEMEM,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USEMEM_NONE	template_iocmd.h	/^	IOCTL_USEMEM_NONE = 0,$/;"	e	enum:IOCTL_USEMEM_SUB
+IOCTL_USEMEM_PAGEDUMP	template_iocmd.h	/^	IOCTL_USEMEM_PAGEDUMP,$/;"	e	enum:IOCTL_USEMEM_SUB
+IOCTL_USEMEM_SUB	template_iocmd.h	/^enum IOCTL_USEMEM_SUB{$/;"	g
+IOCTL_USEMEM_VMA_SCAN	template_iocmd.h	/^	IOCTL_USEMEM_VMA_SCAN,$/;"	e	enum:IOCTL_USEMEM_SUB
+IOCTL_USEMSR	template_iocmd.h	/^	IOCTL_USEMSR,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USERAIDIXTREE	template_iocmd.h	/^	IOCTL_USERAIDIXTREE,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USERAIDIXTREE_ADD	template_iocmd.h	/^	IOCTL_USERAIDIXTREE_ADD,$/;"	e	enum:IOCTL_USERAIDIXTREE_SUB
+IOCTL_USERAIDIXTREE_DEL	template_iocmd.h	/^	IOCTL_USERAIDIXTREE_DEL,$/;"	e	enum:IOCTL_USERAIDIXTREE_SUB
+IOCTL_USERAIDIXTREE_DUMP	template_iocmd.h	/^	IOCTL_USERAIDIXTREE_DUMP,$/;"	e	enum:IOCTL_USERAIDIXTREE_SUB
+IOCTL_USERAIDIXTREE_GET	template_iocmd.h	/^	IOCTL_USERAIDIXTREE_GET,$/;"	e	enum:IOCTL_USERAIDIXTREE_SUB
+IOCTL_USERAIDIXTREE_NONE	template_iocmd.h	/^	IOCTL_USERAIDIXTREE_NONE = 0,$/;"	e	enum:IOCTL_USERAIDIXTREE_SUB
+IOCTL_USERAIDIXTREE_SUB	template_iocmd.h	/^enum IOCTL_USERAIDIXTREE_SUB {$/;"	g
+IOCTL_USERCU	template_iocmd.h	/^	IOCTL_USERCU,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USERCU_NONE	template_iocmd.h	/^	IOCTL_USERCU_NONE = 0,$/;"	e	enum:IOCTL_USERCU_SUB
+IOCTL_USERCU_READTEST_END	template_iocmd.h	/^	IOCTL_USERCU_READTEST_END,$/;"	e	enum:IOCTL_USERCU_SUB
+IOCTL_USERCU_READTEST_START	template_iocmd.h	/^	IOCTL_USERCU_READTEST_START,$/;"	e	enum:IOCTL_USERCU_SUB
+IOCTL_USERCU_SUB	template_iocmd.h	/^enum IOCTL_USERCU_SUB {$/;"	g
+IOCTL_USERMAP	template_iocmd.h	/^	IOCTL_USERMAP,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USESCHED	template_iocmd.h	/^	IOCTL_USESCHED,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USESCHED_NONE	template_iocmd.h	/^	IOCTL_USESCHED_NONE = 0,$/;"	e	enum:IOCTL_USESCHED_SUB
+IOCTL_USESCHED_SUB	template_iocmd.h	/^enum IOCTL_USESCHED_SUB{$/;"	g
+IOCTL_USESCHED_TASK_GET	template_iocmd.h	/^	IOCTL_USESCHED_TASK_GET,$/;"	e	enum:IOCTL_USESCHED_SUB
+IOCTL_USEWORKQUEUE	template_iocmd.h	/^	IOCTL_USEWORKQUEUE,$/;"	e	enum:ioctl_cmdtype
+IOCTL_USEWORKQUEUE_NONE	template_iocmd.h	/^	IOCTL_USEWORKQUEUE_NONE = 0,$/;"	e	enum:IOCTL_USEWORKQUEUE_SUB
+IOCTL_USEWORKQUEUE_PEFORMANCE_DELAY	template_iocmd.h	/^	IOCTL_USEWORKQUEUE_PEFORMANCE_DELAY,$/;"	e	enum:IOCTL_USEWORKQUEUE_SUB
+IOCTL_USEWORKQUEUE_PERCPU	template_iocmd.h	/^	IOCTL_USEWORKQUEUE_PERCPU,$/;"	e	enum:IOCTL_USEWORKQUEUE_SUB
+IOCTL_USEWORKQUEUE_PERCPU_SPINLOCKIRQ_RACE	template_iocmd.h	/^	IOCTL_USEWORKQUEUE_PERCPU_SPINLOCKIRQ_RACE,$/;"	e	enum:IOCTL_USEWORKQUEUE_SUB
+IOCTL_USEWORKQUEUE_SIG	template_iocmd.h	/^	IOCTL_USEWORKQUEUE_SIG,$/;"	e	enum:IOCTL_USEWORKQUEUE_SUB
+IOCTL_USEWORKQUEUE_SIG_SPINLOCK	template_iocmd.h	/^	IOCTL_USEWORKQUEUE_SIG_SPINLOCK,$/;"	e	enum:IOCTL_USEWORKQUEUE_SUB
+IOCTL_USEWORKQUEUE_SIG_SPINLOCKIRQ	template_iocmd.h	/^	IOCTL_USEWORKQUEUE_SIG_SPINLOCKIRQ,$/;"	e	enum:IOCTL_USEWORKQUEUE_SUB
+IOCTL_USEWORKQUEUE_SUB	template_iocmd.h	/^enum IOCTL_USEWORKQUEUE_SUB{$/;"	g
+IRQ_ATRS_NUM	arm64/gic/gic_virtual_device.c	51;"	d	file:
+IRQ_MASK	arm64/gic/gic_virtual_device.c	28;"	d	file:
+IRQ_PENDING	arm64/gic/gic_virtual_device.c	30;"	d	file:
+IRQ_TRIGGER	arm64/gic/gic_virtual_device.c	27;"	d	file:
+IRQ_UNMASK	arm64/gic/gic_virtual_device.c	29;"	d	file:
+KERSRC	Makefile	/^KERSRC ?= \/lib\/modules\/$(KERVER)\/build$/;"	m
+KERSRC	Makefile	/^KERSRC ?=\/export\/disk1T\/zoucao.zcdisk\/cach\/ck\/$/;"	m
+KERVER	Makefile	/^KERVER =$(shell uname -r)$/;"	m
+LDFLAGS	mrs-tool/Makefile	/^LDFLAGS  =$/;"	m
+LOC_PRINT	lib/crc32.c	11;"	d	file:
+LOC_PRINT	lib/crc32.c	6;"	d	file:
+LOC_PRINT	lib/page.c	11;"	d	file:
+LOC_PRINT	lib/page.c	6;"	d	file:
+LOOKUP_SYMBOL	showstack.c	34;"	d	file:
+LOOKUP_SYMBOLEX	showstack.c	26;"	d	file:
+LOOKUP_SYMS	misc_ioctl.h	6;"	d
+LOOP_CNT	atomic_entry.c	21;"	d	file:
+MAX_CM	mrs-tool/sysreg.h	25;"	d
+MAX_CM	msr_arm.h	47;"	d
+MAX_CN	mrs-tool/sysreg.h	24;"	d
+MAX_CN	msr_arm.h	46;"	d
+MAX_LENGTH	mrs-tool/sysreg.h	8;"	d
+MAX_LINE	mrs-tool/sysreg.h	9;"	d
+MAX_OP0	mrs-tool/sysreg.h	21;"	d
+MAX_OP0	msr_arm.h	43;"	d
+MAX_OP1	mrs-tool/sysreg.h	22;"	d
+MAX_OP1	msr_arm.h	44;"	d
+MAX_OP2	mrs-tool/sysreg.h	23;"	d
+MAX_OP2	msr_arm.h	45;"	d
+MAX_REG	mrs-tool/sysreg.h	10;"	d
+MISC_NAME	misc_entry.c	49;"	d	file:
+MISC_UNIT	misc_entry.c	41;"	d	file:
+NG	lib/page.c	24;"	d	file:
+NS	lib/page.c	28;"	d	file:
+NSTABLE	lib/page.c	14;"	d	file:
+NT	lib/page.c	23;"	d	file:
+OBJS	lib/Makefile	/^OBJS := page.o crc32.o$/;"	m
+Op0_mask	mrs-tool/sysreg.h	38;"	d
+Op0_shift	mrs-tool/sysreg.h	37;"	d
+Op1_mask	mrs-tool/sysreg.h	40;"	d
+Op1_shift	mrs-tool/sysreg.h	39;"	d
+Op2_mask	mrs-tool/sysreg.h	46;"	d
+Op2_shift	mrs-tool/sysreg.h	45;"	d
+PAGE_SIZE	user_space/kmem.c	63;"	d	file:
+PSR_MODE_ALL_EL	msr_arm.h	37;"	d
+PSR_MODE_MASK_ALL	msr_arm.h	36;"	d
+PSS_SHIFT	kmem/kmem_unit.c	22;"	d	file:
+PTE_BIT_ENABLE	lib/page.c	31;"	d	file:
+PTE_MBIT_ENABLE	lib/page.c	32;"	d	file:
+PXN	lib/page.c	19;"	d	file:
+PXNTABLE	lib/page.c	17;"	d	file:
+P_RQ	ksched/ksched_debug.c	27;"	d	file:
+RADIX_TREE_RETRY	lib/raidtree.c	36;"	d	file:
+RSRC	mrs-tool/Makefile	/^RSRC = rsysreg.c$/;"	m
+SH	lib/page.c	26;"	d	file:
+SLUB_OP	template_iocmd.h	/^enum SLUB_OP {$/;"	g
+SLUB_OP_ADD	template_iocmd.h	/^	SLUB_OP_ADD,$/;"	e	enum:SLUB_OP
+SLUB_OP_CREATE	template_iocmd.h	/^	SLUB_OP_CREATE,$/;"	e	enum:SLUB_OP
+SLUB_OP_DEC	template_iocmd.h	/^	SLUB_OP_DEC$/;"	e	enum:SLUB_OP
+SLUB_OP_NONE	template_iocmd.h	/^	SLUB_OP_NONE = 0,$/;"	e	enum:SLUB_OP
+SLUB_OP_REMOVE	template_iocmd.h	/^	SLUB_OP_REMOVE,$/;"	e	enum:SLUB_OP
+SPLIT_NS	ksched/ksched_debug.c	26;"	d	file:
+TABLENAME	mrs-tool/rsysreg.c	/^char *TABLENAME = "regsv8_1.table"; \/* the path for regs.table *\/$/;"	v
+TABLENAME	mrs-tool/wsysreg.c	/^char *TABLENAME = "regsv8_1.table"; \/* the path for regs.table *\/$/;"	v
+TABLEPATH	mrs-tool/rsysreg.c	/^char *TABLEPATH; \/* the path for regs.table *\/$/;"	v
+TABLEPATH	mrs-tool/wsysreg.c	/^char *TABLEPATH; \/* the path for regs.table *\/$/;"	v
+TARGET	Makefile	/^TARGET := misc$/;"	m
+TARGET	lib/Makefile	/^TARGET :=misctest_lib.a$/;"	m
+THREAD_CNT	atomic_entry.c	22;"	d	file:
+U64	template_iocmd.h	/^typedef unsigned long U64;$/;"	t
+UXN	lib/page.c	18;"	d	file:
+UXNTABLE	lib/page.c	16;"	d	file:
+VERSION_STRING	mrs-tool/version.h	4;"	d
+WARN	debug_ctrl.h	12;"	d
+WARN	debug_ctrl.h	17;"	d
+WSRC	mrs-tool/Makefile	/^WSRC = wsysreg.c$/;"	m
+_ME_PCILOCLA_H_	pci/pcilocal.h	2;"	d
+__BLOCK_LOCAL_H__	block/blocklocal.h	2;"	d
+__COMMON_HEAD_H__	user_space/common_head.h	2;"	d
+__DEBUG_CTRL_H__	debug_ctrl.h	2;"	d
+__GIC_LOCAL_DATA_H__	arm64/gic/gic_local_data.h	2;"	d
+__KMEM_DATA_H__	include/kmem_data.h	2;"	d
+__KMEM_LOCAL_H__	kmem/kmemlocal.h	2;"	d
+__KSCHEDLOCAL_H__	ksched/kschedlocal.h	2;"	d
+__MEKERNEL_H__	include/mekernel.h	2;"	d
+__ME_DELAY_H__	include/medelay.h	2;"	d
+__ME_LIB_H__	include/melib.h	2;"	d
+__MISC_IOCTL_H__	misc_ioctl.h	2;"	d
+__MSR_ARM_H__	msr_arm.h	3;"	d
+__START_KERNEL_map_test	kmem/kmem_unit.c	340;"	d	file:
+__SYSREG_TOOL_MSR_H__	mrs-tool/sysreg.h	3;"	d
+__SYSREG_TOOL_VERSION_H__	mrs-tool/version.h	2;"	d
+__TEMPLATE_IOCMD_H__	template_iocmd.h	2;"	d
+__mephys_addr_nodebug	kmem/kmem_unit.c	/^static inline unsigned long __mephys_addr_nodebug(unsigned long x)$/;"	f	file:
+__rdmsr_safe_on_cpu_aarch64	msr_arm.c	/^static void __rdmsr_safe_on_cpu_aarch64(void *info)$/;"	f	file:
+__this_module	misc.mod.c	/^__visible struct module __this_module$/;"	v	typeref:struct:module
+__used	misc.mod.c	/^__used$/;"	v	file:
+__used	misc.mod.c	/^__used$/;"	v	typeref:struct:____versions	file:
+__wrmsr_safe_on_cpu_aarch64	msr_arm.c	/^static void __wrmsr_safe_on_cpu_aarch64(void *info)$/;"	f	file:
+aarch64_insn_mrs_gen	msr_arm.c	/^EXPORT_SYMBOL(aarch64_insn_mrs_gen);$/;"	v
+aarch64_insn_mrs_gen	msr_arm.c	/^u32 aarch64_insn_mrs_gen(u32 op0, u32 op1, u32 crn, u32 crm, u32 op2, u32 rt)$/;"	f
+aarch64_insn_msr_gen	msr_arm.c	/^EXPORT_SYMBOL(aarch64_insn_msr_gen);$/;"	v
+aarch64_insn_msr_gen	msr_arm.c	/^u32 aarch64_insn_msr_gen(u32 op0, u32 op1, u32 crn, u32 crm, u32 op2, u32 rt)$/;"	f
+aarch64_insn_other_gen	msr_arm.c	/^EXPORT_SYMBOL(aarch64_insn_other_gen);$/;"	v
+aarch64_insn_other_gen	msr_arm.c	/^u32 aarch64_insn_other_gen(u32 op0, u32 op1, u32 crn, u32 crm, u32 op2, u32 rt)$/;"	f
+aarch64_insn_patch	msr_arm.h	/^struct aarch64_insn_patch {$/;"	s
+aarch64_insn_patch_text_smc	msr_arm.c	/^int aarch64_insn_patch_text_smc(void *addrs[], u32 insns[], int cnt)$/;"	f
+aarch64_insn_read_smc	msr_arm.c	/^int aarch64_insn_read_smc(void *addr, u32 *insnp)$/;"	f
+aarch64_modify_read_text	msr_arm.c	/^EXPORT_SYMBOL(aarch64_modify_read_text);$/;"	v
+aarch64_modify_read_text	msr_arm.c	/^int aarch64_modify_read_text(u32 opcode)$/;"	f
+aarch64_modify_write_text	msr_arm.c	/^EXPORT_SYMBOL(aarch64_modify_write_text);$/;"	v
+aarch64_modify_write_text	msr_arm.c	/^int aarch64_modify_write_text(u32 opcode)$/;"	f
+aarch64_printf	mrs-tool/aarch64_rdmsr.c	/^void aarch64_printf(int mode, uint64_t data,unsigned int highbit,$/;"	f
+aarch64_read_register	mrs-tool/aarch64_rdmsr.c	/^void aarch64_read_register(int fd, uint64_t *data, int size, uint32_t reg)$/;"	f
+aarch64_register_check	msr_arm.c	/^EXPORT_SYMBOL(aarch64_register_check);$/;"	v
+aarch64_register_check	msr_arm.c	/^int aarch64_register_check(u32 reg)$/;"	f
+aarch64_write_register	mrs-tool/aarch64_wrmsr.c	/^void aarch64_write_register(int fd, uint64_t data, int size, uint32_t reg)$/;"	f
+add_new_virt_gic_dev	arm64/gic/gic_virtual_device.c	/^static struct virtual_gic_dev_data *add_new_virt_gic_dev(int nrirqs)$/;"	f	file:
+addr	template_iocmd.h	/^			unsigned long addr; \/\/pte addr$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl
+all_funcs	user_space/main.c	/^static struct memisc_func all_funcs[] = {$/;"	v	typeref:struct:memisc_func	file:
+alloc_context	kmem/compact.c	/^struct alloc_context {                                                                                                                                                                                  $/;"	s	file:
+alloc_flags	kmem/zone.c	/^	const unsigned int alloc_flags;	\/* alloc flags of a direct compactor *\/$/;"	m	struct:compact_control	file:
+anonymous	template_iocmd.h	/^    unsigned long anonymous;$/;"	m	struct:mem_size_stats
+anonymous_thp	template_iocmd.h	/^    unsigned long anonymous_thp;$/;"	m	struct:mem_size_stats
+args	template_iocmd.h	/^	unsigned long args[5];$/;"	m	struct:ioctl_data
+arm64gic	misc_ioctl.h	/^FUNC_UNIT(arm64gic);$/;"	v
+arm64gic_unit_exit	arm64/gic/gic_entry.c	/^int arm64gic_unit_exit(void)$/;"	f
+arm64gic_unit_init	arm64/gic/gic_entry.c	/^int arm64gic_unit_init(void)$/;"	f
+arm64gic_unit_ioctl_func	arm64/gic/gic_entry.c	/^int arm64gic_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+atm_dt	atomic_entry.c	/^} *atm_dt;$/;"	v	typeref:struct:atomic_test_data
+atm_per_cpu_test	atomic_entry.c	/^static unsigned long long atm_per_cpu_test(struct work_struct *work)$/;"	f	file:
+atm_sig_test	atomic_entry.c	/^static void atm_sig_test(struct work_struct *work)$/;"	f	file:
+atomic_test	user_space/main.c	/^static int atomic_test(int fd ,struct ioctl_data *data)$/;"	f	file:
+atomic_test_data	atomic_entry.c	/^struct atomic_test_data {$/;"	s	file:
+atomic_test_val1	atomic_entry.c	/^static atomic_t atomic_test_val1 __attribute__((aligned (128)));$/;"	v	file:
+atomic_unit_exit	atomic_entry.c	/^int atomic_unit_exit(void)$/;"	f
+atomic_unit_init	atomic_entry.c	/^int atomic_unit_init(void)$/;"	f
+atomic_unit_ioctl_func	atomic_entry.c	/^int atomic_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+attr_name	arm64/gic/gic_virtual_device.c	/^	char **attr_name;$/;"	m	struct:virtual_gic_dev_data	file:
+base	arm64/gic/gic_local_data.h	/^        void            *base;$/;"	m	struct:its_baser
+base	arm64/gic/gic_local_data.h	/^        void __iomem            *base;$/;"	m	struct:its_node
+base_id	arm64/gic/gic_local_data.h	/^	u32                     base_id;$/;"	m	struct:lpi_range
+bdr_init	bus_dev_driver.c	/^int bdr_init(void)$/;"	f
+bdr_ioctl_func	bus_dev_driver.c	/^int bdr_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+bio_dump_data	block/bio.c	/^void bio_dump_data(struct bio *bio)$/;"	f
+blk_name	template_iocmd.h	/^			char blk_name[128]; $/;"	m	struct:ioctl_data::__anon3::ext2fs_ioctl
+blk_offset	template_iocmd.h	/^			int blk_offset;$/;"	m	struct:ioctl_data::__anon3::ext2fs_ioctl
+block	misc_ioctl.h	/^FUNC_UNIT(block);$/;"	v
+block_data	template_iocmd.h	/^		} block_data;$/;"	m	union:ioctl_data::__anon3	typeref:struct:ioctl_data::__anon3::block_ioctl
+block_file	user_space/block.c	/^static int block_file(int fd ,struct ioctl_data *data, char *arg)$/;"	f	file:
+block_help	user_space/block.c	/^static void block_help(void)$/;"	f	file:
+block_ioctl	template_iocmd.h	/^		struct block_ioctl {$/;"	s	union:ioctl_data::__anon3
+block_unit_exit	block_unit.c	/^int block_unit_exit(void)$/;"	f
+block_unit_init	block_unit.c	/^int block_unit_init(void)$/;"	f
+block_unit_ioctl_func	block_unit.c	/^int block_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+block_usage	user_space/block.c	/^int block_usage(int argc, char **argv)$/;"	f
+buddy_test	kmem/kmem_unit.c	/^static void buddy_test(void)$/;"	f	file:
+buf	template_iocmd.h	/^			unsigned char *buf;$/;"	m	struct:ioctl_data::__anon3::ext2fs_ioctl
+buf	template_iocmd.h	/^			void *buf; $/;"	m	struct:ioctl_data::__anon3::raidixtree_ioctl
+buf_len	template_iocmd.h	/^			int buf_len; $/;"	m	struct:ioctl_data::__anon3::raidixtree_ioctl
+buf_len	template_iocmd.h	/^			int buf_len;$/;"	m	struct:ioctl_data::__anon3::ext2fs_ioctl
+caps_ready	statickey_unit.c	/^DEFINE_STATIC_KEY_FALSE(caps_ready);$/;"	v
+cbaser_save	arm64/gic/gic_local_data.h	/^        u64                     cbaser_save;$/;"	m	struct:its_node
+check_shmem_swap	template_iocmd.h	/^    int check_shmem_swap;$/;"	m	struct:mem_size_stats
+classzone_idx	kmem/zone.c	/^	const int classzone_idx;	\/* zone index of a direct compactor *\/$/;"	m	struct:compact_control	file:
+cm	mrs-tool/sysreg.h	/^	int cm;$/;"	m	struct:register_t
+cmd_base	arm64/gic/gic_local_data.h	/^        struct its_cmd_block    *cmd_base;$/;"	m	struct:its_node	typeref:struct:its_node::its_cmd_block
+cmd_write	arm64/gic/gic_local_data.h	/^        struct its_cmd_block    *cmd_write;$/;"	m	struct:its_node	typeref:struct:its_node::its_cmd_block
+cmdcode	template_iocmd.h	/^	int  cmdcode;$/;"	m	struct:ioctl_data
+cn	mrs-tool/sysreg.h	/^	int cn;$/;"	m	struct:register_t
+cnt_test	rcu_test.c	/^static unsigned long cnt_test;$/;"	v	file:
+col_id	arm64/gic/gic_local_data.h	/^        u16                     col_id;$/;"	m	struct:its_collection
+col_map	arm64/gic/gic_local_data.h	/^        u16                     *col_map;$/;"	m	struct:event_lpi_map
+collections	arm64/gic/gic_local_data.h	/^        struct its_collection   *collections;$/;"	m	struct:its_node	typeref:struct:its_node::its_collection
+compact_cached_free_pfn	template_iocmd.h	/^				unsigned long       compact_cached_free_pfn;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl::zone_data
+compact_cached_migrate_pfn	template_iocmd.h	/^				unsigned long       compact_cached_migrate_pfn[2];$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl::zone_data
+compact_control	kmem/zone.c	/^struct compact_control {$/;"	s	file:
+compatc_zone_order	kmem/zone.c	/^void compatc_zone_order(struct zone *zone, int order, gfp_t gfp_mask, unsigned int alloc_flags, int classzone_idx)$/;"	f
+contended	kmem/zone.c	/^	bool contended;			\/* Signal lock or sched contention *\/$/;"	m	struct:compact_control	file:
+count	template_iocmd.h	/^					unsigned long count;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl::__anon4::slub_control
+count	template_iocmd.h	/^			int count;$/;"	m	struct:ioctl_data::__anon3::raidixtree_ioctl
+cpu	misc_ioctl.h	/^FUNC_UNIT(cpu);$/;"	v
+cpu_count	msr_arm.h	/^	atomic_t	cpu_count;$/;"	m	struct:aarch64_insn_patch
+cpu_rq	ksched/kschedlocal.h	26;"	d
+cpu_unit_exit	cpu_unit.c	/^int cpu_unit_exit(void)$/;"	f
+cpu_unit_init	cpu_unit.c	/^int cpu_unit_init(void)$/;"	f
+cpu_unit_ioctl_func	cpu_unit.c	/^int cpu_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+cpuhp_msr_state	msr_arm.c	/^static enum cpuhp_state cpuhp_msr_state;$/;"	v	typeref:enum:cpuhp_state	file:
+crc32_test	lib/crc32.c	/^void crc32_test(void *buf, unsigned long size)$/;"	f
+crc32_test	misc_entry.c	/^void crc32_test(void *buf, unsigned long size)$/;"	f
+ctlr_save	arm64/gic/gic_local_data.h	/^        u32                     ctlr_save;$/;"	m	struct:its_node
+data	kmem/kmemcache.c	/^	void *data;$/;"	m	struct:kmem_kmemcache_item	file:
+data1	arm64/gic/gic_virtual_device.c	/^struct virtual_gic_dev_data  *data1;$/;"	v	typeref:struct:virtual_gic_dev_data
+data_buf	template_iocmd.h	/^	unsigned char *data_buf;$/;"	m	struct:ioctl_data
+dbd_dt	kernel/virtual_bus.c	/^} *dbd_dt;$/;"	v	typeref:struct:devbusdrv_data
+decdigits	mrs-tool/rsysreg.c	/^int decdigits[] = {$/;"	v
+decdigits	mrs-tool/wsysreg.c	/^int decdigits[] = {$/;"	v
+dev	kernel/virtual_bus.c	/^	struct device dev;$/;"	m	struct:devbusdrv_data	typeref:struct:devbusdrv_data::device	file:
+dev	misc_entry.c	/^	const struct device *dev;$/;"	m	struct:misc_private_data	typeref:struct:misc_private_data::device	file:
+dev_alloc_lock	arm64/gic/gic_local_data.h	/^        struct mutex            dev_alloc_lock;$/;"	m	struct:its_node	typeref:struct:its_node::mutex
+dev_irq_attr	arm64/gic/gic_virtual_device.c	/^	struct device_attribute dev_irq_attr;$/;"	m	struct:gic_vdev_irq_attr	typeref:struct:gic_vdev_irq_attr::device_attribute	file:
+dev_irq_mask	arm64/gic/gic_virtual_device.c	/^	struct device_attribute dev_irq_mask;$/;"	m	struct:gic_vdev_irq_attr	typeref:struct:gic_vdev_irq_attr::device_attribute	file:
+dev_irq_pending	arm64/gic/gic_virtual_device.c	/^	struct device_attribute dev_irq_pending;$/;"	m	struct:gic_vdev_irq_attr	typeref:struct:gic_vdev_irq_attr::device_attribute	file:
+dev_irq_unmask	arm64/gic/gic_virtual_device.c	/^	struct device_attribute dev_irq_unmask;$/;"	m	struct:gic_vdev_irq_attr	typeref:struct:gic_vdev_irq_attr::device_attribute	file:
+devbusdrv_data	kernel/virtual_bus.c	/^struct devbusdrv_data {$/;"	s	file:
+devbusdrvtest_unit_exit	devbusdrv_unit.c	/^int devbusdrvtest_unit_exit(void)$/;"	f
+devbusdrvtest_unit_init	devbusdrv_unit.c	/^int devbusdrvtest_unit_init(void)$/;"	f
+devbusdrvtest_unit_ioctl_func	devbusdrv_unit.c	/^int devbusdrvtest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+device_id	arm64/gic/gic_local_data.h	/^        u32                     device_id;$/;"	m	struct:its_device
+direct_compaction	kmem/zone.c	/^	bool direct_compaction;		\/* False from kcompactd or \/proc\/... *\/$/;"	m	struct:compact_control	file:
+dist_base	arm64/gic/gic_local_data.h	/^        void __iomem            *dist_base;$/;"	m	struct:gic_chip_data
+domain	arm64/gic/gic_local_data.h	/^        struct irq_domain       *domain;$/;"	m	struct:gic_chip_data	typeref:struct:gic_chip_data::irq_domain
+done	msr_arm.c	/^	struct completion	done;$/;"	m	struct:msr_info_completion	typeref:struct:msr_info_completion::completion	file:
+drop_inode_page_cache	block/inode.c	/^void drop_inode_page_cache(char *filename)$/;"	f
+dump_buf	kprobe_entry.c	/^	char *dump_buf;$/;"	m	struct:kprobe_misc_data	file:
+dump_buf	template_iocmd.h	/^			char *dump_buf;$/;"	m	struct:ioctl_data::__anon3::kprobe_ioctl
+dump_data	arm64/gic/gic_entry.c	/^static void dump_data(unsigned long *addr, int size)$/;"	f	file:
+dump_disk_info	block/block_disck.c	/^static void  dump_disk_info(struct gendisk *disk)$/;"	f	file:
+dump_inode_data	block/inode.c	/^void dump_inode_data(struct inode *inode, int leve)$/;"	f
+dump_kernel_page_attr	kmem/kmem_unit.c	/^static void dump_kernel_page_attr(struct ioctl_data *data, u64 start_pfn, u64 size)$/;"	f	file:
+dump_len	template_iocmd.h	/^			int dump_len;$/;"	m	struct:ioctl_data::__anon3::kprobe_ioctl
+dump_mss_info	kmem/kmem_unit.c	/^static void dump_mss_info(struct mem_size_stats *mss)$/;"	f	file:
+dump_mss_info	user_space/kmem.c	/^static void dump_mss_info(struct mem_size_stats *mss)$/;"	f	file:
+dump_page_info	lib/page.c	/^void dump_page_info(struct page *page)$/;"	f
+dump_pages_buffer	user_space/kmem.c	/^static void dump_pages_buffer(struct mem_size_stats *mss)$/;"	f	file:
+dump_pte_info	lib/page.c	/^void dump_pte_info(unsigned long pte)$/;"	f
+dump_request	block/request.c	/^static void dump_request(struct request *req)$/;"	f	file:
+dump_request_queue	block/request.c	/^static void dump_request_queue(struct request_queue *req_queue)$/;"	f	file:
+enable	misc_entry.c	/^ARRT_MARCO(enable);$/;"	v
+enable	misc_entry.c	/^ARRT_MARCO_READ(enable);$/;"	v
+enable	misc_entry.c	/^ARRT_MARCO_WRITE(enable);$/;"	v
+enable	misc_entry.c	/^static int enable;$/;"	v	file:
+entry	arm64/gic/gic_local_data.h	/^	struct list_head        entry;$/;"	m	struct:lpi_range	typeref:struct:lpi_range::list_head
+entry	arm64/gic/gic_local_data.h	/^        struct list_head        entry;$/;"	m	struct:its_device	typeref:struct:its_device::list_head
+entry	arm64/gic/gic_local_data.h	/^        struct list_head        entry;$/;"	m	struct:its_node	typeref:struct:its_node::list_head
+entry	arm64/gic/gic_virtual_device.c	/^	struct list_head entry;$/;"	m	struct:virtual_gic_dev_data	typeref:struct:virtual_gic_dev_data::list_head	file:
+entry_to_node	lib/raidtree.c	/^static inline struct radix_tree_node *entry_to_node(void *ptr)$/;"	f	file:
+err	msr_arm.h	/^	int err;$/;"	m	struct:msr_info
+event_lpi_map	arm64/gic/gic_local_data.h	/^struct event_lpi_map {$/;"	s
+event_map	arm64/gic/gic_local_data.h	/^        struct event_lpi_map    event_map;$/;"	m	struct:its_device	typeref:struct:its_device::event_lpi_map
+exec_start	template_iocmd.h	/^				unsigned long exec_start;$/;"	m	struct:ioctl_data::__anon3::sched_ioctl::u_task_info
+exit	misc_ioctl.h	/^	misc_unit_fn exit;$/;"	m	struct:misc_uint_item
+exit_code	user_space/rcu_test.c	/^static int exit_code = 0;$/;"	v	file:
+ext2_data	template_iocmd.h	/^		} ext2_data;$/;"	m	union:ioctl_data::__anon3	typeref:struct:ioctl_data::__anon3::ext2fs_ioctl
+ext2fs_ioctl	template_iocmd.h	/^		struct ext2fs_ioctl {$/;"	s	union:ioctl_data::__anon3
+ext2test_unit_exit	block/ext2_test.c	/^int ext2test_unit_exit(void)$/;"	f
+ext2test_unit_init	block/ext2_test.c	/^int ext2test_unit_init(void)$/;"	f
+ext2test_unit_ioctl_func	block/ext2_test.c	/^int ext2test_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+extern1	template_iocmd.h	/^			unsigned long extern1; \/\/it is a extern val1$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl
+extern2	template_iocmd.h	/^			unsigned long extern2; \/\/it is a extern val2$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl
+extern3	template_iocmd.h	/^			unsigned long extern3; \/\/it is a extern val3$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl
+file_readwrite_test	block/readwrite.c	/^void file_readwrite_test(void)$/;"	f
+filename	template_iocmd.h	/^			char filename[256];$/;"	m	struct:ioctl_data::__anon3::block_ioctl
+finishing_block	kmem/zone.c	/^	bool finishing_block;		\/* Finishing current pageblock *\/$/;"	m	struct:compact_control	file:
+first_online_pgdat	kmem/zone.c	/^struct pglist_data *first_online_pgdat(void)$/;"	f
+flag	misc_entry.c	/^	int flag;		$/;"	m	struct:misc_private_data	file:
+flags	arm64/gic/gic_local_data.h	/^        u64                     flags;$/;"	m	struct:gic_chip_data
+flags	arm64/gic/gic_local_data.h	/^        u64                     flags;$/;"	m	struct:its_node
+for_each_leaf_cfs_rq	ksched/kschedlocal.h	32;"	d
+for_each_leaf_cfs_rq_safe	ksched/kschedlocal.h	27;"	d
+for_each_mem_cgroup	kmem/cgroup.c	34;"	d	file:
+for_each_mem_cgroup_tree	kmem/cgroup.c	28;"	d	file:
+for_each_rt_rq	ksched/kschedlocal.h	20;"	d
+free_pfn	kmem/zone.c	/^	unsigned long free_pfn;		\/* isolate_freepages search base *\/$/;"	m	struct:compact_control	file:
+freepages	kmem/zone.c	/^	struct list_head freepages;	\/* List of free pages to migrate to *\/$/;"	m	struct:compact_control	typeref:struct:compact_control::list_head	file:
+full_page_scan	kmem/kmem_unit.c	/^static void full_page_scan(void)$/;"	f	file:
+func	user_space/main.c	/^    misc_fp func;$/;"	m	struct:memisc_func	file:
+fwnode	arm64/gic/gic_local_data.h	/^        struct fwnode_handle    *fwnode;$/;"	m	struct:gic_chip_data	typeref:struct:gic_chip_data::fwnode_handle
+fwnode_handle	arm64/gic/gic_local_data.h	/^        struct fwnode_handle    *fwnode_handle;$/;"	m	struct:its_node	typeref:struct:its_node::fwnode_handle
+get_block_by_name	block/ext2_test.c	/^struct super_block *get_block_by_name(char *name)$/;"	f
+get_func_from_kallsyms	msr_arm.c	/^unsigned long get_func_from_kallsyms(char *func)$/;"	f
+get_gicv3_its_irqdomain	arm64/gic/gic_virtual_device.c	/^static struct irq_domain * get_gicv3_its_irqdomain(void)$/;"	f	file:
+get_msi_base	arm64/gic/gic_local_data.h	/^        u64                     (*get_msi_base)(struct its_device *its_dev);$/;"	m	struct:its_node
+get_pte	kmem/page.c	/^pte_t *get_pte(unsigned long addr, struct mm_struct *mm)$/;"	f
+get_read_insn_addr	msr_arm.c	/^EXPORT_SYMBOL(get_read_insn_addr);$/;"	v
+get_read_insn_addr	msr_arm.c	/^u32 *get_read_insn_addr()$/;"	f
+get_taskstruct_by_pid	kernel/task.c	/^struct task_struct *get_taskstruct_by_pid(int pid)$/;"	f
+get_time_tick	delay.c	/^unsigned long get_time_tick(void)$/;"	f
+get_write_insn_addr	msr_arm.c	/^EXPORT_SYMBOL(get_write_insn_addr);$/;"	v
+get_write_insn_addr	msr_arm.c	/^u32 *get_write_insn_addr()$/;"	f
+gfp_mask	kmem/zone.c	/^	const gfp_t gfp_mask;		\/* gfp mask of a direct compactor *\/$/;"	m	struct:compact_control	file:
+gic_chip_data	arm64/gic/gic_local_data.h	/^struct gic_chip_data {$/;"	s
+gic_data_rdist	arm64/gic/gic_entry.c	32;"	d	file:
+gic_data_rdist_rd_base	arm64/gic/gic_entry.c	33;"	d	file:
+gic_dump_register	arm64/gic/gic_entry.c	/^static void gic_dump_register(void)$/;"	f	file:
+gic_its_base_case	arm64/gic/gic_entry.c	/^static void gic_its_base_case(struct its_node *its)$/;"	f	file:
+gic_its_device_dump	arm64/gic/gic_entry.c	/^static void gic_its_device_dump(struct its_device *dev)$/;"	f	file:
+gic_its_device_find	arm64/gic/gic_entry.c	/^static struct its_device *gic_its_device_find(int dev_id)$/;"	f	file:
+gic_its_device_table	arm64/gic/gic_entry.c	/^static void gic_its_device_table(struct its_baser *baser)$/;"	f	file:
+gic_its_device_table_entry	arm64/gic/gic_entry.c	/^static void gic_its_device_table_entry(u64 *addr)$/;"	f	file:
+gic_its_device_table_entry_list	arm64/gic/gic_entry.c	/^static void gic_its_device_table_entry_list(struct its_baser *baser)$/;"	f	file:
+gic_its_device_table_item	arm64/gic/gic_entry.c	/^static unsigned long gic_its_device_table_item(struct its_device *its_dev)$/;"	f	file:
+gic_its_device_table_summary	arm64/gic/gic_entry.c	/^static void gic_its_device_table_summary(struct its_baser *baser)$/;"	f	file:
+gic_its_interript_collection_table	arm64/gic/gic_entry.c	/^static void gic_its_interript_collection_table(struct its_node *its, struct its_baser *baser)$/;"	f	file:
+gic_its_interript_collection_table_collection	arm64/gic/gic_entry.c	/^static void gic_its_interript_collection_table_collection(struct its_node *its,$/;"	f	file:
+gic_its_interript_collection_table_list	arm64/gic/gic_entry.c	/^static void gic_its_interript_collection_table_list(struct its_baser *baser)$/;"	f	file:
+gic_its_interript_collection_table_summar	arm64/gic/gic_entry.c	/^static void gic_its_interript_collection_table_summar(struct its_baser *baser)$/;"	f	file:
+gic_its_interrupt_mis_irq_dump	arm64/gic/gic_entry.c	/^static int gic_its_interrupt_mis_irq_dump(int irq)$/;"	f	file:
+gic_its_interrupt_mis_irq_dump	kernel/irq.c	/^static int gic_its_interrupt_mis_irq_dump(int irq)$/;"	f	file:
+gic_its_interrut_transfer	arm64/gic/gic_entry.c	/^static void gic_its_interrut_transfer(void)$/;"	f	file:
+gic_its_node	arm64/gic/gic_entry.c	/^static void gic_its_node(void)$/;"	f	file:
+gic_its_percpu_peng_table	arm64/gic/gic_entry.c	/^static void gic_its_percpu_peng_table(void)$/;"	f	file:
+gic_its_property_table	arm64/gic/gic_entry.c	/^static void gic_its_property_table(void)$/;"	f	file:
+gic_its_scan_table	arm64/gic/gic_entry.c	/^static void gic_its_scan_table(struct its_node *its)$/;"	f	file:
+gic_its_virt_cpu_table	arm64/gic/gic_entry.c	/^static void gic_its_virt_cpu_table(struct its_baser *baser)$/;"	f	file:
+gic_vdev_attr_exit	arm64/gic/gic_virtual_device.c	/^static void gic_vdev_attr_exit(struct virtual_gic_dev_data *data)$/;"	f	file:
+gic_vdev_attr_init	arm64/gic/gic_virtual_device.c	/^static int gic_vdev_attr_init(struct virtual_gic_dev_data *data)$/;"	f	file:
+gic_vdev_irq_attr	arm64/gic/gic_virtual_device.c	/^struct gic_vdev_irq_attr {$/;"	s	file:
+gic_vdev_nrirqs	arm64/gic/gic_virtual_device.c	/^static int gic_vdev_nrirqs = 1;$/;"	v	file:
+gic_virtual_device_exit	arm64/gic/gic_virtual_device.c	/^int gic_virtual_device_exit(void)$/;"	f
+gic_virtual_device_init	arm64/gic/gic_virtual_device.c	/^int gic_virtual_device_init(void)$/;"	f
+gic_virtual_device_irq	arm64/gic/gic_virtual_device.c	/^static irqreturn_t gic_virtual_device_irq(int irq, void *dev_id)$/;"	f	file:
+global_register	mrs-tool/rsysreg.c	/^struct register_t *global_register;$/;"	v	typeref:struct:register_t
+global_register	mrs-tool/wsysreg.c	/^struct register_t *global_register;$/;"	v	typeref:struct:register_t
+global_register_name	mrs-tool/rsysreg.c	/^static const char *global_register_name;$/;"	v	file:
+global_register_name	mrs-tool/wsysreg.c	/^static const char *global_register_name;$/;"	v	file:
+glog_buf	user_space/main.c	/^char *glog_buf;$/;"	v
+group	arm64/gic/gic_virtual_device.c	/^	struct attribute_group group;$/;"	m	struct:gic_vdev_irq_attr	typeref:struct:gic_vdev_irq_attr::attribute_group	file:
+h	msr_arm.h	/^			u32 h;$/;"	m	struct:msr::__anon1::__anon2
+hardlock_test	user_space/main.c	/^static int hardlock_test(int fd, struct ioctl_data *data)$/;"	f	file:
+has_rss	arm64/gic/gic_local_data.h	/^        bool                    has_rss;$/;"	m	struct:gic_chip_data
+help	user_space/kmem.c	/^static void help(void)$/;"	f	file:
+help	user_space/kprobe.c	/^static void help(void)$/;"	f	file:
+help	user_space/ktime.c	/^static void help(void)$/;"	f	file:
+help	user_space/lock.c	/^static void help(void)$/;"	f	file:
+help	user_space/pci_main.c	/^static void help(void)$/;"	f	file:
+help	user_space/radixtree.c	/^static void help(void)$/;"	f	file:
+help	user_space/rcu_test.c	/^static void help(void)$/;"	f	file:
+help	user_space/sched_main.c	/^static void help(void)$/;"	f	file:
+help	user_space/workqueue.c	/^static void help(void)$/;"	f	file:
+high_zoneidx	kmem/compact.c	/^    enum zone_type high_zoneidx;$/;"	m	struct:alloc_context	typeref:enum:alloc_context::zone_type	file:
+hookers_mrs	msr_arm.c	/^static int hookers_mrs(struct pt_regs *regs, u32 insn)$/;"	f	file:
+hookers_msr	msr_arm.c	/^static int hookers_msr(struct pt_regs *regs, u32 insn)$/;"	f	file:
+hwpci	misc_ioctl.h	/^FUNC_UNIT(hwpci);$/;"	v
+hwpci_unit_exit	hw/pci/pci_unit.c	/^int hwpci_unit_exit(void)$/;"	f
+hwpci_unit_init	hw/pci/pci_unit.c	/^int hwpci_unit_init(void)$/;"	f
+hwpci_unit_ioctl_func	hw/pci/pci_unit.c	/^int hwpci_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+ignore_block_suitable	kmem/zone.c	/^	bool ignore_block_suitable;	\/* Scan blocks considered unsuitable *\/$/;"	m	struct:compact_control	file:
+ignore_skip_hint	kmem/zone.c	/^	bool ignore_skip_hint;		\/* Scan blocks even if marked skip *\/$/;"	m	struct:compact_control	file:
+index	template_iocmd.h	/^			int index; $/;"	m	struct:ioctl_data::__anon3::raidixtree_ioctl
+init	misc_ioctl.h	/^	misc_unit_fn init;$/;"	m	struct:misc_uint_item
+init	mrs-tool/rsysreg.c	/^void init()$/;"	f
+init	mrs-tool/wsysreg.c	/^void init()$/;"	f
+inode_mapping_dump	block/inode.c	/^void inode_mapping_dump(struct inode *inode)$/;"	f
+insn_cnt	msr_arm.h	/^	int		insn_cnt;$/;"	m	struct:aarch64_insn_patch
+ioctl	misc_ioctl.h	/^	misc_unit_ioctl_fn ioctl;$/;"	m	struct:misc_uint_item
+ioctl_cmdtype	template_iocmd.h	/^enum ioctl_cmdtype {$/;"	g
+ioctl_data	template_iocmd.h	/^struct ioctl_data {$/;"	s
+ioctl_data_init	user_space/main.c	/^void ioctl_data_init(struct ioctl_data *data)$/;"	f
+irq	arm64/gic/gic_virtual_device.c	/^	int irq;$/;"	m	struct:gic_vdev_irq_attr	file:
+irq	arm64/gic/gic_virtual_device.c	/^	int irq;$/;"	m	struct:virtual_gic_dev_data	file:
+irq_attrs	arm64/gic/gic_virtual_device.c	/^	struct attribute *irq_attrs[IRQ_ATRS_NUM+1];$/;"	m	struct:gic_vdev_irq_attr	typeref:struct:gic_vdev_irq_attr::attribute	file:
+is_sibling_entry	lib/raidtree.c	/^bool is_sibling_entry(const struct radix_tree_node *parent, void *node)$/;"	f
+islegal	mrs-tool/rsysreg.c	/^void islegal(struct register_t *regs)$/;"	f
+item_list	kmem/kmemcache.c	/^	struct list_head item_list;$/;"	m	struct:kmem_kmemcache_data	typeref:struct:kmem_kmemcache_data::list_head	file:
+its	arm64/gic/gic_local_data.h	/^        struct its_node 	*its;$/;"	m	struct:its_device	typeref:struct:its_device::its_node
+its_baser	arm64/gic/gic_local_data.h	/^struct its_baser {$/;"	s
+its_collection	arm64/gic/gic_local_data.h	/^struct its_collection {$/;"	s
+its_device	arm64/gic/gic_local_data.h	/^struct its_device {$/;"	s
+its_device_list	arm64/gic/gic_local_data.h	/^        struct list_head        its_device_list;$/;"	m	struct:its_node	typeref:struct:its_node::list_head
+its_domain	arm64/gic/gic_virtual_device.c	/^static struct irq_domain *its_domain;$/;"	v	typeref:struct:irq_domain	file:
+its_get_baser	arm64/gic/gic_entry.c	/^static struct its_baser *its_get_baser(struct its_node *its, u32 type)                               $/;"	f	file:
+its_node	arm64/gic/gic_local_data.h	/^struct its_node {$/;"	s
+its_read_baser	arm64/gic/gic_entry.c	/^static u64 its_read_baser(struct its_node *its, struct its_baser *baser)$/;"	f	file:
+itt	arm64/gic/gic_local_data.h	/^        void                    *itt;$/;"	m	struct:its_device
+kallsyms_init	arm64/gic/gic_virtual_device.c	/^static int kallsyms_init(void)$/;"	f	file:
+kmem_cache	kmem/kmemcache.c	/^	struct kmem_cache *kmem_cache;$/;"	m	struct:kmem_kmemcache_data	typeref:struct:kmem_kmemcache_data::kmem_cache	file:
+kmem_compact	kmem/compact.c	/^void kmem_compact(gfp_t gfp_mask, unsigned int order)$/;"	f
+kmem_data	template_iocmd.h	/^		} kmem_data;$/;"	m	union:ioctl_data::__anon3	typeref:struct:ioctl_data::__anon3::kmem_ioctl
+kmem_dump_node_item	kmem/zone.c	/^static void kmem_dump_node_item(atomic_long_t *vm_stat)$/;"	f	file:
+kmem_dump_numa_item	kmem/zone.c	/^static void kmem_dump_numa_item(void)$/;"	f	file:
+kmem_dump_state	kmem/zone.c	/^void kmem_dump_state(void)$/;"	f
+kmem_dump_zone_item	kmem/zone.c	/^static void kmem_dump_zone_item(atomic_long_t *vm_stat)$/;"	f	file:
+kmem_ioctl	template_iocmd.h	/^		struct kmem_ioctl {$/;"	s	union:ioctl_data::__anon3
+kmem_kmemcache_create	kmem/kmemcache.c	/^int kmem_kmemcache_create(char *name, int size)$/;"	f
+kmem_kmemcache_create_objs	kmem/kmemcache.c	/^int kmem_kmemcache_create_objs(char *name, int size, int is_free)$/;"	f
+kmem_kmemcache_data	kmem/kmemcache.c	/^struct kmem_kmemcache_data {$/;"	s	file:
+kmem_kmemcache_get_item	kmem/kmemcache.c	/^struct kmem_kmemcache_data *kmem_kmemcache_get_item(char *name)$/;"	f
+kmem_kmemcache_item	kmem/kmemcache.c	/^struct kmem_kmemcache_item {$/;"	s	file:
+kmem_kmemcache_list	kmem/kmemcache.c	/^LIST_HEAD(kmem_kmemcache_list);$/;"	v
+kmem_kmemcache_remove	kmem/kmemcache.c	/^void kmem_kmemcache_remove(char *name)$/;"	f
+kmem_unit_exit	kmem/kmem_unit.c	/^int kmem_unit_exit(void)$/;"	f
+kmem_unit_init	kmem/kmem_unit.c	/^int kmem_unit_init(void)$/;"	f
+kmem_unit_ioctl_func	kmem/kmem_unit.c	/^int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+kmem_usage	user_space/kmem.c	/^int kmem_usage(int argc, char **argv)$/;"	f
+kp1	kprobe_entry.c	/^	struct kprobe kp1;$/;"	m	struct:kprobe_misc_data	typeref:struct:kprobe_misc_data::kprobe	file:
+kp_data	template_iocmd.h	/^		} kp_data;$/;"	m	union:ioctl_data::__anon3	typeref:struct:ioctl_data::__anon3::kprobe_ioctl
+kprobe_compl	kprobe_entry.c	/^	struct completion kprobe_compl;$/;"	m	struct:kprobe_misc_data	typeref:struct:kprobe_misc_data::completion	file:
+kprobe_complete	kprobe_entry.c	/^	u8 kprobe_complete;$/;"	m	struct:kprobe_misc_data	file:
+kprobe_func_dump	kprobe_entry.c	/^static int kprobe_func_dump(char *dump_buf, char *name)$/;"	f	file:
+kprobe_handler	kprobe_entry.c	/^static int kprobe_handler(struct kprobe *p, struct pt_regs *regs)$/;"	f	file:
+kprobe_ioctl	template_iocmd.h	/^		struct kprobe_ioctl {$/;"	s	union:ioctl_data::__anon3
+kprobe_misc_data	kprobe_entry.c	/^struct kprobe_misc_data {$/;"	s	file:
+kprobe_post_handler	kprobe_entry.c	/^static int kprobe_post_handler(struct kprobe *p, struct pt_regs *regs, unsigned long flags)$/;"	f	file:
+kprobe_test	user_space/main.c	/^static int kprobe_test(int fd ,struct ioctl_data *data)$/;"	f	file:
+kprobe_unit_exit	kprobe_entry.c	/^int kprobe_unit_exit(void)$/;"	f
+kprobe_unit_init	kprobe_entry.c	/^int kprobe_unit_init(void)$/;"	f
+kprobe_unit_ioctl_func	kprobe_entry.c	/^int kprobe_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+kprobe_usage	user_space/kprobe.c	/^int kprobe_usage(int argc, char **argv)$/;"	f
+krbtree_data	ktree/ktree_rbtree_unit.c	/^struct krbtree_data {$/;"	s	file:
+krbtree_insert	ktree/ktree_rbtree_unit.c	/^int krbtree_insert(struct rb_root *root, struct mytype *data)$/;"	f
+krbtree_scan	ktree/ktree_rbtree_unit.c	/^static void krbtree_scan(struct rb_root *root)$/;"	f	file:
+krbtree_unit_exit	ktree/ktree_rbtree_unit.c	/^int krbtree_unit_exit(void)$/;"	f
+krbtree_unit_init	ktree/ktree_rbtree_unit.c	/^int krbtree_unit_init(void)$/;"	f
+krbtree_unit_ioctl_func	ktree/ktree_rbtree_unit.c	/^int krbtree_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+ksach_sacn_cfs_rq	ksched/ksched_unit.c	/^int ksach_sacn_cfs_rq(void)$/;"	f
+ksched_print_cpu	ksched/ksched_debug.c	/^void ksched_print_cpu(int cpu)$/;"	f
+ksched_rq_scan_vruntime	ksched/ksched_unit.c	/^int ksched_rq_scan_vruntime(struct ioctl_data *data)$/;"	f
+ksched_scan_rq	ksched/ksched_unit.c	/^int ksched_scan_rq(struct ioctl_data *data)$/;"	f
+ksched_sched_clock_test	ksched/ksched_unit.c	/^int ksched_sched_clock_test(struct ioctl_data *data)$/;"	f
+ksched_usage	user_space/sched_main.c	/^int ksched_usage(int argc, char **argv)$/;"	f
+ktime	misc_ioctl.h	/^FUNC_UNIT(ktime);$/;"	v
+ktime_unit_exit	ktime_unit.c	/^int ktime_unit_exit(void)$/;"	f
+ktime_unit_init	ktime_unit.c	/^int ktime_unit_init(void)$/;"	f
+ktime_unit_ioctl_func	ktime_unit.c	/^int ktime_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+ktime_usage	user_space/ktime.c	/^int ktime_usage(int argc, char **argv)$/;"	f
+l	msr_arm.h	/^			u32 l;$/;"	m	struct:msr::__anon1::__anon2
+last_migrated_pfn	kmem/zone.c	/^	unsigned long last_migrated_pfn;\/* Not yet flushed page being freed *\/$/;"	m	struct:compact_control	file:
+lazyfree	template_iocmd.h	/^    unsigned long lazyfree;$/;"	m	struct:mem_size_stats
+len	template_iocmd.h	/^			int len;$/;"	m	struct:ioctl_data::__anon3::kprobe_ioctl
+length	mrs-tool/sysreg.h	/^	unsigned int length;$/;"	m	struct:register_t
+level_debug	debug_ctrl.h	6;"	d
+list	kmem/kmemcache.c	/^	struct list_head list;$/;"	m	struct:kmem_kmemcache_data	typeref:struct:kmem_kmemcache_data::list_head	file:
+list	kmem/kmemcache.c	/^	struct list_head list;$/;"	m	struct:kmem_kmemcache_item	typeref:struct:kmem_kmemcache_item::list_head	file:
+list_nr	arm64/gic/gic_local_data.h	/^        unsigned long           list_nr;$/;"	m	struct:its_node
+lock	arm64/gic/gic_local_data.h	/^        raw_spinlock_t          lock;$/;"	m	struct:its_node
+lock_usage	user_space/lock.c	/^int lock_usage(int argc, char **argv)$/;"	f
+locktest_irqlock_flags	lock_unit.c	/^static unsigned long locktest_irqlock_flags;$/;"	v	file:
+locktest_unit_exit	lock_unit.c	/^int locktest_unit_exit(void)$/;"	f
+locktest_unit_init	lock_unit.c	/^int locktest_unit_init(void)$/;"	f
+locktest_unit_ioctl_func	lock_unit.c	/^int locktest_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+log_buf	template_iocmd.h	/^	char *log_buf;$/;"	m	struct:ioctl_data
+long_options	mrs-tool/rsysreg.c	/^struct option long_options[] = {$/;"	v	typeref:struct:option
+long_options	mrs-tool/wsysreg.c	/^struct option long_options[] = {$/;"	v	typeref:struct:option
+long_options	user_space/kmem.c	/^static const struct option long_options[] = {$/;"	v	typeref:struct:option	file:
+long_options	user_space/kprobe.c	/^static const struct option long_options[] = {$/;"	v	typeref:struct:option	file:
+long_options	user_space/lock.c	/^static const struct option long_options[] = {$/;"	v	typeref:struct:option	file:
+long_options	user_space/pci_main.c	/^static const struct option long_options[] = {$/;"	v	typeref:struct:option	file:
+long_options	user_space/radixtree.c	/^static const struct option long_options[] = {$/;"	v	typeref:struct:option	file:
+long_options	user_space/rcu_test.c	/^static const struct option long_options[] = {$/;"	v	typeref:struct:option	file:
+long_options	user_space/sched_main.c	/^static const struct option long_options[] = {$/;"	v	typeref:struct:option	file:
+long_options	user_space/workqueue.c	/^static const struct option long_options[] = {$/;"	v	typeref:struct:option	file:
+lpi_base	arm64/gic/gic_local_data.h	/^        irq_hw_number_t         lpi_base;$/;"	m	struct:event_lpi_map
+lpi_map	arm64/gic/gic_local_data.h	/^        unsigned long           *lpi_map;$/;"	m	struct:event_lpi_map
+lpi_range	arm64/gic/gic_local_data.h	/^struct lpi_range { $/;"	s
+main	mrs-tool/rsysreg.c	/^int main(int argc, char *argv[])$/;"	f
+main	mrs-tool/wsysreg.c	/^int main(int argc, char *argv[])$/;"	f
+main	user_space/block_main.c	/^int main(int argc, char *argv[])$/;"	f
+main	user_space/main.c	/^int main(int argc, char *argv[])$/;"	f
+managed_pages	template_iocmd.h	/^				unsigned long       managed_pages;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl::zone_data
+me_mdelay	delay.c	/^void me_mdelay(unsigned long var)$/;"	f
+me_udelay	delay.c	/^void me_udelay(unsigned long var)$/;"	f
+medentry_dump_full_patch	kernel/dentry.c	/^void medentry_dump_full_patch(struct dentry *dentry)$/;"	f
+mem_proc_show	kmem/zone.c	/^static void __maybe_unused mem_proc_show(void)$/;"	f	file:
+mem_size_stats	template_iocmd.h	/^struct mem_size_stats {$/;"	s
+memisc_func	user_space/main.c	/^struct memisc_func {$/;"	s	file:
+merequest_list_dump	block/request.c	/^void merequest_list_dump(struct request *req)$/;"	f
+metest_class	kernel/virtual_bus.c	/^	struct class *metest_class;$/;"	m	struct:devbusdrv_data	typeref:struct:devbusdrv_data::class	file:
+metest_idr	kernel/virtual_bus.c	/^ 	struct idr metest_idr;$/;"	m	struct:devbusdrv_data	typeref:struct:devbusdrv_data::idr	file:
+migrate_pfn	kmem/zone.c	/^	unsigned long migrate_pfn;	\/* isolate_migratepages search base *\/$/;"	m	struct:compact_control	file:
+migratepages	kmem/zone.c	/^	struct list_head migratepages;	\/* List of pages being migrated *\/$/;"	m	struct:compact_control	typeref:struct:compact_control::list_head	file:
+migratetype	kmem/compact.c	/^    int migratetype;$/;"	m	struct:alloc_context	file:
+migratetype	kmem/zone.c	/^	int migratetype;		\/* migratetype of direct compactor *\/$/;"	m	struct:compact_control	file:
+misc_data	misc_entry.c	/^static struct misc_private_data *misc_data;$/;"	v	typeref:struct:misc_private_data	file:
+misc_dev	misc_entry.c	/^struct miscdevice  misc_dev = {$/;"	v	typeref:struct:miscdevice
+misc_fd	user_space/main.c	/^int misc_fd;$/;"	v
+misc_fp	user_space/main.c	/^typedef int (*misc_fp)(int argc, char **argv);$/;"	t	file:
+misc_private_data	misc_entry.c	/^struct misc_private_data {$/;"	s	file:
+misc_show_stack	showstack.c	/^void misc_show_stack(char *log_buf, struct task_struct *task, unsigned long *sp)$/;"	f
+misc_temp_ops	misc_entry.c	/^struct file_operations misc_temp_ops = {$/;"	v	typeref:struct:file_operations
+misc_template_open	misc_entry.c	/^static int misc_template_open(struct inode *inode, struct file * file)$/;"	f	file:
+misc_template_read	misc_entry.c	/^static ssize_t misc_template_read(struct file *file, char __user * buf, size_t size, loff_t *ppos)$/;"	f	file:
+misc_template_release	misc_entry.c	/^static int misc_template_release (struct inode *inode, struct file *file)$/;"	f	file:
+misc_template_unlocked_ioctl	misc_entry.c	/^static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, unsigned long arg)$/;"	f	file:
+misc_template_write	misc_entry.c	/^static ssize_t misc_template_write(struct file *file, const char __user * buf, size_t size, loff_t *ppos)$/;"	f	file:
+misc_uint_item	misc_ioctl.h	/^struct misc_uint_item {$/;"	s
+misc_unit_fn	misc_ioctl.h	/^typedef int (*misc_unit_fn)(void);$/;"	t
+misc_unit_ioctl_fn	misc_ioctl.h	/^typedef int (*misc_unit_ioctl_fn)(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);$/;"	t
+misc_virtio_queue_rq_hook	block_unit.c	/^void misc_virtio_queue_rq_hook(struct blk_mq_hw_ctx *hctx, const struct blk_mq_queue_data *bd)$/;"	f
+miscdriver_exit	misc_entry.c	/^module_exit(miscdriver_exit);$/;"	v
+miscdriver_exit	misc_entry.c	/^static void __exit miscdriver_exit(void)$/;"	f	file:
+miscdriver_init	misc_entry.c	/^module_init(miscdriver_init);$/;"	v
+miscdriver_init	misc_entry.c	/^static int __init miscdriver_init(void)$/;"	f	file:
+mo_c	mrs-tool/sysreg.h	19;"	d
+mo_chx	mrs-tool/sysreg.h	16;"	d
+mo_dec	mrs-tool/sysreg.h	12;"	d
+mo_fill	mrs-tool/sysreg.h	18;"	d
+mo_hex	mrs-tool/sysreg.h	11;"	d
+mo_mask	mrs-tool/sysreg.h	17;"	d
+mo_oct	mrs-tool/sysreg.h	13;"	d
+mo_raw	mrs-tool/sysreg.h	14;"	d
+mo_uns	mrs-tool/sysreg.h	15;"	d
+mode	atomic_entry.c	/^	int mode;$/;"	m	struct:atomic_test_data	file:
+mode	kmem/zone.c	/^	enum migrate_mode mode;		\/* Async or sync migration mode *\/$/;"	m	struct:compact_control	typeref:enum:compact_control::migrate_mode	file:
+mpidr	arm64/gic/gic_local_data.h	/^        u32                     mpidr;$/;"	m	struct:its_node
+mrs_flags	msr_arm.c	/^EXPORT_SYMBOL(mrs_flags);$/;"	v
+mrs_flags	msr_arm.c	/^atomic_t mrs_flags = ATOMIC_INIT(0);$/;"	v
+mrs_hook	msr_arm.c	/^static struct undef_hook mrs_hook = {$/;"	v	typeref:struct:undef_hook	file:
+msi_desc	arm64/gic/gic_virtual_device.c	/^	struct msi_desc msi_desc;$/;"	m	struct:virtual_gic_dev_data	typeref:struct:virtual_gic_dev_data::msi_desc	file:
+msi_domain_flags	arm64/gic/gic_local_data.h	/^        unsigned int            msi_domain_flags;$/;"	m	struct:its_node
+msi_info	arm64/gic/gic_virtual_device.c	/^	msi_alloc_info_t msi_info;$/;"	m	struct:virtual_gic_dev_data	file:
+msr	msr_arm.c	/^	struct msr_info		msr;$/;"	m	struct:msr_info_completion	typeref:struct:msr_info_completion::msr_info	file:
+msr	msr_arm.h	/^struct msr {$/;"	s
+msr_class	msr_arm.c	/^static struct class *msr_class;$/;"	v	typeref:struct:class	file:
+msr_device_create	msr_arm.c	/^static int msr_device_create(unsigned int cpu)$/;"	f	file:
+msr_device_destroy	msr_arm.c	/^static int msr_device_destroy(unsigned int cpu)$/;"	f	file:
+msr_devnode	msr_arm.c	/^static char *msr_devnode(struct device *dev, umode_t *mode)$/;"	f	file:
+msr_flags	msr_arm.c	/^EXPORT_SYMBOL(msr_flags);$/;"	v
+msr_flags	msr_arm.c	/^atomic_t msr_flags = ATOMIC_INIT(0);$/;"	v
+msr_fops	msr_arm.c	/^static const struct file_operations msr_fops = {$/;"	v	typeref:struct:file_operations	file:
+msr_hook	msr_arm.c	/^static struct undef_hook msr_hook = {$/;"	v	typeref:struct:undef_hook	file:
+msr_info	msr_arm.h	/^struct msr_info {$/;"	s
+msr_info_completion	msr_arm.c	/^struct msr_info_completion {$/;"	s	file:
+msr_no	msr_arm.h	/^	u32 msr_no;$/;"	m	struct:msr_info
+msr_open	msr_arm.c	/^static int msr_open(struct inode *inode, struct file *file)$/;"	f	file:
+msr_read	msr_arm.c	/^static ssize_t msr_read(struct file *file, char __user *buf,$/;"	f	file:
+msr_unit_exit	msr_arm.c	/^int msr_unit_exit(void)$/;"	f
+msr_unit_init	msr_arm.c	/^int msr_unit_init(void)$/;"	f
+msr_unit_ioctl	msr_arm.c	/^static long msr_unit_ioctl(struct file *file, unsigned int ioc,$/;"	f	file:
+msr_unit_ioctl_func	msr_arm.c	/^int msr_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+msr_write	msr_arm.c	/^static ssize_t msr_write(struct file *file, const char __user *buf,$/;"	f	file:
+msrs	msr_arm.h	/^	struct msr *msrs;$/;"	m	struct:msr_info	typeref:struct:msr_info::msr
+mss	template_iocmd.h	/^			struct mem_size_stats mss;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl	typeref:struct:ioctl_data::__anon3::kmem_ioctl::mem_size_stats
+mytype	ktree/ktree_rbtree_unit.c	/^struct mytype {$/;"	s	file:
+name	arm64/gic/gic_virtual_device.c	/^	const char name[16];$/;"	m	struct:gic_vdev_irq_attr	file:
+name	kmem/kmemcache.c	/^	char name[128];$/;"	m	struct:kmem_kmemcache_data	file:
+name	mrs-tool/sysreg.h	/^	char *name; \/* eg. S<op0>_op1_cn_cm_op2 or ID_AA64DFR0_EL1 *\/$/;"	m	struct:register_t
+name	template_iocmd.h	/^			char *name;$/;"	m	struct:ioctl_data::__anon3::kprobe_ioctl
+name	template_iocmd.h	/^			char name[128];$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl
+name	template_iocmd.h	/^	char name[128];$/;"	m	struct:ioctl_data
+name	user_space/main.c	/^    const char* name;$/;"	m	struct:memisc_func	file:
+new_insns	msr_arm.h	/^	u32		*new_insns;$/;"	m	struct:aarch64_insn_patch
+next	include/kmem_data.h	/^	struct page_info *next;$/;"	m	struct:page_info	typeref:struct:page_info::page_info
+next_online_pgdat	kmem/zone.c	/^struct pglist_data *next_online_pgdat(struct pglist_data *pgdat)$/;"	f
+next_task_group	ksched/kschedlocal.h	/^static inline struct task_group *next_task_group(struct task_group *tg)$/;"	f
+next_zone	kmem/zone.c	/^struct zone *next_zone(struct zone *zone)$/;"	f
+no_set_skip_hint	kmem/zone.c	/^	bool no_set_skip_hint;		\/* Don't mark blocks for skipping *\/$/;"	m	struct:compact_control	file:
+node	ktree/ktree_rbtree_unit.c	/^	struct rb_node node;$/;"	m	struct:mytype	typeref:struct:mytype::rb_node	file:
+node_len	template_iocmd.h	/^			unsigned long node_len;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl
+node_maxindex	lib/raidtree.c	/^static inline unsigned long node_maxindex(const struct radix_tree_node *node)$/;"	f	file:
+node_to_entry	lib/raidtree.c	/^static inline void *node_to_entry(void *ptr)$/;"	f	file:
+node_vm_state	template_iocmd.h	/^			unsigned long *node_vm_state;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl
+nodemask	kmem/compact.c	/^    nodemask_t *nodemask;$/;"	m	struct:alloc_context	file:
+normal_usage	user_space/main.c	/^static int normal_usage(int argc, char **argv)$/;"	f	file:
+nr_freepages	kmem/zone.c	/^	unsigned long nr_freepages;	\/* Number of isolated free pages *\/$/;"	m	struct:compact_control	file:
+nr_isolate_pageblock	template_iocmd.h	/^				unsigned long       nr_isolate_pageblock;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl::zone_data
+nr_ites	arm64/gic/gic_local_data.h	/^        u32                     nr_ites;$/;"	m	struct:its_device
+nr_lpis	arm64/gic/gic_local_data.h	/^        int                     nr_lpis;$/;"	m	struct:event_lpi_map
+nr_migratepages	kmem/zone.c	/^	unsigned long nr_migratepages;	\/* Number of pages to migrate *\/$/;"	m	struct:compact_control	file:
+nr_redist_regions	arm64/gic/gic_local_data.h	/^        u32                     nr_redist_regions;$/;"	m	struct:gic_chip_data
+nr_vlpis	arm64/gic/gic_local_data.h	/^        int                     nr_vlpis;$/;"	m	struct:event_lpi_map
+nrirqs	arm64/gic/gic_virtual_device.c	/^	int nrirqs;$/;"	m	struct:virtual_gic_dev_data	file:
+nsec_high	ksched/ksched_debug.c	/^static long long nsec_high(unsigned long long nsec)$/;"	f	file:
+nsec_low	ksched/ksched_debug.c	/^static unsigned long nsec_low(unsigned long long nsec)$/;"	f	file:
+numa_len	template_iocmd.h	/^			unsigned long numa_len;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl
+numa_node	arm64/gic/gic_local_data.h	/^        int                     numa_node;$/;"	m	struct:its_node
+numa_vm_state	template_iocmd.h	/^			unsigned long *numa_vm_state;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl
+obj-m	Makefile	/^obj-m := $(TARGET).o$/;"	m
+op	template_iocmd.h	/^					enum SLUB_OP op;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl::__anon4::slub_control	typeref:enum:ioctl_data::__anon3::kmem_ioctl::__anon4::slub_control::SLUB_OP
+op0	mrs-tool/sysreg.h	/^	int op0;$/;"	m	struct:register_t
+op1	mrs-tool/sysreg.h	/^	int op1;$/;"	m	struct:register_t
+op2	mrs-tool/sysreg.h	/^	int op2;$/;"	m	struct:register_t
+opt	msr_arm.h	/^	u32 opt;$/;"	m	struct:msr_info
+order	arm64/gic/gic_local_data.h	/^        u32             order;$/;"	m	struct:its_baser
+order	kmem/zone.c	/^	int order;			\/* order a direct compactor needs *\/$/;"	m	struct:compact_control	file:
+orig___alloc_pages_direct_compact	kmem/compact.c	/^struct page * (*orig___alloc_pages_direct_compact)(gfp_t gfp_mask, unsigned int order,$/;"	v	typeref:struct:orig___alloc_pages_direct_compact
+orig___alloc_pages_direct_compact	kmem/kmem_unit.c	/^struct page * (*orig___alloc_pages_direct_compact)(gfp_t gfp_mask, unsigned int order,$/;"	v	typeref:struct:orig___alloc_pages_direct_compact
+orig___irq_domain_alloc_irqs	arm64/gic/gic_virtual_device.c	/^int (*orig___irq_domain_alloc_irqs)(struct irq_domain *domain, int irq_base,$/;"	v
+orig___kernel_text_address	showstack.c	/^static int (*orig___kernel_text_address)(unsigned long addr);$/;"	v	file:
+orig___pmd_trans_huge_lock	kmem/kmem_unit.c	/^spinlock_t *(*orig___pmd_trans_huge_lock)(pmd_t *pmd, struct vm_area_struct *vma);$/;"	v
+orig__vm_normal_page	kmem/kmem_unit.c	/^struct page *(*orig__vm_normal_page)(struct vm_area_struct *vma, unsigned long addr, pte_t pte, bool with_public_device);$/;"	v	typeref:struct:orig__vm_normal_page
+orig_all_bdevs	block_unit.c	/^struct list_head *orig_all_bdevs;$/;"	v	typeref:struct:list_head
+orig_arch_tlb_gather_mmu	kmem/kmem_unit.c	/^void (*orig_arch_tlb_gather_mmu)(struct mmu_gather *tlb, struct mm_struct *mm, unsigned long start, unsigned long end);$/;"	v
+orig_bdev_lock	block_unit.c	/^spinlock_t *orig_bdev_lock;$/;"	v
+orig_bdi_list	block_unit.c	/^struct list_head *orig_bdi_list;$/;"	v	typeref:struct:list_head
+orig_clockevent_devices	ktime_unit.c	/^struct list_head *orig_clockevent_devices;$/;"	v	typeref:struct:list_head
+orig_cpus_share_cache	cpu_unit.c	/^bool (*orig_cpus_share_cache)(int this_cpu, int that_cpu);$/;"	v
+orig_dump_stack_print_info	kprobe_entry.c	/^static void (*orig_dump_stack_print_info)(const char *log_lvl);$/;"	v	file:
+orig_find_task_by_vpid	ksched/ksched_unit.c	/^static struct task_struct *(*orig_find_task_by_vpid)(pid_t vnr);$/;"	v	typeref:struct:orig_find_task_by_vpid	file:
+orig_follow_trans_huge_pmd	kmem/kmem_unit.c	/^struct page *(*orig_follow_trans_huge_pmd)(struct vm_area_struct *vma,$/;"	v	typeref:struct:orig_follow_trans_huge_pmd
+orig_ftrace_graph_ret_addr	showstack.c	/^static  unsigned long (*orig_ftrace_graph_ret_addr)(struct task_struct *task, int *idx,$/;"	v	file:
+orig_get_stack_info	showstack.c	/^static int (*orig_get_stack_info)(unsigned long *stack, struct task_struct *task, $/;"	v	file:
+orig_gic_data	arm64/gic/gic_entry.c	/^static struct gic_chip_data *orig_gic_data;$/;"	v	typeref:struct:gic_chip_data	file:
+orig_gic_rdists	arm64/gic/gic_entry.c	/^struct rdists **orig_gic_rdists;$/;"	v	typeref:struct:rdists
+orig_irq_domain_activate_irq	arm64/gic/gic_virtual_device.c	/^int (*orig_irq_domain_activate_irq)(struct irq_data *irq_data, bool reserve);$/;"	v
+orig_irq_domain_deactivate_irq	arm64/gic/gic_virtual_device.c	/^void (*orig_irq_domain_deactivate_irq)(struct irq_data *irq_data);$/;"	v
+orig_irq_domain_free_irqs	arm64/gic/gic_virtual_device.c	/^void (*orig_irq_domain_free_irqs)(unsigned int virq, unsigned int nr_irqs);$/;"	v
+orig_irq_domain_list	arm64/gic/gic_virtual_device.c	/^static struct list_head *orig_irq_domain_list;$/;"	v	typeref:struct:list_head	file:
+orig_isolate_migratepages_block	kmem/zone.c	/^unsigned long (*orig_isolate_migratepages_block)(struct compact_control *cc, unsigned long low_pfn,$/;"	v
+orig_its_domain_ops	arm64/gic/gic_virtual_device.c	/^static struct irq_domain_ops *orig_its_domain_ops;$/;"	v	typeref:struct:irq_domain_ops	file:
+orig_its_msi_prepare	arm64/gic/gic_virtual_device.c	/^static int (*orig_its_msi_prepare)(struct irq_domain *domain, struct device *dev,$/;"	v	file:
+orig_its_nodes	arm64/gic/gic_entry.c	/^struct list_head *orig_its_nodes;$/;"	v	typeref:struct:list_head
+orig_lpi_range_list	arm64/gic/gic_entry.c	/^struct list_head *orig_lpi_range_list;$/;"	v	typeref:struct:list_head
+orig_lpi_update_config	arm64/gic/gic_virtual_device.c	/^void (*orig_lpi_update_config)(struct irq_data *d, u8 clr, u8 set);$/;"	v
+orig_pci_bus_type	hw/pci/pci_unit.c	/^struct bus_type *orig_pci_bus_type;$/;"	v	typeref:struct:bus_type
+orig_root_mem_cgroup	kmem/cgroup.c	/^struct mem_cgroup *orig_root_mem_cgroup;$/;"	v	typeref:struct:mem_cgroup
+orig_runqueues	ksched/ksched_unit.c	/^struct rq *orig_runqueues;$/;"	v	typeref:struct:rq
+orig_show_regs_if_on_stack	showstack.c	/^static void (*orig_show_regs_if_on_stack)(struct stack_info *info, struct pt_regs *regs,$/;"	v	file:
+orig_stack_type_name	showstack.c	/^static const char *(*orig_stack_type_name)(enum stack_type type);$/;"	v	file:
+orig_supper_blocks	block/ext2_test.c	/^static struct list_head *orig_supper_blocks;$/;"	v	typeref:struct:list_head	file:
+orig_swp_swapcount	kmem/kmem_unit.c	/^int (*orig_swp_swapcount)(swp_entry_t entry);$/;"	v
+orig_tk_core	ksched/ksched_unit.c	/^struct tk_core *orig_tk_core;$/;"	v	typeref:struct:tk_core
+orig_unwind_get_return_address_ptr	showstack.c	/^static unsigned long *(*orig_unwind_get_return_address_ptr)(struct unwind_state *state);$/;"	v	file:
+orig_virtio_bus	hw/pci/pci_unit.c	/^struct bus_type *orig_virtio_bus;$/;"	v	typeref:struct:bus_type
+orig_virtio_queue_rq_hook	block_unit.c	/^static virtio_hook *orig_virtio_queue_rq_hook;$/;"	v	file:
+orig_vm_node_stat	kmem/zone.c	/^atomic_long_t *orig_vm_node_stat;$/;"	v
+orig_vm_numa_stat	kmem/zone.c	/^atomic_long_t *orig_vm_numa_stat;$/;"	v
+orig_vm_zone_stat	kmem/zone.c	/^atomic_long_t *orig_vm_zone_stat;$/;"	v
+orig_walk_page_vma	kmem/kmem_unit.c	/^int (*orig_walk_page_vma)(struct vm_area_struct *vma, struct mm_walk *walk);$/;"	v
+page	misc_ioctl.h	/^FUNC_UNIT(page);$/;"	v
+page_addr	include/kmem_data.h	/^	unsigned long page_addr;$/;"	m	struct:page_info
+page_attr	template_iocmd.h	/^				struct page_attr {$/;"	s	union:ioctl_data::__anon3::kmem_ioctl::__anon4
+page_buffer	template_iocmd.h	/^	unsigned long *page_buffer;$/;"	m	struct:mem_size_stats
+page_index	template_iocmd.h	/^	unsigned long page_index;$/;"	m	struct:mem_size_stats
+page_info	include/kmem_data.h	/^struct page_info {$/;"	s
+page_info_show	kmem/page.c	/^void page_info_show(struct page *page)$/;"	f
+page_order	include/kmem_data.h	/^	unsigned long page_order;$/;"	m	struct:page_info
+page_order	template_iocmd.h	/^	unsigned long page_order[11];$/;"	m	struct:mem_size_stats
+page_test	kmem/kmem_unit.c	/^static void page_test(void)$/;"	f	file:
+page_unit_exit	page_test.c	/^int page_unit_exit(void)$/;"	f
+page_unit_init	page_test.c	/^int page_unit_init(void)$/;"	f
+page_unit_ioctl_func	page_test.c	/^int page_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+pageattr_data	template_iocmd.h	/^				}pageattr_data;$/;"	m	union:ioctl_data::__anon3::kmem_ioctl::__anon4	typeref:struct:ioctl_data::__anon3::kmem_ioctl::__anon4::page_attr
+pageblock_flags	template_iocmd.h	/^				unsigned long       *pageblock_flags;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl::zone_data
+pages_buffer_order	user_space/kmem.c	/^static pages_buffer_order(unsigned long *buf, unsigned long size)$/;"	f	file:
+parse	mrs-tool/rsysreg.c	/^void parse(const char *regstr)$/;"	f
+parse	mrs-tool/wsysreg.c	/^void parse(const char *regstr)$/;"	f
+pci	misc_ioctl.h	/^FUNC_UNIT(pci);$/;"	v
+pci_bus_scan	hw/pci/pci_unit.c	/^void pci_bus_scan(void)$/;"	f
+pci_data	template_iocmd.h	/^		} pci_data;$/;"	m	union:ioctl_data::__anon3	typeref:struct:ioctl_data::__anon3::pci_ioctl
+pci_dev_data_dump	pci/pci_unit.c	/^static void pci_dev_data_dump(struct pci_dev *pdev)$/;"	f	file:
+pci_ioctl	template_iocmd.h	/^		struct pci_ioctl {$/;"	s	union:ioctl_data::__anon3
+pci_rescan_devices	hw/pci/pci_unit.c	/^static int __must_check pci_rescan_devices(struct device *dev, void *data)$/;"	f	file:
+pci_unit_enumalte_all	pci/pci_unit.c	/^static void pci_unit_enumalte_all(void)$/;"	f	file:
+pci_unit_exit	pci/pci_unit.c	/^int pci_unit_exit(void)$/;"	f
+pci_unit_init	pci/pci_unit.c	/^int pci_unit_init(void)$/;"	f
+pci_unit_ioctl_func	pci/pci_unit.c	/^int pci_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+pci_unit_register_pci_device	hw/pci/pci_unit.c	/^struct pci_dev *pci_unit_register_pci_device(void)$/;"	f
+pci_usage	user_space/pci_main.c	/^int pci_usage(int argc, char **argv)$/;"	f
+per_cpu_atomic_wq	atomic_entry.c	/^	struct work_struct per_cpu_atomic_wq;$/;"	m	struct:atomic_test_data	typeref:struct:atomic_test_data::work_struct	file:
+performance_delay	workqueue_test.c	/^	unsigned long performance_delay;$/;"	m	struct:wkq_data	file:
+performance_exp	workqueue_test.c	/^	unsigned long performance_exp;$/;"	m	struct:wkq_data	file:
+pgd_pud_pnd_pte_dump	page_test.c	/^static pte_t *pgd_pud_pnd_pte_dump(unsigned long addr)$/;"	f	file:
+phys_base	arm64/gic/gic_local_data.h	/^        phys_addr_t             phys_base;$/;"	m	struct:its_node
+phys_base	arm64/gic/gic_local_data.h	/^        phys_addr_t             phys_base;$/;"	m	struct:redist_region
+pid	template_iocmd.h	/^			int pid;$/;"	m	struct:ioctl_data::__anon3::sched_ioctl
+pid	template_iocmd.h	/^	int pid;$/;"	m	struct:ioctl_data
+ping_data	user_space/main.c	/^struct ping_data {$/;"	s	file:
+pmd_clear_bad	kmem/kmem_unit.c	/^void pmd_clear_bad(pmd_t *pmd)$/;"	f
+pmd_huge	kmem/page.c	/^int pmd_huge(pmd_t pmd)$/;"	f
+ppi_descs	arm64/gic/gic_local_data.h	/^        struct partition_desc   **ppi_descs;$/;"	m	struct:gic_chip_data	typeref:struct:gic_chip_data::partition_desc
+ppi_nr	arm64/gic/gic_local_data.h	/^        unsigned int            ppi_nr;$/;"	m	struct:gic_chip_data
+pr_fmt	msr_arm.c	13;"	d	file:
+pre_its_base	arm64/gic/gic_local_data.h	/^        u32                     pre_its_base; \/* for Socionext Synquacer *\/$/;"	m	struct:its_node
+preferred_zoneref	kmem/compact.c	/^    struct zoneref *preferred_zoneref;$/;"	m	struct:alloc_context	typeref:struct:alloc_context::zoneref	file:
+present_pages	template_iocmd.h	/^				unsigned long       present_pages;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl::zone_data
+prev	include/kmem_data.h	/^	struct page_info *prev;$/;"	m	struct:page_info	typeref:struct:page_info::page_info
+prev_sum_exec_runtime	template_iocmd.h	/^				unsigned long prev_sum_exec_runtime;$/;"	m	struct:ioctl_data::__anon3::sched_ioctl::u_task_info
+print_rq	ksched/ksched_debug.c	/^void print_rq(struct rq *rq, int rq_cpu)$/;"	f
+print_task	ksched/ksched_debug.c	/^print_task(struct rq *rq, struct task_struct *p)$/;"	f
+private_clean	template_iocmd.h	/^    unsigned long private_clean;$/;"	m	struct:mem_size_stats
+private_dirty	template_iocmd.h	/^    unsigned long private_dirty;$/;"	m	struct:mem_size_stats
+private_hugetlb	template_iocmd.h	/^    unsigned long private_hugetlb;$/;"	m	struct:mem_size_stats
+program	mrs-tool/rsysreg.c	/^const char *program;$/;"	v
+program	mrs-tool/wsysreg.c	/^const char *program;$/;"	v
+pss	template_iocmd.h	/^    unsigned long pss;$/;"	m	struct:mem_size_stats
+pss_locked	template_iocmd.h	/^    unsigned long pss_locked;$/;"	m	struct:mem_size_stats
+psz	arm64/gic/gic_local_data.h	/^        u32             psz;$/;"	m	struct:its_baser
+pud_huge	kmem/page.c	/^int pud_huge(pud_t pud)$/;"	f
+put_new_virt_gic_dev	arm64/gic/gic_virtual_device.c	/^static void put_new_virt_gic_dev(struct virtual_gic_dev_data *data)$/;"	f	file:
+q	msr_arm.h	/^		u64 q;$/;"	m	union:msr::__anon1
+radix_data	template_iocmd.h	/^		} radix_data;$/;"	m	union:ioctl_data::__anon3	typeref:struct:ioctl_data::__anon3::raidixtree_ioctl
+radixtree	misc_ioctl.h	/^FUNC_UNIT(radixtree);$/;"	v
+radixtree_page_scan	lib/raidtree.c	/^void radixtree_page_scan(struct radix_tree_node *node, unsigned long index)$/;"	f
+radixtree_unit_exit	radixtree_unit.c	/^int radixtree_unit_exit(void)$/;"	f
+radixtree_unit_init	radixtree_unit.c	/^int radixtree_unit_init(void)$/;"	f
+radixtree_unit_ioctl_func	radixtree_unit.c	/^int radixtree_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+radixtree_usage	user_space/radixtree.c	/^int radixtree_usage(int argc, char **argv)$/;"	f
+raidixtree_ioctl	template_iocmd.h	/^		struct raidixtree_ioctl {$/;"	s	union:ioctl_data::__anon3
+rbtree	misc_ioctl.h	/^FUNC_UNIT(rbtree);$/;"	v
+rcu_pointer	rcu_test.c	/^static void *rcu_pointer;$/;"	v	file:
+rcu_readlock_test_start	rcu_test.c	/^static void rcu_readlock_test_start(void)$/;"	f	file:
+rcu_readlock_test_stop	rcu_test.c	/^static void rcu_readlock_test_stop(void)$/;"	f	file:
+rcu_test	user_space/rcu_test.c	/^int rcu_test(int fd)$/;"	f
+rcu_unit_ioctl_func	rwsem_test.c	/^int rcu_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+rcu_usage	user_space/rcu_test.c	/^int rcu_usage(int argc, char **argv)$/;"	f
+rcuassigned_thread	rcu_test.c	/^static int rcuassigned_thread(void *arg)$/;"	f	file:
+rcuread_thread	rcu_test.c	/^static int rcuread_thread(void *arg)$/;"	f	file:
+rcutest_thread_assigned	rcu_test.c	/^struct task_struct *rcutest_thread_assigned;$/;"	v	typeref:struct:task_struct
+rcutest_thread_read	rcu_test.c	/^struct task_struct *rcutest_thread_read;$/;"	v	typeref:struct:task_struct
+rcutest_unit_exit	rcu_test.c	/^int rcutest_unit_exit(void)$/;"	f
+rcutest_unit_init	rcu_test.c	/^int rcutest_unit_init(void)$/;"	f
+rcutest_unit_ioctl_func	rcu_test.c	/^int rcutest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+rd_tp	msr_arm.c	/^static u32 *rd_tp;$/;"	v	file:
+rdists	arm64/gic/gic_local_data.h	/^        struct rdists           rdists;$/;"	m	struct:gic_chip_data	typeref:struct:gic_chip_data::rdists
+rdmsr_safe_aarch64	msr_arm.c	/^static noinline int rdmsr_safe_aarch64(u32 opt, u32 *data0, u32 *data1)$/;"	f	file:
+rdmsr_safe_on_cpu_aarch64	msr_arm.c	/^EXPORT_SYMBOL(rdmsr_safe_on_cpu_aarch64);$/;"	v
+rdmsr_safe_on_cpu_aarch64	msr_arm.c	/^int rdmsr_safe_on_cpu_aarch64(unsigned int cpu, u32 opt, u32 *l, u32 *h)$/;"	f
+readhead_test	block/readwrite.c	/^void readhead_test(void)$/;"	f
+redist_base	arm64/gic/gic_local_data.h	/^        void __iomem            *redist_base;$/;"	m	struct:redist_region
+redist_region	arm64/gic/gic_local_data.h	/^struct redist_region {$/;"	s
+redist_regions	arm64/gic/gic_local_data.h	/^        struct redist_region    *redist_regions;$/;"	m	struct:gic_chip_data	typeref:struct:gic_chip_data::redist_region
+redist_stride	arm64/gic/gic_local_data.h	/^        u64                     redist_stride;$/;"	m	struct:gic_chip_data
+referenced	template_iocmd.h	/^    unsigned long referenced;$/;"	m	struct:mem_size_stats
+reg	msr_arm.h	/^	struct msr reg;$/;"	m	struct:msr_info	typeref:struct:msr_info::msr
+reg_table	mrs-tool/rsysreg.c	/^struct register_t reg_table[MAX_REG];$/;"	v	typeref:struct:register_t
+regcode	mrs-tool/sysreg.h	/^	unsigned int regcode; \/* S<op0>_op1_cn_cm_op2 *\/$/;"	m	struct:register_t
+register_t	mrs-tool/sysreg.h	/^struct register_t{$/;"	s
+register_undef_hook_el1	msr_arm.c	/^EXPORT_SYMBOL(register_undef_hook_el1);$/;"	v
+register_undef_hook_el1	msr_arm.c	/^void register_undef_hook_el1(struct undef_hook *hook)$/;"	f
+request_flag_dump	block/request.c	/^void request_flag_dump(struct request *req)$/;"	f
+resident	template_iocmd.h	/^    unsigned long resident;$/;"	m	struct:mem_size_stats
+root	radixtree_unit.c	/^	struct radix_tree_root root;$/;"	m	struct:rxtree_misc_data	typeref:struct:rxtree_misc_data::radix_tree_root	file:
+root_table	ktree/ktree_rbtree_unit.c	/^	struct rb_root	root_table;$/;"	m	struct:krbtree_data	typeref:struct:krbtree_data::rb_root	file:
+rq	template_iocmd.h	/^				unsigned int rq;$/;"	m	struct:ioctl_data::__anon3::sched_ioctl::u_task_info
+rt_rq_iter_t	ksched/kschedlocal.h	/^typedef struct task_group *rt_rq_iter_t;$/;"	t	typeref:struct:task_group
+runtime	template_iocmd.h	/^			int runtime;$/;"	m	struct:ioctl_data::__anon3::workqueue_ioctl
+runtime	workqueue_test.c	/^	int runtime;$/;"	m	struct:wkq_data	file:
+rwsem_unit_init	rwsem_test.c	/^int rwsem_unit_init(void)$/;"	f
+rxtree_misc_data	radixtree_unit.c	/^struct rxtree_misc_data {$/;"	s	file:
+rxtree_misc_data	radixtree_unit.c	/^} *rxtree_misc_data;$/;"	v	typeref:struct:rxtree_misc_data
+rxtree_misc_dump	radixtree_unit.c	/^static int rxtree_misc_dump(struct radix_tree_root *root)$/;"	f	file:
+s_fd	user_space/rcu_test.c	/^static int s_fd;$/;"	v	file:
+s_recv	user_space/main.c	/^	short unsigned int  s_recv;$/;"	m	struct:ping_data	file:
+s_send	user_space/main.c	/^	short unsigned int  s_send;$/;"	m	struct:ping_data	file:
+sbindir	mrs-tool/Makefile	/^sbindir = \/usr\/sbin$/;"	m
+scan_block_dev_disk	block/block_disck.c	/^void scan_block_dev_disk(void)$/;"	f
+scan_disk_bdi_list	block/block_disck.c	/^static void scan_disk_bdi_list(void)$/;"	f	file:
+scan_disk_bdi_wb_list	block/block_disck.c	/^static void scan_disk_bdi_wb_list(struct backing_dev_info *bdi)$/;"	f	file:
+scan_wb_info	block/block_disck.c	/^static void scan_wb_info(struct bdi_writeback *wb)$/;"	f	file:
+sched	misc_ioctl.h	/^FUNC_UNIT(sched);$/;"	v
+sched_data	template_iocmd.h	/^		} sched_data;$/;"	m	union:ioctl_data::__anon3	typeref:struct:ioctl_data::__anon3::sched_ioctl
+sched_ioctl	template_iocmd.h	/^		struct sched_ioctl {$/;"	s	union:ioctl_data::__anon3
+sched_unit_exit	ksched/ksched_unit.c	/^int sched_unit_exit(void)$/;"	f
+sched_unit_init	ksched/ksched_unit.c	/^int sched_unit_init(void)$/;"	f
+sched_unit_ioctl_func	ksched/ksched_unit.c	/^int sched_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+search	mrs-tool/rsysreg.c	/^int search()$/;"	f
+search	mrs-tool/wsysreg.c	/^int search()$/;"	f
+selftest	ktree/ktree_rbtree_unit.c	/^static void selftest(void)$/;"	f	file:
+seq	ksched/ksched_unit.c	/^	seqcount_t      seq;$/;"	m	struct:tk_core	file:
+sgir_base	arm64/gic/gic_local_data.h	/^        void __iomem            *sgir_base;$/;"	m	struct:its_node
+shared	arm64/gic/gic_local_data.h	/^        bool                    shared;$/;"	m	struct:its_device
+shared_clean	template_iocmd.h	/^    unsigned long shared_clean;$/;"	m	struct:mem_size_stats
+shared_dirty	template_iocmd.h	/^    unsigned long shared_dirty;$/;"	m	struct:mem_size_stats
+shared_hugetlb	template_iocmd.h	/^    unsigned long shared_hugetlb;$/;"	m	struct:mem_size_stats
+shift_maxindex	lib/raidtree.c	/^static inline unsigned long shift_maxindex(unsigned int shift)$/;"	f	file:
+shmem_thp	template_iocmd.h	/^    unsigned long shmem_thp;$/;"	m	struct:mem_size_stats
+show_trace_log	showstack.c	/^static void show_trace_log(char *log_buf, struct task_struct *task, struct pt_regs *regs,$/;"	f	file:
+showstack_unit_init	showstack.c	/^int showstack_unit_init(void)$/;"	f
+sigtestworkqueue	atomic_entry.c	/^	struct workqueue_struct *sigtestworkqueue;$/;"	m	struct:atomic_test_data	typeref:struct:atomic_test_data::workqueue_struct	file:
+sigtestworkqueue	workqueue_test.c	/^	struct workqueue_struct *sigtestworkqueue;$/;"	m	struct:wkq_data	typeref:struct:wkq_data::workqueue_struct	file:
+single_redist	arm64/gic/gic_local_data.h	/^        bool                    single_redist;$/;"	m	struct:redist_region
+size	template_iocmd.h	/^					unsigned long size;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl::__anon4::page_attr
+slub_control	template_iocmd.h	/^				struct slub_control {$/;"	s	union:ioctl_data::__anon3::kmem_ioctl::__anon4
+slub_ctrl	template_iocmd.h	/^				} slub_ctrl;$/;"	m	union:ioctl_data::__anon3::kmem_ioctl::__anon4	typeref:struct:ioctl_data::__anon3::kmem_ioctl::__anon4::slub_control
+slub_size	template_iocmd.h	/^					int slub_size;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl::__anon4::slub_control
+smaps_account	kmem/kmem_unit.c	/^static void smaps_account(struct mem_size_stats *mss, struct page *page,$/;"	f	file:
+smaps_pmd_entry	kmem/kmem_unit.c	/^static void smaps_pmd_entry(pmd_t *pmd, unsigned long addr,$/;"	f	file:
+smaps_pte_entry	kmem/kmem_unit.c	/^static void smaps_pte_entry(pte_t *pte, unsigned long addr,$/;"	f	file:
+smaps_pte_range	kmem/kmem_unit.c	/^static int smaps_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end,$/;"	f	file:
+span	arm64/gic/gic_local_data.h	/^	u32                     span; $/;"	m	struct:lpi_range
+spanned_pages	template_iocmd.h	/^				unsigned long       spanned_pages;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl::zone_data
+spin_test	user_space/spin_test.c	/^int spin_test(int fd, struct ioctl_data *data)$/;"	f
+spread_dirty_pages	kmem/compact.c	/^    bool spread_dirty_pages;$/;"	m	struct:alloc_context	file:
+start_pfn	template_iocmd.h	/^					unsigned long start_pfn;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl::__anon4::page_attr
+statickey	misc_ioctl.h	/^FUNC_UNIT(statickey);$/;"	v
+statickey_unit_exit	statickey_unit.c	/^int statickey_unit_exit(void)$/;"	f
+statickey_unit_init	statickey_unit.c	/^int statickey_unit_init(void)$/;"	f
+statickey_unit_ioctl_func	statickey_unit.c	/^int statickey_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+store_irq_mask	arm64/gic/gic_virtual_device.c	/^static ssize_t store_irq_mask(struct device *dev, struct device_attribute *attr,$/;"	f	file:
+store_irq_pending	arm64/gic/gic_virtual_device.c	/^static ssize_t store_irq_pending(struct device *dev, struct device_attribute *attr,$/;"	f	file:
+store_irq_trigger	arm64/gic/gic_virtual_device.c	/^static ssize_t store_irq_trigger(struct device *dev, struct device_attribute *attr,$/;"	f	file:
+store_irq_unmask	arm64/gic/gic_virtual_device.c	/^static ssize_t store_irq_unmask(struct device *dev, struct device_attribute *attr,$/;"	f	file:
+struct_collection_dump	arm64/gic/gic_entry.c	/^static void struct_collection_dump(struct its_collection *collections)$/;"	f	file:
+sum_exec_runtime	template_iocmd.h	/^				unsigned long sum_exec_runtime;$/;"	m	struct:ioctl_data::__anon3::sched_ioctl::u_task_info
+swap	template_iocmd.h	/^    unsigned long swap;$/;"	m	struct:mem_size_stats
+swap_pss	template_iocmd.h	/^    unsigned long swap_pss;$/;"	m	struct:mem_size_stats
+sys_insn	mrs-tool/sysreg.h	53;"	d
+sys_reg	mrs-tool/sysreg.h	48;"	d
+sys_reg_CRm	mrs-tool/sysreg.h	58;"	d
+sys_reg_CRn	mrs-tool/sysreg.h	57;"	d
+sys_reg_Op0	mrs-tool/sysreg.h	55;"	d
+sys_reg_Op1	mrs-tool/sysreg.h	56;"	d
+sys_reg_Op2	mrs-tool/sysreg.h	59;"	d
+tables	arm64/gic/gic_local_data.h	/^        struct its_baser        tables[GITS_BASER_NR_REGS];$/;"	m	struct:its_node	typeref:struct:its_node::its_baser
+target_address	arm64/gic/gic_local_data.h	/^        u64                     target_address;$/;"	m	struct:its_collection
+task_file_enum	kernel/task.c	/^void task_file_enum(struct task_struct *task)$/;"	f
+task_info	template_iocmd.h	/^			} task_info;$/;"	m	struct:ioctl_data::__anon3::sched_ioctl	typeref:struct:ioctl_data::__anon3::sched_ioctl::u_task_info
+task_of	ksched/kschedlocal.h	/^static inline struct task_struct *task_of(struct sched_entity *se)$/;"	f
+test_all	mrs-tool/rsysreg.c	/^int test_all()$/;"	f
+test_user_page	page_test.c	/^static void test_user_page(u64 addr)$/;"	f	file:
+text_addrs	msr_arm.h	/^	void		**text_addrs;$/;"	m	struct:aarch64_insn_patch
+thread1	user_space/rcu_test.c	/^void* thread1()$/;"	f
+thread2	user_space/rcu_test.c	/^void* thread2()$/;"	f
+thread_task	atomic_entry.c	/^static struct task_struct *thread_task[THREAD_CNT];$/;"	v	typeref:struct:task_struct	file:
+thread_wq	misc_entry.c	/^	struct workqueue_struct  *thread_wq;$/;"	m	struct:misc_private_data	typeref:struct:misc_private_data::workqueue_struct	file:
+time	atomic_entry.c	/^	unsigned long time[NR_CPUS];$/;"	m	struct:atomic_test_data	file:
+timekeeper	ksched/ksched_unit.c	/^	struct timekeeper  timekeeper;$/;"	m	struct:tk_core	typeref:struct:tk_core::timekeeper	file:
+timer_clockevent_device_scan	ktime_unit.c	/^static void timer_clockevent_device_scan(void)$/;"	f	file:
+tk_core	ksched/ksched_unit.c	/^struct tk_core {$/;"	s	file:
+total_free_scanned	kmem/zone.c	/^	unsigned long total_free_scanned;$/;"	m	struct:compact_control	file:
+total_migrate_scanned	kmem/zone.c	/^	unsigned long total_migrate_scanned;$/;"	m	struct:compact_control	file:
+type	include/kmem_data.h	/^	int type;$/;"	m	struct:page_info
+type	misc_ioctl.h	/^	enum ioctl_cmdtype type;$/;"	m	struct:misc_uint_item	typeref:enum:misc_uint_item::ioctl_cmdtype
+type	mrs-tool/sysreg.h	/^	bool type; \/* 0:S<op0>_..., 1: ID_ *\/$/;"	m	struct:register_t
+type	template_iocmd.h	/^	enum ioctl_cmdtype type;$/;"	m	struct:ioctl_data	typeref:enum:ioctl_data::ioctl_cmdtype
+typer	arm64/gic/gic_local_data.h	/^        u64                     typer;$/;"	m	struct:its_node
+u_name	misc_ioctl.h	/^	const char *u_name;$/;"	m	struct:misc_uint_item
+u_task_info	template_iocmd.h	/^			struct u_task_info {$/;"	s	struct:ioctl_data::__anon3::sched_ioctl
+unit_list	misc_entry.c	/^struct misc_uint_item unit_list[] =$/;"	v	typeref:struct:misc_uint_item
+unregister_undef_hook_el1	msr_arm.c	/^EXPORT_SYMBOL(unregister_undef_hook_el1);$/;"	v
+unregister_undef_hook_el1	msr_arm.c	/^void unregister_undef_hook_el1(struct undef_hook *hook)$/;"	f
+usage	mrs-tool/rsysreg.c	/^void usage(void)$/;"	f
+usage	mrs-tool/wsysreg.c	/^void usage(void)$/;"	f
+usage_help	user_space/block_main.c	/^void usage_help()$/;"	f
+usage_help	user_space/main.c	/^static int usage_help(int argc, char **argv)$/;"	f	file:
+usage_limit_help	user_space/main.c	/^void usage_limit_help()$/;"	f
+val	arm64/gic/gic_local_data.h	/^        u64             val;$/;"	m	struct:its_baser
+val	ktree/ktree_rbtree_unit.c	/^	int val;$/;"	m	struct:mytype	file:
+val	template_iocmd.h	/^			unsigned long val; \/\/if pte, it is pte value$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl
+vdev_irq_attr	arm64/gic/gic_virtual_device.c	/^	struct gic_vdev_irq_attr **vdev_irq_attr;$/;"	m	struct:virtual_gic_dev_data	typeref:struct:virtual_gic_dev_data::gic_vdev_irq_attr	file:
+virme_bus_match	kernel/virtual_bus.c	/^int virme_bus_match(struct device *dev, struct device_driver *drv)$/;"	f
+virme_bus_type	kernel/virtual_bus.c	/^struct bus_type virme_bus_type = {$/;"	v	typeref:struct:bus_type
+virme_bus_uevent	kernel/virtual_bus.c	/^int virme_bus_uevent(struct device *dev, struct kobj_uevent_env *env)$/;"	f
+virt_dev	arm64/gic/gic_virtual_device.c	/^	struct device *virt_dev;$/;"	m	struct:virtual_gic_dev_data	typeref:struct:virtual_gic_dev_data::device	file:
+virtio_hook	block_unit.c	/^typedef void (*virtio_hook)(struct blk_mq_hw_ctx *hctx, const struct blk_mq_queue_data *bd);$/;"	t	file:
+virtual_get_new_device	kernel/virtual_bus.c	/^struct device *virtual_get_new_device(void)$/;"	f
+virtual_gic_dev_data	arm64/gic/gic_virtual_device.c	/^struct virtual_gic_dev_data {$/;"	s	file:
+virtual_put_new_device	kernel/virtual_bus.c	/^void virtual_put_new_device(struct device *dev)$/;"	f
+virtual_test_bus_exit	kernel/virtual_bus.c	/^int virtual_test_bus_exit(void)$/;"	f
+virtual_test_bus_init	kernel/virtual_bus.c	/^int virtual_test_bus_init(void)$/;"	f
+virtual_test_device_release	kernel/virtual_bus.c	/^static void virtual_test_device_release(struct device *dev)$/;"	f	file:
+virtual_test_get_device	kernel/virtual_bus.c	/^struct device * virtual_test_get_device(void)$/;"	f
+vlpi_lock	arm64/gic/gic_local_data.h	/^	raw_spinlock_t          vlpi_lock;$/;"	m	struct:event_lpi_map
+vlpi_lock	arm64/gic/gic_local_data.h	/^        struct mutex            vlpi_lock;$/;"	m	struct:event_lpi_map	typeref:struct:event_lpi_map::mutex
+vlpi_maps	arm64/gic/gic_local_data.h	/^        struct its_vlpi_map     *vlpi_maps;$/;"	m	struct:event_lpi_map	typeref:struct:event_lpi_map::its_vlpi_map
+vlpi_redist_offset	arm64/gic/gic_local_data.h	/^        int                     vlpi_redist_offset;$/;"	m	struct:its_node
+vm	arm64/gic/gic_local_data.h	/^        struct its_vm           *vm;$/;"	m	struct:event_lpi_map	typeref:struct:event_lpi_map::its_vm
+vma_pte_dump	kmem/page.c	/^void vma_pte_dump(struct vm_area_struct *vma, u64 start_addr, u64 nr_page)$/;"	f
+vma_scan	kmem/kmem_unit.c	/^static int vma_scan(struct ioctl_data *data)$/;"	f	file:
+vruntime	template_iocmd.h	/^				unsigned long vruntime;$/;"	m	struct:ioctl_data::__anon3::sched_ioctl::u_task_info
+wait	kprobe_entry.c	/^	wait_queue_head_t wait;$/;"	m	struct:kprobe_misc_data	file:
+wait	workqueue_test.c	/^	wait_queue_head_t wait;$/;"	m	struct:wkq_data	file:
+wb_inode	block/block_disck.c	/^static inline struct inode *wb_inode(struct list_head *head)$/;"	f	file:
+whole_zone	kmem/zone.c	/^	bool whole_zone;		\/* Whole zone should\/has been scanned *\/$/;"	m	struct:compact_control	file:
+wkq_data	workqueue_test.c	/^struct wkq_data {$/;"	s	file:
+wkq_delay_test	atomic_entry.c	/^	struct delayed_work wkq_delay_test;;$/;"	m	struct:atomic_test_data	typeref:struct:atomic_test_data::delayed_work	file:
+wkq_delay_test	workqueue_test.c	/^	struct delayed_work wkq_delay_test;$/;"	m	struct:wkq_data	typeref:struct:wkq_data::delayed_work	file:
+wkq_delay_test	workqueue_test.c	/^static void wkq_delay_test(struct work_struct *work)$/;"	f	file:
+wkq_dt	workqueue_test.c	/^} *wkq_dt;$/;"	v	typeref:struct:wkq_data
+wkq_sig_performace_delay	workqueue_test.c	/^static void wkq_sig_performace_delay(struct work_struct *work)$/;"	f	file:
+wkq_sig_spinlock_test	workqueue_test.c	/^static void wkq_sig_spinlock_test(struct work_struct *work)$/;"	f	file:
+wkq_sig_spinlockirq_race_test	workqueue_test.c	/^static void wkq_sig_spinlockirq_race_test(struct work_struct *work)$/;"	f	file:
+wkq_sig_spinlockirq_test	workqueue_test.c	/^static void wkq_sig_spinlockirq_test(struct work_struct *work)$/;"	f	file:
+wkq_sig_test	workqueue_test.c	/^static void wkq_sig_test(struct work_struct *work)$/;"	f	file:
+workqueue	atomic_entry.c	/^	struct workqueue_struct *workqueue;$/;"	m	struct:atomic_test_data	typeref:struct:atomic_test_data::workqueue_struct	file:
+workqueue	workqueue_test.c	/^	struct workqueue_struct *workqueue;$/;"	m	struct:wkq_data	typeref:struct:wkq_data::workqueue_struct	file:
+workqueue_ioctl	template_iocmd.h	/^		struct workqueue_ioctl {$/;"	s	union:ioctl_data::__anon3
+workqueue_performance	template_iocmd.h	/^			unsigned long *workqueue_performance;$/;"	m	struct:ioctl_data::__anon3::workqueue_ioctl
+workqueue_unit_exit	workqueue_test.c	/^int workqueue_unit_exit(void)$/;"	f
+workqueue_unit_init	workqueue_test.c	/^int workqueue_unit_init(void)$/;"	f
+workqueue_unit_ioctl_func	workqueue_test.c	/^int workqueue_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)$/;"	f
+workqueue_usage	user_space/workqueue.c	/^int workqueue_usage(int argc, char **argv)$/;"	f
+wq_complete	workqueue_test.c	/^	u8 wq_complete;$/;"	m	struct:wkq_data	file:
+wq_data	template_iocmd.h	/^		} wq_data;$/;"	m	union:ioctl_data::__anon3	typeref:struct:ioctl_data::__anon3::workqueue_ioctl
+wq_sigtestwq	atomic_entry.c	/^	struct work_struct wq_sigtestwq;$/;"	m	struct:atomic_test_data	typeref:struct:atomic_test_data::work_struct	file:
+wq_sigtestwq	workqueue_test.c	/^	struct work_struct wq_sigtestwq;$/;"	m	struct:wkq_data	typeref:struct:wkq_data::work_struct	file:
+wq_sigtestwq_performace_delay	workqueue_test.c	/^	struct work_struct wq_sigtestwq_performace_delay;$/;"	m	struct:wkq_data	typeref:struct:wkq_data::work_struct	file:
+wq_sigtestwq_spinlock	workqueue_test.c	/^	struct work_struct wq_sigtestwq_spinlock;$/;"	m	struct:wkq_data	typeref:struct:wkq_data::work_struct	file:
+wq_sigtestwq_spinlockirq	workqueue_test.c	/^	struct work_struct wq_sigtestwq_spinlockirq;$/;"	m	struct:wkq_data	typeref:struct:wkq_data::work_struct	file:
+wq_sigtestwq_spinlockirq_race	workqueue_test.c	/^	struct work_struct wq_sigtestwq_spinlockirq_race;$/;"	m	struct:wkq_data	typeref:struct:wkq_data::work_struct	file:
+wr_tp	msr_arm.c	/^static u32 *wr_tp;$/;"	v	file:
+wrmsr_safe_aarch64	msr_arm.c	/^static noinline int wrmsr_safe_aarch64(u32 opt, u32 data0, u32 data1)$/;"	f	file:
+wrmsr_safe_on_cpu_aarch64	msr_arm.c	/^EXPORT_SYMBOL(wrmsr_safe_on_cpu_aarch64);$/;"	v
+wrmsr_safe_on_cpu_aarch64	msr_arm.c	/^int wrmsr_safe_on_cpu_aarch64(unsigned int cpu, u32 opt, u32 l, u32 h)$/;"	f
+zone	kmem/zone.c	/^	struct zone *zone;$/;"	m	struct:compact_control	typeref:struct:compact_control::zone	file:
+zone_data	template_iocmd.h	/^			struct zone_data {$/;"	s	struct:ioctl_data::__anon3::kmem_ioctl
+zone_dump_info	kmem/zone.c	/^void zone_dump_info(struct ioctl_data *data)$/;"	f
+zone_len	template_iocmd.h	/^			unsigned long zone_len;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl
+zone_start_pfn	template_iocmd.h	/^				unsigned long       zone_start_pfn;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl::zone_data
+zone_vm_state	template_iocmd.h	/^			unsigned long *zone_vm_state;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl
+zonedata	template_iocmd.h	/^			} zonedata;$/;"	m	struct:ioctl_data::__anon3::kmem_ioctl	typeref:struct:ioctl_data::__anon3::kmem_ioctl::zone_data
+zonelist	kmem/compact.c	/^    struct zonelist *zonelist;$/;"	m	struct:alloc_context	typeref:struct:alloc_context::zonelist	file:

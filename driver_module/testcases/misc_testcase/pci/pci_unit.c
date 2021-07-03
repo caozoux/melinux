@@ -22,17 +22,47 @@
 #include "medelay.h"
 
 
+// read the config space data from pdev
+static void read_pci_config_space(struct pci_dev *pdev)
+{
+	
+}
+
+static void pci_dev_data_dump(struct pci_dev *pdev)
+{
+	int i;
+	printk("devfn:%ld vendor:%lx device:%lx class:%lx aer_cap:%lx irq:%ld \n",
+				(unsigned long)pdev->devfn,
+				(unsigned long)pdev->vendor,
+				(unsigned long)pdev->device,
+				(unsigned long)pdev->class,
+				(unsigned long)pdev->aer_cap,
+				(unsigned long)pdev->irq);
+	for (i = 0; i < DEVICE_COUNT_RESOURCE; ++i) {
+		struct resource *res = &pdev->resource[i];
+		if (res->start)
+			printk("zz %s start:%lx end:%lx \n",__func__, (unsigned long)res->start, (unsigned long)res->end);
+	}
+}
+
+#if 0
+static void pci_unit_find_device(void)
+{
+
+}
+#endif
+
 static void pci_unit_enumalte_all(void)
 {
 	struct pci_dev *pdev;
 	struct device  *dev;
 	struct pci_bus *bus = NULL;
-	struct pci_bus *tmp_bus;
 
 	while ((bus = pci_find_next_bus(bus)) != NULL)  {
 		list_for_each_entry(pdev, &bus->devices, bus_list) {
 			dev = &pdev->dev;
 			printk("pci:%s parent:%s\n", dev_name(dev), dev_name(dev->parent));
+			pci_dev_data_dump(pdev);
 		}
 	}
 }

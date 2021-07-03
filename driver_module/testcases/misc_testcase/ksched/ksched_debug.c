@@ -22,8 +22,6 @@
 #include "debug_ctrl.h"
 #include "medelay.h"
 
-static char group_path[PATH_MAX];
-static DEFINE_SPINLOCK(sched_debug_lock);
 
 #define SPLIT_NS(x) nsec_high(x), nsec_low(x)
 #define P_RQ(x)  printk("  .%-30s: %ld\n", #x, (long)(rq->x));
@@ -51,6 +49,7 @@ static long long nsec_high(unsigned long long nsec)
 }
 
 #if 0
+static char group_path[PATH_MAX];
 static char *task_group_path(struct task_group *tg)
 {
 	if (autogroup_path(tg, group_path, PATH_MAX))
@@ -124,7 +123,6 @@ void print_rq(struct rq *rq, int rq_cpu)
 void ksched_print_cpu(int cpu)
 {
 	struct rq *rq = cpu_rq(cpu);
-	unsigned long flags;
 
 	{
 		unsigned int freq = cpu_khz ? : 1;
@@ -160,6 +158,8 @@ void ksched_print_cpu(int cpu)
 
 	print_rq(rq, cpu);
 #if 0
+static DEFINE_SPINLOCK(sched_debug_lock);
+	unsigned long flags;
 	spin_lock_irqsave(&sched_debug_lock, flags);
 	{
 		struct cfs_rq *cfs_rq;

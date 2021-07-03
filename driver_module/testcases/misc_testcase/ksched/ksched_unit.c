@@ -41,9 +41,10 @@ int ksach_sacn_cfs_rq(void)
 	for_each_online_cpu(cpu) {
 		rq = cpu_rq(cpu);
 		for_each_leaf_cfs_rq_safe(rq, cfs_rq, pos) {
-			struct sched_entity *se;
+			//struct sched_entity *se;
 		}
 	}
+	return 0;
 }
 
 /* scan rq all node of task_timeline */
@@ -83,6 +84,7 @@ int ksched_sched_clock_test(struct ioctl_data *data)
 	now2 = ktime_get();
 	printk("zz %s clk:%lld ktime:%lld\n",__func__, clk1, now1);
 	printk("zz %s clk:%lld ktime:%lld\n",__func__, clk2, now2);
+	return 0;
 }
 
 int ksched_scan_rq(struct ioctl_data *data)
@@ -107,11 +109,12 @@ int ksched_scan_rq(struct ioctl_data *data)
 #else
 
 #endif
+	return 0;
 }
 
 int sched_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
-	struct u_task_info  info;
+	//struct u_task_info  info;
 	//struct  sched_iotcl *sched_io;
 	struct  task_struct *task;
 	switch (data->cmdcode) {
