@@ -3,6 +3,16 @@
 
 #include <melib.h>
 
+#define TRACK_ADDRS_COUNT 16
+struct track {
+	unsigned long addr;
+	unsigned long addrs[TRACK_ADDRS_COUNT];
+	int cpu;
+	int pid;
+	unsigned long when;
+};
+
+
 void task_file_enum(struct task_struct *task);
 void medentry_dump_full_patch(struct dentry *dentry);
 void merequest_dump_full_patch(struct request *req);
@@ -27,5 +37,8 @@ pte_t *get_pte(unsigned long addr, struct mm_struct *mm);
 void vma_pte_dump(struct vm_area_struct *vma, u64 start_addr, u64 nr_page);
 void dump_page_info(struct page *page);
 
+//get the dump addr
+int get_current_track(struct track *track, unsigned long addr);
+void print_track(const char *s, struct track *t, unsigned long pr_time);
 #endif
 

@@ -537,6 +537,9 @@ int kmem_unit_init(void)
 	LOOKUP_SYMS(__pmd_trans_huge_lock);
 	LOOKUP_SYMS(follow_trans_huge_pmd);
 	LOOKUP_SYMS(isolate_migratepages_block);
+	LOOKUP_SYMS(iomem_resource);
+
+	resource_scan();
 	return 0;
 }
 
