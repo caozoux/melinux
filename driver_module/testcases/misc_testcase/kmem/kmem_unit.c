@@ -515,6 +515,9 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 			//ret = kmemcache_create(, );
 			break;
 
+		case IOCTL_USEKMEM_RESOURCE_SCAN:
+			resource_scan();
+			break;
 
 		default:
 			goto OUT;
@@ -539,7 +542,6 @@ int kmem_unit_init(void)
 	LOOKUP_SYMS(isolate_migratepages_block);
 	LOOKUP_SYMS(iomem_resource);
 
-	resource_scan();
 	return 0;
 }
 

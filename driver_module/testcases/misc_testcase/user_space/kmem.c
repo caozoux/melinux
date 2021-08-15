@@ -21,7 +21,8 @@ static void help(void)
 	printf("kmem --buddypagetest   dump page flags\n");
 	printf("kmem --full_page_scan  full page scan\n");
 	printf("kmem --slub_op $name   kmemcache operation\n");
-	printf("     --slub_op $name   --op_name \"create/remove/add/dec\"	--extern ${size}  slub operation\n");
+	printf("kmem --slub_op $name   --op_name \"create/remove/add/dec\"	--extern ${size}  slub operation\n");
+	printf("kmem --resource_scan   scan all resource\n");
 }
 
 static pages_buffer_order(unsigned long *buf, unsigned long size)
@@ -102,6 +103,7 @@ static const struct option long_options[] = {
 	{"full_page_scan",   no_argument, 0,  0 },
 	{"slub_op",   required_argument, 0,  0 },
 	{"op_name",   required_argument, 0,  0 },
+	{"resource_scan",   no_argument, 0,  0 },
 	{0,0,0,0}
 };
 
@@ -194,6 +196,10 @@ int kmem_usage(int argc, char **argv)
 
 			case 11:
 				strcpy(op_name, optarg);
+				break;
+
+			case 12:
+				data.cmdcode =IOCTL_USEKMEM_RESOURCE_SCAN;
 				break;
 
 			default:
