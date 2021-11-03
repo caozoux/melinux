@@ -171,6 +171,7 @@ static struct memisc_func all_funcs[] = {
 	{"radixtree", radixtree_usage},
 	{"sched", ksched_usage},
 	{"pci", pci_usage},
+	{"panic", panic_usage},
 };
 
 static int usage_help(int argc, char **argv)

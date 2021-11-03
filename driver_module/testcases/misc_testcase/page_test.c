@@ -90,10 +90,10 @@ int page_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 	int ret = -1;
 
 	switch (data->cmdcode) {
-		case  IOCTL_USEMEM_PAGEDUMP:
+		//case  IOCTL_USEMEM_PAGEDUMP:
 			//pgd_pud_pnd_pte_dump(arg);
 			//test_user_page((u64)arg);
-			break;
+		//	break;
 
 		default:
 			goto OUT;

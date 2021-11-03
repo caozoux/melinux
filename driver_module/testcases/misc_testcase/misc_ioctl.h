@@ -79,6 +79,10 @@ int efi_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data 
 int efi_unit_init(void);
 int efi_unit_exit(void);
 
+int panic_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
+int panic_unit_init(void);
+int panic_unit_exit(void);
+
 FUNC_UNIT(locktest);
 FUNC_UNIT(hwpci);
 FUNC_UNIT(statickey);
@@ -93,4 +97,5 @@ FUNC_UNIT(radixtree);
 FUNC_UNIT(rbtree);
 FUNC_UNIT(pci);
 FUNC_UNIT(efi);
+FUNC_UNIT(panic);
 #endif

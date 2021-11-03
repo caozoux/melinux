@@ -27,6 +27,7 @@ $(TARGET)-objs += ksched/ksched_unit.o  ksched/ksched_debug.o
 $(TARGET)-objs += ktree/ktree_rbtree_unit.o
 $(TARGET)-objs += pci/pci_unit.o
 $(TARGET)-objs += efi/efi_unit.o
+$(TARGET)-objs += panic_hang/panic_unit.o
 
 
 all:
