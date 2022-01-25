@@ -25,6 +25,12 @@
 			orig_text_poke_smp(orig_##func, e9_##func,		\
 					   RELATIVEJUMP_SIZE);			\
 		} while (0)
+	#define JUMP_INSTALLWITHOLD(func) do {						\
+			memcpy(inst_##func, orig_##func, RELATIVEJUMP_SIZE);	\
+	        old_##func = orig_##func + 5;                   \
+			orig_text_poke_smp(orig_##func, e9_##func,		\
+					   RELATIVEJUMP_SIZE);			\
+		} while (0)
 
 	#define JUMP_REMOVE(func)						\
 		orig_text_poke_smp(orig_##func, inst_##func, RELATIVEJUMP_SIZE)
@@ -36,6 +42,13 @@
 #else
 	#define JUMP_INSTALL(func) do {						\
 			memcpy(inst_##func, orig_##func, RELATIVEJUMP_SIZE);	\
+			orig_text_poke_bp(orig_##func, e9_##func,		\
+					   RELATIVEJUMP_SIZE, new_##func);	\
+		} while (0)
+
+	#define JUMP_INSTALLWITHOLD(func) do {						\
+			memcpy(inst_##func, orig_##func, RELATIVEJUMP_SIZE);	\
+	        old_##func = orig_##func + 5;                   \
 			orig_text_poke_bp(orig_##func, e9_##func,		\
 					   RELATIVEJUMP_SIZE, new_##func);	\
 		} while (0)

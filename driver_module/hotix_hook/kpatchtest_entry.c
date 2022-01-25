@@ -25,35 +25,35 @@ struct mutex *orig_text_mutex;
 struct timekeeper *orig_timekeeper;
 TEXT_DECLARE()
 
-DEFINE_ORIG_FUNC(void,  getboottime, 1,
-		 struct timespec*, ts);
+DEFINE_ORIG_FUNC(void,  getboottime64, 1,
+		 struct timespec64*, ts);
 
 static int init_syms(void)
 {
 	TEXT_SYMS()
-	LOOKUP_SYMS(timekeeper);
-	LOOKUP_SYMS(getboottime);
+	LOOKUP_SYMS(getboottime64);
 	return 0;
 }
 
+void (*old_getboottime64)(struct timespec64 *ts);
 
-void new_getboottime(struct timespec *ts)
+void new_getboottime64(struct timespec64 *ts)
 {
-	printk("zz %s %d \n", __func__, __LINE__);
 }
 
 static int __init cpuset_trick_init(void)
 {
 	int ret = 0;
-
+	struct timespec64 boot;
+    boot.tv_nsec = 0;
 	if (init_syms())
 		return -EINVAL;
 
-	JUMP_INIT(getboottime);
+	JUMP_INIT(getboottime64);
 
 	get_online_cpus();
 	mutex_lock(orig_text_mutex);
-	JUMP_INSTALL(getboottime);
+	JUMP_INSTALLWITHOLD(getboottime64);
 	mutex_unlock(orig_text_mutex);
 	put_online_cpus();
 
@@ -64,7 +64,7 @@ static void __exit cpuset_trick_exit(void)
 {
 	get_online_cpus();
 	mutex_lock(orig_text_mutex);
-	JUMP_REMOVE(getboottime);
+	JUMP_REMOVE(getboottime64);
 	mutex_unlock(orig_text_mutex);
 	put_online_cpus();
 }
