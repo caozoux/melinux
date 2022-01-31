@@ -131,6 +131,7 @@ void ksched_print_cpu(int cpu)
 			   cpu, freq / 1000, (freq % 1000));
 	}
 
+#if 0
 	P_RQ(nr_running);
 	printk("  .%-30s: %lu\n", "load", rq->load.weight);
 	P_RQ(nr_switches);
@@ -154,6 +155,7 @@ void ksched_print_cpu(int cpu)
 	P_RQ(sched_goidle);
 	P_RQ(ttwu_count);
 	P_RQ(ttwu_local);
+#endif
 
 
 	print_rq(rq, cpu);

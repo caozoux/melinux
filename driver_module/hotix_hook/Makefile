@@ -5,6 +5,8 @@ TARGET := kpatch_hootk
 KERVER =$(shell uname -r)
 KERSRC ?= /lib/modules/$(KERVER)/build
 
+EXTRA_CFLAGS += -I/home/zc/github/cloud-kernel
+
 obj-m := $(TARGET).o  
 $(TARGET)-objs := kpatchtest_entry.o
 all:

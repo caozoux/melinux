@@ -35,7 +35,6 @@ int locktest_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_
 	switch (data->cmdcode) {
 		case IOCTL_HARDLOCK_LOCK:
 			DEBUG("spinlock lock\n");
-			//spin_lock_irqsave(&davinci_rtc_lock, flags);
 			spin_lock(&locktest_lock);
 			break;
 		case IOCTL_HARDLOCK_UNLOCK:

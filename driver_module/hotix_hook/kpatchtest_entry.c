@@ -19,26 +19,29 @@
 #include <linux/time.h>
 #include <linux/tick.h>
 #include "hotfix_util.h"
+#include "kernel/time/tick-sched.h"
 
 
 struct mutex *orig_text_mutex;
 struct timekeeper *orig_timekeeper;
-TEXT_DECLARE()
 
-DEFINE_ORIG_FUNC(void,  getboottime64, 1,
-		 struct timespec64*, ts);
+DEFINE_ORIG_FUNC(ktime_t, tick_nohz_next_event, 2, struct tick_sched *, ts, int, cpu);
+TEXT_DECLARE()
+ktime_t (*old_tick_nohz_next_event)(struct tick_sched *ts, int cpu);
+
+ktime_t new_tick_nohz_next_event(struct tick_sched *ts, int cpu)
+{
+	ktime_t  kt_s;
+	kt_s = old_tick_nohz_next_event(ts,cpu);
+	printk("zz %s %d cpu%d ts:%lx\n", __func__, __LINE__, cpu, kt_s);
+	return kt_s;	 
+}
 
 static int init_syms(void)
 {
 	TEXT_SYMS()
-	LOOKUP_SYMS(getboottime64);
+	LOOKUP_SYMS(tick_nohz_next_event);
 	return 0;
-}
-
-void (*old_getboottime64)(struct timespec64 *ts);
-
-void new_getboottime64(struct timespec64 *ts)
-{
 }
 
 static int __init cpuset_trick_init(void)
@@ -49,11 +52,11 @@ static int __init cpuset_trick_init(void)
 	if (init_syms())
 		return -EINVAL;
 
-	JUMP_INIT(getboottime64);
+	JUMP_INIT(tick_nohz_next_event);
 
 	get_online_cpus();
 	mutex_lock(orig_text_mutex);
-	JUMP_INSTALLWITHOLD(getboottime64);
+	JUMP_INSTALLWITHOLD(tick_nohz_next_event);
 	mutex_unlock(orig_text_mutex);
 	put_online_cpus();
 
@@ -64,7 +67,7 @@ static void __exit cpuset_trick_exit(void)
 {
 	get_online_cpus();
 	mutex_lock(orig_text_mutex);
-	JUMP_REMOVE(getboottime64);
+	JUMP_REMOVE(tick_nohz_next_event);
 	mutex_unlock(orig_text_mutex);
 	put_online_cpus();
 }

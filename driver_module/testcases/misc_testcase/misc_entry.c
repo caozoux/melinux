@@ -80,6 +80,7 @@ struct misc_uint_item unit_list[] =
 	MISC_UNIT(pci, IOCTL_PCI),
 	MISC_UNIT(efi, IOCTL_PCI),
 	MISC_UNIT(panic, IOCTL_PANIC),
+	MISC_UNIT(time, IOCTL_PANIC),
 #ifdef CONFIG_ARM64
 	//MISC_UNIT(arm64gic, IOCTL_USEBLOCK),
 #endif

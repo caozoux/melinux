@@ -26,7 +26,7 @@ static u32 *orig_log_next_idx;
 static u64 *orig_log_first_seq;
 static u32 *orig_log_first_idx;
 
-struct kprobe rcu_kprobe;
+//struct kprobe rcu_kprobe;
 
 static int rcu_stall_kprobe(struct kprobe *p, struct pt_regs *regs)
 {
