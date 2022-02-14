@@ -1,6 +1,7 @@
 #ifndef __MEKERNEL_H__
 #define __MEKERNEL_H__
 
+#include <linux/blkdev.h>
 #include <melib.h>
 
 #define TRACK_ADDRS_COUNT 16

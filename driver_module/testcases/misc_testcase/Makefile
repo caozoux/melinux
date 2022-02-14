@@ -30,6 +30,7 @@ $(TARGET)-objs += pci/pci_unit.o
 $(TARGET)-objs += efi/efi_unit.o
 $(TARGET)-objs += panic_hang/panic_unit.o
 $(TARGET)-objs += time/time_unit.o
+$(TARGET)-objs += inject/inject_unit.o
 
 
 all:

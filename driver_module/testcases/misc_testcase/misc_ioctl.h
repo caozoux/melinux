@@ -87,6 +87,10 @@ int time_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data
 int time_unit_init(void);
 int time_unit_exit(void);
 
+int inject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
+int inject_unit_init(void);
+int inject_unit_exit(void);
+
 FUNC_UNIT(locktest);
 FUNC_UNIT(hwpci);
 FUNC_UNIT(statickey);
@@ -103,4 +107,5 @@ FUNC_UNIT(pci);
 FUNC_UNIT(efi);
 FUNC_UNIT(panic);
 FUNC_UNIT(time);
+FUNC_UNIT(inject);
 #endif

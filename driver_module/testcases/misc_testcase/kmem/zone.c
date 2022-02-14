@@ -176,7 +176,7 @@ void kmem_dump_state(void)
 
 void compatc_zone_order(struct zone *zone, int order, gfp_t gfp_mask, unsigned int alloc_flags, int classzone_idx)
 {
-	u64 start, end;
+	u64 start;
 	u64 old_mirgrate_pfn = 0;
 	struct page *page;
 	struct compact_control cc = {

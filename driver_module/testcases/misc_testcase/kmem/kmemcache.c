@@ -52,7 +52,7 @@ void kmem_kmemcache_remove(char *name)
 
 	data = kmem_kmemcache_get_item(name);
 	if (!data)
-		return -EINVAL;
+		return;
 
 	s = data->kmem_cache;
 	if (!s)
@@ -65,13 +65,12 @@ void kmem_kmemcache_remove(char *name)
 	kmem_cache_destroy(data->kmem_cache);
 
 failed:
-	pr_warn("%s objects:%ld, can be free\n", s->name, s->refcount);
+	pr_warn("%s objects:%d, can be free\n", s->name, s->refcount);
 
 };
 
 int kmem_kmemcache_create(char *name, int size)
 {
-	int i;
 	struct kmem_kmemcache_data *data;
 	data = kmalloc(__GFP_ZERO, sizeof(struct kmem_kmemcache_data));
 	if (!data)
@@ -88,7 +87,7 @@ int kmem_kmemcache_create(char *name, int size)
 		goto out;
 
 	list_add_tail(&data->list, &kmem_kmemcache_list);
-	DEBUG("slub create:%s %lx %s\n", data->kmem_cache->name, data->kmem_cache, data->name);
+	DEBUG("slub create:%s %p %s\n", data->kmem_cache->name, data->kmem_cache, data->name);
 	return 0;
 
 out:
@@ -112,7 +111,7 @@ int kmem_kmemcache_create_objs(char *name, int size, int is_free)
 
 	s = data->kmem_cache;
 
-	DEBUG("slub %lx size:%d\n", data->kmem_cache->name, size);
+	DEBUG("slub %s size:%d\n", data->kmem_cache->name, size);
 
 	if (is_free) {
 		i = 0;
@@ -133,5 +132,6 @@ int kmem_kmemcache_create_objs(char *name, int size, int is_free)
 			list_add_tail(&item->list, &data->item_list);
 		}
 	}
+	return 0;
 }
 
