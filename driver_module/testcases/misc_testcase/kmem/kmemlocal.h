@@ -13,6 +13,7 @@ void page_info_show(struct page *page);
 int kmem_kmemcache_create(char *name, int size);
 int kmem_kmemcache_create_objs(char *name, int size, int is_free);
 void kmem_kmemcache_remove(char *name);
+void  start_node_scan_thread(void);
 void resource_scan(void);
 #endif
 

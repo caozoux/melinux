@@ -10,6 +10,7 @@
 #include <linux/swap.h>
 #include <linux/swapops.h>
 #include <linux/page_idle.h>
+#include <linux/mm_inline.h>
 //#include <asm/tlb.h>
 
 #include "../template_iocmd.h"
@@ -43,7 +44,13 @@ pte_t *get_pte(unsigned long addr, struct mm_struct *mm)
 	pte = pte_offset_map(pmd, addr);
     //pte = pte_offset_kernel(pmd, addr);
 
-    return pte;
+	if (pte_none(*pte))
+		return NULL;
+
+	if (pte_present(*pte))
+    	return pte;
+
+	return NULL;
 }
 
 void vma_pte_dump(struct vm_area_struct *vma, u64 start_addr, u64 nr_page)
@@ -92,11 +99,61 @@ void vma_pte_dump(struct vm_area_struct *vma, u64 start_addr, u64 nr_page)
 
 void page_info_show(struct page *page)
 {
+	struct address_space *mapping;
+	enum lru_list lru;
+	printk("pfn:%lld virt:%llx flag:%llx\n", page_to_pfn(page), page_to_virt(page));
+
+	if (PageBuddy(page))
+		printk("page:buddy\n");
+
+	if (PageCompound(page))
+		printk("page: Compound\n");
+
+	if (PageAnon(page))
+		printk("page: Anon\n");
+
+	if (PageReferenced(page))
+		printk("page Reference:%d\n",PageReferenced(page));
+
+	if (PageActive(page))
+		printk("page: Active\n");
+	else
+		printk("page: Inactive\n");
+
+	if (PageLRU(page)) {
+		lru = page_lru(page);
+		if (lru == LRU_INACTIVE_ANON)
+			printk("page: LRU_INACTIVE_ANON\n");
+		else if (lru == LRU_ACTIVE_ANON)
+			printk("page: LRU_ACTIVE_ANON\n");
+		else if (lru == LRU_INACTIVE_FILE)
+			printk("page: LRU_INACTIVE_FILE\n");
+		else if (lru == LRU_ACTIVE_FILE)
+			printk("page: LRU_ACTIVE_FILE\n");
+		else if (lru == LRU_UNEVICTABLE)
+			printk("page: LRU_UNEVICTABLE\n");
+		else
+			printk("page: LRU ERR\n");
+	}
+
+	if (page_is_idle(page))
+		printk("page: idle\n");
+
+	if (page_is_young(page))
+		printk("page: young\n");
+
+	mapping = page_mapping(page);
+	if (mapping)
+		printk("page: mapping\n");
+
+	printk("count:%d \n", page_count(page));
+	/*
 	printk("pfn:%llx virt:%llx %llx %llx buddy:%d Comp:%d LRU:%d map:%llx order:%llx count:%d head:%lx free:%lx \n",
 			page_to_pfn(page), page_to_virt(page), page->page_type, page->flags, PageBuddy(page),
 			PageCompound(page), PageLRU(page), page_mapping(page), page_private(page),
 			page_count(page), page_to_pfn(compound_head(page)), page->index
 		   );
+	 */
 
 }
 

@@ -41,6 +41,7 @@ static inline struct task_struct *task_of(struct sched_entity *se)
 void ksched_print_cpu(int cpu);
 void print_rq(struct rq *rq, int rq_cpu);
 void print_task(struct rq *rq, struct task_struct *p);
+int ksched_sched_ipi_call_test(void);
 
 #endif
 

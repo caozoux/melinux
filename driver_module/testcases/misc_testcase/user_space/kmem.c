@@ -6,7 +6,9 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
 #include <getopt.h>
+#include <sys/mman.h>
 #include "template_iocmd.h"
 #include "common_head.h"
 
@@ -23,6 +25,7 @@ static void help(void)
 	printf("kmem --slub_op $name   kmemcache operation\n");
 	printf("kmem --slub_op $name   --op_name \"create/remove/add/dec\"	--extern ${size}  slub operation\n");
 	printf("kmem --resource_scan   scan all resource\n");
+	printf("kmem --testmmap  test mmap page flag\n");
 }
 
 static pages_buffer_order(unsigned long *buf, unsigned long size)
@@ -104,6 +107,7 @@ static const struct option long_options[] = {
 	{"slub_op",   required_argument, 0,  0 },
 	{"op_name",   required_argument, 0,  0 },
 	{"resource_scan",   no_argument, 0,  0 },
+	{"testmmap",   no_argument, 0,  0 },
 	{0,0,0,0}
 };
 
@@ -120,6 +124,9 @@ int kmem_usage(int argc, char **argv)
 	unsigned long extern_arg;
 	void *buf;
 	char op_name[128];
+	int mapfd;
+	unsigned char *p_map;
+	int loopnum;
 
 	if (argc <= 1) { 
 		help();
@@ -169,6 +176,8 @@ int kmem_usage(int argc, char **argv)
 				break;
 			case 5:
 				data.cmdcode = IOCTL_USEKMEM_GET_PTE;
+				data.kmem_data.addr=atoi(pidstr);;
+				ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 				break;
 
 			case 6:
@@ -178,6 +187,7 @@ int kmem_usage(int argc, char **argv)
 			case 7:
 				data.cmdcode = IOCTL_USEKMEM_PAGE_ATTR;
 				data.kmem_data.pageattr_data.start_pfn = atoi(optarg);
+				data.kmem_data.pageattr_data.size = 1;
 				break;
 
 			case 8:
@@ -202,6 +212,30 @@ int kmem_usage(int argc, char **argv)
 				data.cmdcode =IOCTL_USEKMEM_RESOURCE_SCAN;
 				break;
 
+			case 13:
+				mapfd = open("/tmp/testmap", O_RDWR | O_CREAT);
+				if (mapfd < 0) {
+					printf("create /tmp/testmap failed\n");
+					return -1;
+				}
+				p_map = (unsigned char *)mmap(0, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED,mapfd, 0);
+				//p_map = (unsigned char *)malloc(4096);
+
+			    if(p_map == MAP_FAILED) {
+					printf("create /tmp/testmap failed\n");
+					return -1;
+				}
+				data.kmem_data.addr=p_map;
+				data.cmdcode=IOCTL_USEKMEM_TESTMMAP;
+				*p_map = 1;
+				ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+				printf("zz %s p_map:%lx \n",__func__, (unsigned long)p_map);
+				*p_map = 1;
+				data.kmem_data.addr=p_map;
+				data.cmdcode=IOCTL_USEKMEM_TESTMMAP;
+				ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+				munmap(p_map, PAGE_SIZE);
+				break;
 			default:
 				break;
 		}

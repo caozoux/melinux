@@ -162,9 +162,9 @@ int sched_unit_init(void)
 			ksched_print_cpu(cpu);
 	}
 #endif
+	//ksched_sched_ipi_call_test();
 
-
-	ksched_rq_scan_vruntime(NULL);
+	//ksched_rq_scan_vruntime(NULL);
 	return 0;
 }
 

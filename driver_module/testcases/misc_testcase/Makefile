@@ -23,8 +23,8 @@ endif
 $(TARGET)-objs += rcu/rcu_test.o
 $(TARGET)-objs += kernel/task.o kernel/dentry.o kernel/virtual_bus.o  kernel/track.o
 $(TARGET)-objs += block/request.o  block/block_disck.o block/inode.o  block/bio.o block/buffer_head.o block/readwrite.o
-$(TARGET)-objs += kmem/kmem_unit.o kmem/page.o kmem/zone.o kmem/kmemcache.o kmem/resource.o
-$(TARGET)-objs += ksched/ksched_unit.o  ksched/ksched_debug.o 
+$(TARGET)-objs += kmem/kmem_unit.o kmem/page.o kmem/zone.o kmem/kmemcache.o kmem/resource.o kmem/scan_page.o  kmem/pagecache.o kmem/mem_cg.o
+$(TARGET)-objs += ksched/ksched_unit.o  ksched/ksched_debug.o  ksched/ksched_ipi.o
 $(TARGET)-objs += ktree/ktree_rbtree_unit.o
 $(TARGET)-objs += pci/pci_unit.o
 $(TARGET)-objs += efi/efi_unit.o

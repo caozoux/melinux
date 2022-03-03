@@ -23,6 +23,8 @@
 
 extern unsigned long (*orig_isolate_migratepages_block)(struct compact_control *cc, unsigned long low_pfn,
 		unsigned long end_pfn, isolate_mode_t isolate_mode);
+extern struct mem_cgroup *(*orig_mem_cgroup_iter)(struct mem_cgroup *root, struct mem_cgroup *prev, struct mem_cgroup_reclaim_cookie *reclaim);
+
 //int (*orig_zap_huge_pud)(struct mmu_gather *tlb, struct vm_area_struct *vma, pud_t *pud, unsigned long addr);
 struct page *(*orig__vm_normal_page)(struct vm_area_struct *vma, unsigned long addr, pte_t pte, bool with_public_device);
 void (*orig_arch_tlb_gather_mmu)(struct mmu_gather *tlb, struct mm_struct *mm, unsigned long start, unsigned long end);
@@ -36,6 +38,7 @@ struct page *(*orig_follow_trans_huge_pmd)(struct vm_area_struct *vma,
                    unsigned long addr,
                    pmd_t *pmd,
                    unsigned int flags);
+void (*orig_page_idle_clear_pte_refs)(struct page *page);
 
 void pmd_clear_bad(pmd_t *pmd)
 {
@@ -321,6 +324,8 @@ static void dump_kernel_page_attr(struct ioctl_data *data, u64 start_pfn, u64 si
 		if (PageCompound(page))
 			page = compound_head(page);
 
+		page_info_show(page);
+		
 		printk("pfn:%lx flags:%lx recount:%d mapcout:%d mapping:%d compound:%d isBuddy:%d isCompad:%d isLRU:%d moveable:%d order:%d\n"
 				, start_pfn + i
 				, page->flags
@@ -454,6 +459,8 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 {
 	int ret = -1;
 	pte_t *pte;
+	unsigned long pfn;
+	struct page *page;
 
 	printk("zz %s %d cmdcode:%lx\n", __func__, __LINE__, data->cmdcode);
 
@@ -463,20 +470,20 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 			kmem_dump_state();
 			break;
 
-		case  IOCTL_USEKMEM_VMA_SCAN:
+		case IOCTL_USEKMEM_VMA_SCAN:
 			printk("zz %s %d \n", __func__, __LINE__);
 			DEBUG("mem vma scan\n");
 			vma_scan(data);
 			break;
 
-		case  IOCTL_USEKMEM_GET_PTE:
+		case IOCTL_USEKMEM_GET_PTE:
 			DEBUG("mem pte get\n");
 			pte = get_pte(data->kmem_data.addr, current->mm);
 			data->kmem_data.val = *((u64*) pte);
 			dump_pte_info(pte);
 			break;
 
-		case  IOCTL_USERCU_READTEST_END:
+		case IOCTL_USERCU_READTEST_END:
 			DEBUG("mem_readlock_test_stop\n");
 			//mem_readlock_test_stop();
 			break;
@@ -521,6 +528,27 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 			resource_scan();
 			break;
 
+		case IOCTL_USEKMEM_TESTMMAP:
+			printk("zz %s addr:%lx \n",__func__, (unsigned long)data->kmem_data.addr);
+			pte = get_pte(data->kmem_data.addr, current->mm);
+			if (pte != NULL) {
+				pfn = pte_pfn(*pte);
+				page = pfn_to_page(pfn);
+				page_info_show(page);
+				if (get_page_unless_zero(page)) {
+					if (likely(PageLRU(page))) {
+						//set_page_idle(page);
+						pte = get_pte(data->kmem_data.addr, current->mm);
+						printk("zz %s pte:%lx +\n",__func__, (unsigned long)pte_val(*pte));
+						//orig_page_idle_clear_pte_refs(page);
+						printk("zz %s pte:%lx -\n",__func__, (unsigned long)pte_val(*pte));
+					}
+					put_page(page);
+				}
+			}
+			printk("zz %s pte:%lx \n",__func__, (unsigned long)pte);
+			//printk("zz %s pfn:%lx page:%lx \n",__func__, (unsigned long)pfn, (unsigned long)page);
+			break;
 		default:
 			goto OUT;
 	}
@@ -543,7 +571,9 @@ int kmem_unit_init(void)
 	LOOKUP_SYMS(follow_trans_huge_pmd);
 	LOOKUP_SYMS(isolate_migratepages_block);
 	LOOKUP_SYMS(iomem_resource);
-
+	LOOKUP_SYMS(page_idle_clear_pte_refs);
+	LOOKUP_SYMS(mem_cgroup_iter);
+	//start_node_scan_thread();
 	return 0;
 }
 
