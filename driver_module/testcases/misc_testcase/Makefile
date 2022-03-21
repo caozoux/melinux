@@ -11,7 +11,7 @@ obj-m := $(TARGET).o
 #KBUILD_CFLAGS
 ccflags-y += -I$(PWD)/include -I$(PWD)/$(PRIV_INC) -I$(PWD)/../ -I$(PWD)/lib -Wuninitialized -I$(KERHSRC)
 
-$(TARGET)-objs := misc_entry.o page_test.o kprobe_entry.o showstack.o workqueue_test.o delay.o lock_unit.o msr_arm.o radixtree_unit.o block/ext2_test.o atomic_entry.o devbusdrv_unit.o  hw/pci/pci_unit.o statickey_unit.o  cpu_unit.o block_unit.o cpu_unit.o ktime_unit.o
+$(TARGET)-objs := misc_entry.o page_test.o kprobe_entry.o showstack.o workqueue_test.o delay.o lock_unit.o msr_arm.o  block/ext2_test.o atomic_entry.o devbusdrv_unit.o  hw/pci/pci_unit.o statickey_unit.o  cpu_unit.o block_unit.o cpu_unit.o ktime_unit.o
 
 $(TARGET)-objs += ./lib/page.o
 $(TARGET)-objs += ./lib/raidtree.o
@@ -23,9 +23,9 @@ endif
 $(TARGET)-objs += rcu/rcu_test.o
 $(TARGET)-objs += kernel/task.o kernel/dentry.o kernel/virtual_bus.o  kernel/track.o
 $(TARGET)-objs += block/request.o  block/block_disck.o block/inode.o  block/bio.o block/buffer_head.o block/readwrite.o
-$(TARGET)-objs += kmem/kmem_unit.o kmem/page.o kmem/zone.o kmem/kmemcache.o kmem/resource.o kmem/scan_page.o  kmem/pagecache.o kmem/mem_cg.o
+$(TARGET)-objs += kmem/kmem_unit.o kmem/page.o kmem/zone.o kmem/kmemcache.o kmem/resource.o kmem/scan_page.o  kmem/pagecache.o kmem/mem_cg.o kmem/pte.o kmem/task_mem.o kmem/vma.o kmem/hugetlb.o
 $(TARGET)-objs += ksched/ksched_unit.o  ksched/ksched_debug.o  ksched/ksched_ipi.o
-$(TARGET)-objs += ktree/ktree_rbtree_unit.o
+$(TARGET)-objs += ktree/ktree_rbtree_unit.o ktree/radixtree_unit.o
 $(TARGET)-objs += pci/pci_unit.o
 $(TARGET)-objs += efi/efi_unit.o
 $(TARGET)-objs += panic_hang/panic_unit.o

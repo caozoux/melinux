@@ -11,28 +11,39 @@
 #include <linux/swapops.h>
 #include <linux/page_idle.h>
 #include <linux/version.h>
+#include <linux/mmu_notifier.h>
 //#include <asm/tlb.h>
 
 #include "../template_iocmd.h"
+#include "../block/blocklocal.h"
 #include "../misc_ioctl.h"
 #include "../debug_ctrl.h"
 #include "mekernel.h"
 #include "kmemlocal.h"
 
-#define PSS_SHIFT 12
 
+
+extern struct hstate (*orig_hstates);
+extern int (*orig_hugetlb_max_hstate);
+
+extern void (*orig_flush_tlb_all)(void);
+extern unsigned long (*orig_try_to_free_mem_cgroup_pages)(struct mem_cgroup *memcg, unsigned long nr_pages,gfp_t gfp_mask, bool may_swap);
 extern unsigned long (*orig_isolate_migratepages_block)(struct compact_control *cc, unsigned long low_pfn,
 		unsigned long end_pfn, isolate_mode_t isolate_mode);
 extern struct mem_cgroup *(*orig_mem_cgroup_iter)(struct mem_cgroup *root, struct mem_cgroup *prev, struct mem_cgroup_reclaim_cookie *reclaim);
+extern struct mem_cgroup *orig_root_mem_cgroup; 
+extern unsigned long (*orig_node_page_state)(struct pglist_data *pgdat,
+                          enum node_stat_item item);
+struct page * (*orig___alloc_pages_direct_compact)(gfp_t gfp_mask, unsigned int order,
+	  unsigned int alloc_flags, const struct alloc_context *ac,
+	  enum compact_priority prio, int *compact_result);
 
+void (*orig_flush_tlb_all)(void);
 //int (*orig_zap_huge_pud)(struct mmu_gather *tlb, struct vm_area_struct *vma, pud_t *pud, unsigned long addr);
 struct page *(*orig__vm_normal_page)(struct vm_area_struct *vma, unsigned long addr, pte_t pte, bool with_public_device);
 void (*orig_arch_tlb_gather_mmu)(struct mmu_gather *tlb, struct mm_struct *mm, unsigned long start, unsigned long end);
 int (*orig_walk_page_vma)(struct vm_area_struct *vma, struct mm_walk *walk);
 int (*orig_swp_swapcount)(swp_entry_t entry);
-struct page * (*orig___alloc_pages_direct_compact)(gfp_t gfp_mask, unsigned int order,
-  unsigned int alloc_flags, const struct alloc_context *ac,
-  enum compact_priority prio, int *compact_result);
 spinlock_t *(*orig___pmd_trans_huge_lock)(pmd_t *pmd, struct vm_area_struct *vma);
 struct page *(*orig_follow_trans_huge_pmd)(struct vm_area_struct *vma,
                    unsigned long addr,
@@ -45,273 +56,6 @@ void pmd_clear_bad(pmd_t *pmd)
     pmd_ERROR(*pmd);
     pmd_clear(pmd);
 }
-
-#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
-static void smaps_account(struct mem_size_stats *mss, struct page *page,
-        bool compound, bool young, bool dirty, bool locked)
-{
-    int i, nr = compound ? 1 << compound_order(page) : 1;
-    unsigned long size = nr * PAGE_SIZE;
-	unsigned long phys;
-	int ret;
-
-	mss->page_order[compound_order(page)]++;
-
-	phys = page_to_phys(page);
-	ret = copy_to_user(mss->page_buffer + mss->page_index, &phys, sizeof(unsigned long));
-	if (!ret)
-		return;
-
-	mss->page_index++;
-
-    if (PageAnon(page)) {
-        mss->anonymous += size;
-        if (!PageSwapBacked(page) && !dirty && !PageDirty(page))
-            mss->lazyfree += size;
-    }
-
-    mss->resident += size;
-    /* Accumulate the size in pages that have been accessed. */
-    if (young || page_is_young(page) || PageReferenced(page))
-        mss->referenced += size;
-
-    /*
-     * page_count(page) == 1 guarantees the page is mapped exactly once.
-     * If any subpage of the compound page mapped with PTE it would elevate
-     * page_count().
-     */
-    if (page_count(page) == 1) {
-        if (dirty || PageDirty(page))
-            mss->private_dirty += size;
-        else
-            mss->private_clean += size;
-        mss->pss += (u64)size << PSS_SHIFT;
-        if (locked)
-            mss->pss_locked += (u64)size << PSS_SHIFT;
-        return;
-    }
-
-    for (i = 0; i < nr; i++, page++) {
-        int mapcount = page_mapcount(page);
-        unsigned long pss = (PAGE_SIZE << PSS_SHIFT);
-
-        if (mapcount >= 2) {
-            if (dirty || PageDirty(page))
-                mss->shared_dirty += PAGE_SIZE;
-            else
-                mss->shared_clean += PAGE_SIZE;
-            mss->pss += pss / mapcount;
-            if (locked)
-                mss->pss_locked += pss / mapcount;
-        } else {
-            if (dirty || PageDirty(page))
-                mss->private_dirty += PAGE_SIZE;
-            else
-                mss->private_clean += PAGE_SIZE;
-            mss->pss += pss;
-            if (locked)
-                mss->pss_locked += pss;
-        }
-    }
-}
-
-static void smaps_pte_entry(pte_t *pte, unsigned long addr,
-        struct mm_walk *walk)
-{
-#if LINUX_VERSION_CODE >  KERNEL_VERSION(4,19,0)
-    struct mem_size_stats *mss = walk->private;
-    struct vm_area_struct *vma = walk->vma;
-    bool locked = !!(vma->vm_flags & VM_LOCKED);
-    struct page *page = NULL;
-
-    if (pte_present(*pte)) {
-        page = orig__vm_normal_page(vma, addr, *pte, false);
-    } else if (is_swap_pte(*pte)) {
-        swp_entry_t swpent = pte_to_swp_entry(*pte);
-
-        if (!non_swap_entry(swpent)) {
-            int mapcount;
-
-            mss->swap += PAGE_SIZE;
-            mapcount = orig_swp_swapcount(swpent);
-            if (mapcount >= 2) {
-                u64 pss_delta = (u64)PAGE_SIZE << PSS_SHIFT;
-
-                do_div(pss_delta, mapcount);
-                mss->swap_pss += pss_delta;
-            } else {
-                mss->swap_pss += (u64)PAGE_SIZE << PSS_SHIFT;
-            }
-        } else if (is_migration_entry(swpent))
-            page = migration_entry_to_page(swpent);
-        else if (is_device_private_entry(swpent))
-            page = device_private_entry_to_page(swpent);
-    } else if (unlikely(IS_ENABLED(CONFIG_SHMEM) && mss->check_shmem_swap
-                            && pte_none(*pte))) {
-        page = find_get_entry(vma->vm_file->f_mapping,
-                        linear_page_index(vma, addr));
-        if (!page)
-            return;
-
-        if (radix_tree_exceptional_entry(page))
-            mss->swap += PAGE_SIZE;
-        else
-            put_page(page);
-
-        return;
-    }
-
-    if (!page)
-        return;
-
-    smaps_account(mss, page, false, pte_young(*pte), pte_dirty(*pte), locked);
-#endif
-}
-
-static void smaps_pmd_entry(pmd_t *pmd, unsigned long addr,
-        struct mm_walk *walk)
-{
-    struct mem_size_stats *mss = walk->private;
-    struct vm_area_struct *vma = walk->vma;
-    bool locked = !!(vma->vm_flags & VM_LOCKED);
-    struct page *page;
-
-    /* FOLL_DUMP will return -EFAULT on huge zero page */
-    page = orig_follow_trans_huge_pmd(vma, addr, pmd, FOLL_DUMP);
-    if (IS_ERR_OR_NULL(page))
-        return;
-    if (PageAnon(page))
-        mss->anonymous_thp += HPAGE_PMD_SIZE;
-    else if (PageSwapBacked(page))
-        mss->shmem_thp += HPAGE_PMD_SIZE;
-    else if (is_zone_device_page(page))
-        /* pass */;
-    else
-        VM_BUG_ON_PAGE(1, page);
-    smaps_account(mss, page, true, pmd_young(*pmd), pmd_dirty(*pmd), locked);
-}
-
-static int smaps_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end,
-			 struct mm_walk *walk)
-{
-	struct vm_area_struct *vma = walk->vma;
-	pte_t *pte;
-	spinlock_t *ptl;
-
-	if (is_swap_pmd(*pmd) || pmd_trans_huge(*pmd) || pmd_devmap(*pmd))
-       ptl = orig___pmd_trans_huge_lock(pmd, vma);
-    else
-       ptl = NULL;
-
-	if (ptl) {
-		if (pmd_present(*pmd))
-			smaps_pmd_entry(pmd, addr, walk);
-		spin_unlock(ptl);
-		goto out;
-	}
-
-	if (pmd_trans_unstable(pmd))
-		goto out;
-
-	/*
-	* The mmap_sem held all the way back in m_start() is what
-	* keeps khugepaged out of here and from collapsing things
-	* in here.
-	*/
-	pte = pte_offset_map_lock(vma->vm_mm, pmd, addr, &ptl);
-	for (; addr != end; pte++, addr += PAGE_SIZE)
-		smaps_pte_entry(pte, addr, walk);
-	pte_unmap_unlock(pte - 1, ptl);
-out:
-	cond_resched();
-	return 0;
-}
-
-
-static void dump_mss_info(struct mem_size_stats *mss)
-{
-	int i;
-
-	printk("resident:%ld \n",(unsigned long)mss->resident/PAGE_SIZE*4);
-	printk("shared_clean:%ld \n",(unsigned long)mss->shared_clean/PAGE_SIZE*4);
-	printk("shared_dirty:%ld \n",(unsigned long)mss->shared_dirty/PAGE_SIZE*4);
-	printk("private_clean:%ld \n",(unsigned long)mss->private_clean/PAGE_SIZE*4);
-	printk("private_dirty:%ld \n",(unsigned long)mss->private_dirty/PAGE_SIZE*4);
-	printk("referenced:%ld \n",(unsigned long)mss->referenced/PAGE_SIZE*4);
-	printk("anonymous:%ld \n",(unsigned long)mss->anonymous/PAGE_SIZE*4);
-	printk("lazyfree:%ld \n",(unsigned long)mss->lazyfree/PAGE_SIZE*4);
-	printk("anonymous_thp:%ld \n",(unsigned long)mss->anonymous_thp/PAGE_SIZE*4);
-	printk("shmem_thp:%ld \n",(unsigned long)mss->shmem_thp/PAGE_SIZE*4);
-	printk("swap:%ld \n",(unsigned long)mss->swap/PAGE_SIZE*4);
-	printk("shared_hugetlb:%ld \n",(unsigned long)mss->shared_hugetlb/PAGE_SIZE*4);
-	printk("private_hugetlb:%ld \n",(unsigned long)mss->private_hugetlb/PAGE_SIZE*4);
-	printk("pss:%ld \n",(unsigned long)mss->pss/PAGE_SIZE*4);
-	printk("pss_locked:%ld \n",(unsigned long)mss->pss_locked/PAGE_SIZE*4);
-	printk("swap_pss:%ld \n",(unsigned long)mss->swap_pss/PAGE_SIZE*4);
-
-	for (i = 0; i < 11; ++i) {
-		printk("order %d %lx \n",(int)i, 	mss->page_order[i]);
-	}
-}
-
-// it will scan all vma list of task
-static int vma_scan(struct ioctl_data *data)
-{
-	struct task_struct *task;
-	struct mm_struct *mm;
-	struct vm_area_struct *vma;
-	int i;
-	struct mem_size_stats mss;
-
-	memset(&mss, 0, sizeof(mss));
-	mss.page_buffer =  data->kmem_data.mss.page_buffer;
-
-	printk("zz %s data->pid:%08x \n",__func__, (int)data->pid);
-	if (data->pid != -1)
-			task = get_taskstruct_by_pid(data->pid);
-	else
-			task = current;
-
-	if (task == NULL) {	
-		printk("error vma scan not find task struct\n");
-		return 0;
-	}
-
-	for (i = 0; i < NR_MM_COUNTERS; i++) {
-		printk("name %s type:%d rss:%d \n", task->comm, i, task->rss_stat.count[i]);
- 	}
-
-	mm = task->mm;
-	down_read(&mm->mmap_sem);
-
-	for (vma = mm->mmap; vma; vma = vma->vm_next) {
-#if 0
-		data->log_buf += sprintf(data->log_buf, "%d: %lx~%lx\n", index++, vma->vm_start, vma->vm_end);
-		vma_scan_map_page_list(task, vma);
-#else
-		struct mm_walk smaps_walk = {
-			.pmd_entry = smaps_pte_range,
-			.mm = vma->vm_mm,
-		};
-		smaps_walk.private = &mss;
-
-		printk("zz %s vm_start:%lx vm_end:%lx \n",__func__, (unsigned long)vma->vm_start, (unsigned long)vma->vm_end);
-		//orig_walk_page_vma(vma, &smaps_walk);
-		vma_pte_dump(vma, vma->vm_start, (vma->vm_end - vma->vm_start)>>PAGE_SHIFT);
-#endif
-	}
-
-	up_read(&mm->mmap_sem);
-	dump_mss_info(&mss);
-
-	return copy_to_user(&data->kmem_data.mss, &mss, sizeof(struct mem_size_stats));
-}
-#else
-static int vma_scan(struct ioctl_data *data)
-{
-	return 0;
-}
-#endif
 
 static void dump_kernel_page_attr(struct ioctl_data *data, u64 start_pfn, u64 size)
 {
@@ -326,12 +70,12 @@ static void dump_kernel_page_attr(struct ioctl_data *data, u64 start_pfn, u64 si
 
 		page_info_show(page);
 		
-		printk("pfn:%lx flags:%lx recount:%d mapcout:%d mapping:%d compound:%d isBuddy:%d isCompad:%d isLRU:%d moveable:%d order:%d\n"
+		printk("pfn:%llx flags:%lx recount:%d mapcout:%d mapping:%llx compound:%d isBuddy:%d isCompad:%d isLRU:%d moveable:%d order:%ld\n"
 				, start_pfn + i
 				, page->flags
 				, page_count(page)
 				, page_mapcount(page)
-				, page_mapping(page)
+				, (u64)page_mapping(page)
 				, PageCompound(page)
 				, PageBuddy(page)
 				, compound_order(page)
@@ -349,10 +93,10 @@ static void dump_kernel_page_attr(struct ioctl_data *data, u64 start_pfn, u64 si
 static inline unsigned long __mephys_addr_nodebug(unsigned long x)
 {
 	 unsigned long y = x - __START_KERNEL_map;
-	 printk("zz %s %d %llx\n", __func__, __LINE__, x - __START_KERNEL_map_test);
-	 printk("zz %s x:%llx y:%llx %llx\n",__func__, (unsigned long)x, (unsigned long)y, __START_KERNEL_map);
-	 printk("zz %s __START_KERNEL_map:%lx phys_base:%lx PAGE_OFFSET:%lx page_offset_base:%lx vmemmap_base::%llx \n",__func__, (unsigned long)__START_KERNEL_map, (unsigned long)phys_base, (unsigned long)PAGE_OFFSET, (unsigned long)page_offset_base, vmemmap_base);
-	 printk("zz %s a:%llx b:%llx c:%llx  %llx %llx\n",__func__, x, x - __START_KERNEL_map, y + phys_base, __START_KERNEL_map - PAGE_OFFSET, y + __START_KERNEL_map - PAGE_OFFSET);
+	 printk("%lx\n", x - __START_KERNEL_map_test);
+	 printk("zz %s x:%lx y:%lx %lx\n",__func__, (unsigned long)x, (unsigned long)y, __START_KERNEL_map);
+	 printk("zz %s __START_KERNEL_map:%lx phys_base:%lx PAGE_OFFSET:%lx page_offset_base:%lx vmemmap_base::%lx \n",__func__, (unsigned long)__START_KERNEL_map, (unsigned long)phys_base, (unsigned long)PAGE_OFFSET, (unsigned long)page_offset_base, vmemmap_base);
+	 printk("zz %s a:%lx b:%lx c:%lx  %lx %lx\n",__func__, x, x - __START_KERNEL_map, y + phys_base, __START_KERNEL_map - PAGE_OFFSET, y + __START_KERNEL_map - PAGE_OFFSET);
 	 x = y + ((x > y) ? phys_base : (__START_KERNEL_map - PAGE_OFFSET));
 
 	 return x;
@@ -361,7 +105,6 @@ static inline unsigned long __mephys_addr_nodebug(unsigned long x)
 static void buddy_test(void)
 {
 	void *buf;
-	u64 pfn;
 	struct page *page;
 	int i;
 
@@ -407,8 +150,6 @@ static void page_test(void)
 	u64 pfn;
 	struct page *page;
 	struct per_cpu_pages *pcp;
-	struct pglist_data *__pgdat;
-	int i;
 
 	printk("test kmalloc 16K start\n");
 	buf = kmalloc(PAGE_SIZE * 4 , GFP_KERNEL);
@@ -437,7 +178,7 @@ static void full_page_scan(void)
 	unsigned long start_pfn, end_pfn;
 	unsigned long pfn;
 
-	unsigned long anon_page, map_page, free_page, others_page;
+	unsigned long anon_page;
 
 	for_each_online_pgdat(pgdat) {
 		end_pfn = pgdat_end_pfn(pgdat);
@@ -458,11 +199,11 @@ static void full_page_scan(void)
 int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data)
 {
 	int ret = -1;
-	pte_t *pte;
+	pte_t *ptep, pte;
 	unsigned long pfn;
 	struct page *page;
 
-	printk("zz %s %d cmdcode:%lx\n", __func__, __LINE__, data->cmdcode);
+	printk("zz %s %d cmdcode:%d\n", __func__, __LINE__, data->cmdcode);
 
 	switch (data->cmdcode) {
 		case  IOCTL_USEKMEM_SHOW:
@@ -478,9 +219,9 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 
 		case IOCTL_USEKMEM_GET_PTE:
 			DEBUG("mem pte get\n");
-			pte = get_pte(data->kmem_data.addr, current->mm);
-			data->kmem_data.val = *((u64*) pte);
-			dump_pte_info(pte);
+			ptep = get_pte(data->kmem_data.addr, current->mm);
+			data->kmem_data.val = *((u64*) ptep);
+			dump_pte_info((unsigned long)ptep);
 			break;
 
 		case IOCTL_USERCU_READTEST_END:
@@ -530,23 +271,30 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 
 		case IOCTL_USEKMEM_TESTMMAP:
 			printk("zz %s addr:%lx \n",__func__, (unsigned long)data->kmem_data.addr);
-			pte = get_pte(data->kmem_data.addr, current->mm);
-			if (pte != NULL) {
-				pfn = pte_pfn(*pte);
+			ptep = get_pte(data->kmem_data.addr, current->mm);
+			printk("zz %s pte:%lx +\n",__func__, (unsigned long)pte_val(*ptep));
+			pte=*ptep;
+			if (ptep != NULL) {
+				pfn = pte_pfn(*ptep);
 				page = pfn_to_page(pfn);
 				page_info_show(page);
 				if (get_page_unless_zero(page)) {
-					if (likely(PageLRU(page))) {
-						//set_page_idle(page);
-						pte = get_pte(data->kmem_data.addr, current->mm);
-						printk("zz %s pte:%lx +\n",__func__, (unsigned long)pte_val(*pte));
-						//orig_page_idle_clear_pte_refs(page);
-						printk("zz %s pte:%lx -\n",__func__, (unsigned long)pte_val(*pte));
-					}
+					//set_page_idle(page);
+					orig_page_idle_clear_pte_refs(page);
+					//ptep_clear_flush_young_notify(vma, address, ptep);
+					//pte = pte_mkclean(pte);
+					//pte = pte_mkold(pte);
+					//pte = pte_mkyoung(pte);
 					put_page(page);
 				}
+				get_page_rmap_addr(page);
+				//set_pte_at(current->mm, data->kmem_data.addr, ptep, pte);
+				//flush_cache_range(current->mm, data->kmem_data.addr, data->kmem_data.addr + PAGE_SIZE);
+				//mmu_notifier_clear_flush_young(current->mm, data->kmem_data.addr, data->kmem_data.addr + PAGE_SIZE);
+				orig_flush_tlb_all();
 			}
-			printk("zz %s pte:%lx \n",__func__, (unsigned long)pte);
+			printk("zz %s pte:%lx -\n",__func__, (unsigned long)pte_val(*ptep));
+			//printk("zz %s pte:%lx \n",__func__, (unsigned long)pte);
 			//printk("zz %s pfn:%lx page:%lx \n",__func__, (unsigned long)pfn, (unsigned long)page);
 			break;
 		default:
@@ -554,6 +302,17 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 	}
 OUT:
 	return ret;
+}
+
+static void test1(void)
+{
+	struct inode *inode;
+
+	inode=get_inode_with_filename("/root/bigfile");
+
+	printk("zz %s inode:%lx \n",__func__, (unsigned long)inode);
+	scan_inode_radix_pagecache(inode);
+
 }
 
 int kmem_unit_init(void)
@@ -573,9 +332,22 @@ int kmem_unit_init(void)
 	LOOKUP_SYMS(iomem_resource);
 	LOOKUP_SYMS(page_idle_clear_pte_refs);
 	LOOKUP_SYMS(mem_cgroup_iter);
+	LOOKUP_SYMS(root_mem_cgroup);
+	LOOKUP_SYMS(node_page_state);
+	LOOKUP_SYMS(try_to_free_mem_cgroup_pages);
+	LOOKUP_SYMS(flush_tlb_all);
+	LOOKUP_SYMS(anon_vma_interval_tree_iter_first);
+	LOOKUP_SYMS(anon_vma_interval_tree_iter_next);
+	LOOKUP_SYMS(PageHeadHuge);
+	LOOKUP_SYMS(hstates);
+	LOOKUP_SYMS(hugetlb_max_hstate);
+
 	//start_node_scan_thread();
+	//enumerate_node_memcg();
+	//test1();
+	enum_hugetlb();
 	return 0;
-}
+} 
 
 int kmem_unit_exit(void)
 {

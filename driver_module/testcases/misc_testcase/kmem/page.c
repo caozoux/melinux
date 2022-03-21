@@ -10,6 +10,7 @@
 #include <linux/swap.h>
 #include <linux/swapops.h>
 #include <linux/page_idle.h>
+#include <linux/rmap.h>
 #include <linux/mm_inline.h>
 //#include <asm/tlb.h>
 
@@ -17,91 +18,61 @@
 #include "../misc_ioctl.h"
 #include "../debug_ctrl.h"
 #include "mekernel.h"
+#include "kmemlocal.h"
 
-#ifdef CONFIG_X86
-int pmd_huge(pmd_t pmd)
+int (*orig_PageHeadHuge)(struct page *page_head);
+
+int get_page_rmap_addr(struct page *old)
 {
-    return !pmd_none(pmd) &&
-        (pmd_val(pmd) & (_PAGE_PRESENT|_PAGE_PSE)) != _PAGE_PRESENT;
-}
+	unsigned long address;
+	struct page *head_page;
+	struct anon_vma *anon_vma;
+	struct anon_vma_chain *avc;
+	unsigned long val;
+	pte_t *ptep, entry;
+	pgoff_t pgoff;
+	pgoff_t pgoff_start, pgoff_end;
 
-int pud_huge(pud_t pud)
-{
-    return !!(pud_val(pud) & _PAGE_PSE);
-}
-#endif
+	if (PageAnon(old)) {
+		if (PageCompound(old))
+			head_page = compound_head(old);
+		else
+			head_page = old;
 
-pte_t *get_pte(unsigned long addr, struct mm_struct *mm)
-{
-    pgd_t *pgd = pgd_offset(mm, addr);
-    p4d_t *p4d = p4d_offset(pgd, addr);
-    pud_t *pud = pud_offset(p4d, addr);
-    pmd_t *pmd = pmd_offset(pud, addr);
-    pte_t *pte;
-    u64 addr_aligned;
+		val = (unsigned long) head_page->mapping;
+		if ((val& PAGE_MAPPING_FLAGS) != PAGE_MAPPING_ANON)
+			return 0;
+		val &= ~PAGE_MAPPING_FLAGS;
+		anon_vma = (struct anon_vma *)val;
+		pgoff_start = orig_page_to_pgoff(head_page);
+		pgoff_end = pgoff_start + hpage_nr_pages(head_page) - 1;
+		anon_vma_interval_tree_foreach(avc, &anon_vma->rb_root,
+				pgoff_start, pgoff_end) {
+			int is_young = 0;
+			struct vm_area_struct *vma = avc->vma;
+			address = vma_address(head_page, vma);
+			ptep = get_pte(address, vma->vm_mm);
+			entry=*ptep;
+			if (pte_young(entry)) {
+				is_young = 1;
+				//orig_page_idle_clear_pte_refs(head_page);
+			}
 
-    addr_aligned = addr & PAGE_MASK;
-	pte = pte_offset_map(pmd, addr);
-    //pte = pte_offset_kernel(pmd, addr);
-
-	if (pte_none(*pte))
-		return NULL;
-
-	if (pte_present(*pte))
-    	return pte;
-
-	return NULL;
-}
-
-void vma_pte_dump(struct vm_area_struct *vma, u64 start_addr, u64 nr_page)
-{
-	unsigned long addr = vma->vm_start, end = addr + nr_page * PAGE_SIZE;
-	struct page *page;
-	u64 pfn;
-
-    pgd_t *pgd;
-    p4d_t *p4d;
-    pud_t *pud;
-    pmd_t *pmd;
-    pte_t *pte;
-	pte_t  ptet;
-
-    pgd = pgd_offset(vma->vm_mm, addr);
-    p4d = p4d_offset(pgd, addr);
-    pud = pud_offset(p4d, addr);
-
-	for (addr = vma->vm_start; addr < end; addr += PAGE_SIZE) {
-		if (pud_huge(*pud) || pud_none(*pud)) {
-			//printk("zz %s pud:%llx \n", __func__, (u64)pmd);
-			return;
-			//return (pte_t*)pud;
-		}
-
-		pmd = pmd_offset(pud, addr);
-
-		if (pmd_huge(*pmd) || pmd_none(*pmd)) {
-			//printk("zz %s pdm:%llx \n", __func__, (u64)pmd);
-			continue;
-		}
-
-		pte = pte_offset_map(pmd, addr);
-
-		//if (*((u64*)pte) != 0 ) {
-		//if (*((u64*)pte) != 0) {
-		if (!pte_none(*pte) && *((u64*)pte) != 0) {
-
-			pfn = pte_pfn(*pte);
-			page = pfn_to_page(pfn);
-			printk("addr:%llx pte:%llx %llx pageflags:%llx-%llx\n", addr, (u64)pte, *((u64*)pte), pfn, (u64)page->flags);
+			printk("zz %s address:%lx %s\n",__func__, (unsigned long)address,
+										 is_young ? "is_young" : "old");
 		}
 	}
+
+	return 0;
 }
 
 void page_info_show(struct page *page)
 {
 	struct address_space *mapping;
 	enum lru_list lru;
-	printk("pfn:%lld virt:%llx flag:%llx\n", page_to_pfn(page), page_to_virt(page));
+
+	//printk("pfn:%lld virt:%llx flag:%llx\n", page_to_pfn(page), page_to_virt(page));
+	printk("pfn:%lld  count:%d\n", page_to_pfn(page), page_count(page));
 
 	if (PageBuddy(page))
 		printk("page:buddy\n");
@@ -113,7 +84,7 @@ void page_info_show(struct page *page)
 		printk("page: Anon\n");
 
 	if (PageReferenced(page))
-		printk("page Reference:%d\n",PageReferenced(page));
+		printk("page Reference:%d\n", PageReferenced(page));
 
 	if (PageActive(page))
 		printk("page: Active\n");
@@ -146,7 +117,7 @@ void page_info_show(struct page *page)
 	if (mapping)
 		printk("page: mapping\n");
 
-	printk("count:%d \n", page_count(page));
+
 	/*
 	printk("pfn:%llx virt:%llx %llx %llx buddy:%d Comp:%d LRU:%d map:%llx order:%llx count:%d head:%lx free:%lx \n",
 			page_to_pfn(page), page_to_virt(page), page->page_type, page->flags, PageBuddy(page),
@@ -154,6 +125,5 @@ void page_info_show(struct page *page)
 			page_count(page), page_to_pfn(compound_head(page)), page->index
 		   );
 	 */
-
 }
 

@@ -26,6 +26,8 @@ static void help(void)
 	printf("kmem --slub_op $name   --op_name \"create/remove/add/dec\"	--extern ${size}  slub operation\n");
 	printf("kmem --resource_scan   scan all resource\n");
 	printf("kmem --testmmap  test mmap page flag\n");
+	printf("kmem --hugetlb_alloc_nofault  alloc hugetlb but not fault\n");
+	printf("kmem --hugetlb_alloc  alloc hugetlb\n");
 }
 
 static pages_buffer_order(unsigned long *buf, unsigned long size)
@@ -108,6 +110,9 @@ static const struct option long_options[] = {
 	{"op_name",   required_argument, 0,  0 },
 	{"resource_scan",   no_argument, 0,  0 },
 	{"testmmap",   no_argument, 0,  0 },
+	{"hugetlb_alloc_nofault",   required_argument, 0,  0 },
+	{"hugetlb_alloc",   required_argument, 0,  0 },
+	{"sleep",   required_argument, 0,  0 },
 	{0,0,0,0}
 };
 
@@ -126,6 +131,7 @@ int kmem_usage(int argc, char **argv)
 	char op_name[128];
 	int mapfd;
 	unsigned char *p_map;
+	unsigned int size, sleep_time;
 	int loopnum;
 
 	if (argc <= 1) { 
@@ -218,24 +224,42 @@ int kmem_usage(int argc, char **argv)
 					printf("create /tmp/testmap failed\n");
 					return -1;
 				}
-				p_map = (unsigned char *)mmap(0, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED,mapfd, 0);
-				//p_map = (unsigned char *)malloc(4096);
+				//p_map = (unsigned char *)mmap(0, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED,mapfd, 0);
+				p_map = mmap(NULL, 2 * 0x200000, PROT_READ | PROT_WRITE,
+                    MAP_PRIVATE | MAP_ANONYMOUS | 0x40000 /*MAP_HUGETLB*/, -1, 0);
 
 			    if(p_map == MAP_FAILED) {
 					printf("create /tmp/testmap failed\n");
 					return -1;
 				}
+
+				//p_map = (unsigned char *)malloc(4096);
+
 				data.kmem_data.addr=p_map;
 				data.cmdcode=IOCTL_USEKMEM_TESTMMAP;
+
 				*p_map = 1;
+				printf("zz %s p_map:%lx \n",__func__, (unsigned long)*p_map);
 				ioctl(misc_fd, sizeof(struct ioctl_data), &data);
-				printf("zz %s p_map:%lx \n",__func__, (unsigned long)p_map);
-				*p_map = 1;
+				//*p_map = 3;
+				printf("zz %s p_map:%lx \n",__func__, (unsigned long)*p_map);
 				data.kmem_data.addr=p_map;
 				data.cmdcode=IOCTL_USEKMEM_TESTMMAP;
 				ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 				munmap(p_map, PAGE_SIZE);
 				break;
+			case 14:
+				size = atoi(optarg);
+				p_map = mmap(NULL, size * 0x200000, PROT_READ | PROT_WRITE,
+                    MAP_PRIVATE | MAP_ANONYMOUS | 0x40000 /*MAP_HUGETLB*/, -1, 0);
+			case 15:
+				size = atoi(optarg);
+				p_map = mmap(NULL, size * 0x200000, PROT_READ | PROT_WRITE,
+                    MAP_PRIVATE | MAP_ANONYMOUS | 0x40000 /*MAP_HUGETLB*/, -1, 0);
+				memset(p_map, 0, size * 0x200000);
+			case 16:
+				sleep_time = atoi(optarg);
+
 			default:
 				break;
 		}
@@ -282,7 +306,9 @@ int kmem_usage(int argc, char **argv)
 		ret = ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 	}
 	
-			data.kmem_data.slub_ctrl.op = extern_arg;
+	if (sleep_time)
+		sleep(sleep_time);
+	data.kmem_data.slub_ctrl.op = extern_arg;
 	free(data.kmem_data.mss.page_buffer);
 
 	return ret;

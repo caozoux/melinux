@@ -22,7 +22,7 @@
 static void scan_node(pg_data_t *pgdat)
 {
 	unsigned long node_end, node_start, node_present;
-	unsigned long pfn;
+	unsigned long pfn, nr_pages;
 	unsigned long idle_nums=0, page_scan_nums=0;
 	unsigned long cont_page_start =0, cont_page_end = 0; 
 	struct page *page;
@@ -32,7 +32,7 @@ static void scan_node(pg_data_t *pgdat)
 	node_present = pgdat->node_present_pages;
 	pfn = node_start;
 	page = pfn_to_page(pfn);
-	cont_page_start=cont_page_end= pfn;
+	cont_page_start=cont_page_end=pfn;
 	cont_page_end--;
 
 	while(pfn < node_present) {
@@ -43,8 +43,12 @@ static void scan_node(pg_data_t *pgdat)
 		if (!page)
 			goto again;
 
+		if (PageTransHuge(page))
+			nr_pages = 1 << compound_order(page);
+
 		if (page_is_idle(page))
 			idle_nums++;
+
 		if (page)
 			page_scan_nums++;
 

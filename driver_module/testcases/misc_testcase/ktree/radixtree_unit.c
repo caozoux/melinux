@@ -23,7 +23,7 @@ struct rxtree_misc_data {
 
 RADIX_TREE(roottest, GFP_ATOMIC);
 #if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
-static int rxtree_misc_dump(struct radix_tree_root *root)
+int rxtree_misc_dump(struct radix_tree_root *root)
 {
 	struct radix_tree_node *node = root->rnode, *node_iter, **slot;
 	struct radix_tree_node *child;
@@ -60,7 +60,7 @@ static int rxtree_misc_dump(struct radix_tree_root *root)
 					(unsigned long)node_iter->slots, (unsigned long)node_iter->tags, (unsigned long)&node_iter->rcu_head);
 #endif
 			}
-				//printk("zz %s node->slots:%lx \n",__func__, (unsigned long)node->slots[i]);
+			//printk("zz %s node->slots:%lx \n",__func__, (unsigned long)node->slots[i]);
 	}
 #endif
 	return 0;

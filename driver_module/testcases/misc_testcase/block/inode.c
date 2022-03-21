@@ -36,13 +36,37 @@ void dump_inode_data(struct inode *inode, int leve)
 
 void inode_mapping_dump(struct inode *inode)
 {
+	//struct radix_tree_iter iter;
+	//void __rcu **slot;
 	struct address_space *mapping = inode->i_mapping;
 	struct radix_tree_root *radix = &mapping->i_pages;
+	//radix_tree_for_each_slot(slot, root, &iter, first_index) {
+	printk("zz %s mapping:%lx radix:%lx \n",__func__, (unsigned long)mapping, (unsigned long)radix);
+}
+
+void scan_inode_radix_pagecache(struct inode *inode)
+{
+	struct address_space *mapping;
+	//struct dentry *dentry;
+	//dentry = hlist_entry(inode->i_dentry.first, struct dentry, d_u.d_alias)
+	mapping = inode->i_mapping;
+
+	//page = radix_tree_lookup(&mapping->i_pages, page_offset);
+
+}
+
+struct inode *get_inode_with_filename(char *filename)
+{
+	struct file *filp;
+	struct inode *inode;
+	filp = filp_open(filename, O_RDWR , 0600);
+	inode = filp->f_inode;
+	filp_close(filp,NULL);
+	return inode;
 }
 
 void drop_inode_page_cache(char *filename)
 {
-	int lenth;
 	struct inode *inode;
 	struct address_space *mapping;
 	unsigned long start_index = 0;
