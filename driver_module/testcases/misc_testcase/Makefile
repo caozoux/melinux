@@ -11,7 +11,7 @@ obj-m := $(TARGET).o
 #KBUILD_CFLAGS
 ccflags-y += -I$(PWD)/include -I$(PWD)/$(PRIV_INC) -I$(PWD)/../ -I$(PWD)/lib -Wuninitialized -I$(KERHSRC)
 
-$(TARGET)-objs := misc_entry.o page_test.o kprobe_entry.o showstack.o workqueue_test.o delay.o lock_unit.o msr_arm.o  block/ext2_test.o atomic_entry.o devbusdrv_unit.o  hw/pci/pci_unit.o statickey_unit.o  cpu_unit.o block_unit.o cpu_unit.o ktime_unit.o
+$(TARGET)-objs := misc_entry.o page_test.o  showstack.o workqueue_test.o delay.o lock_unit.o msr_arm.o  block/ext2_test.o atomic_entry.o devbusdrv_unit.o  hw/pci/pci_unit.o statickey_unit.o  cpu_unit.o block_unit.o cpu_unit.o ktime_unit.o
 
 $(TARGET)-objs += ./lib/page.o
 $(TARGET)-objs += ./lib/raidtree.o
@@ -31,6 +31,7 @@ $(TARGET)-objs += efi/efi_unit.o
 $(TARGET)-objs += panic_hang/panic_unit.o
 $(TARGET)-objs += time/time_unit.o
 $(TARGET)-objs += inject/inject_unit.o
+$(TARGET)-objs += kprobe/kprobe_unit.o
 
 
 all:

@@ -143,6 +143,9 @@ enum IOCTL_USEKRPOBE_SUB {
 	IOCTL_USEKRPOBE_NONE = 0,
 	//dumpstack of function
 	IOCTL_USEKRPOBE_FUNC_DUMP,
+	IOCTL_USEKRPOBE_KPROBE_FUNC, //kprobe and printk function
+	IOCTL_USEKRPOBE_KPROBE_HOOK, //hook and not return real func
+	IOCTL_USEKRPOBE_KPROBE_FREE, //free kprobe function
 };
 
 enum IOCTL_USEWORKQUEUE_SUB{
@@ -206,6 +209,9 @@ struct ioctl_data {
 		struct kprobe_ioctl {
 			char *name;
 			int len;
+			int cpu;
+			int hook;
+			int free;
 			char *dump_buf;
 			int dump_len;
 		} kp_data;
