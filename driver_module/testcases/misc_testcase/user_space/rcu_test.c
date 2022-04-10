@@ -96,11 +96,13 @@ extern int misc_fd;
 static void help(void)
 {
 	printf("rcu --rcu_read_sync  test the rcu read for rcu sync\n");
+	printf("rcu --rcu_block_read test the rcu read block\n");
 }
 
 static const struct option long_options[] = {
 	{"help",     no_argument, 0,  0 },
 	{"rcu_read_sync",     no_argument, 0,  0 },
+	{"rcu_block_read",     no_argument, 0,  0 },
 	{0,0,0,0}};
 
 int rcu_usage(int argc, char **argv)
@@ -108,24 +110,31 @@ int rcu_usage(int argc, char **argv)
 	int c;
 	struct ioctl_data data;
 
+	if (argc <= 1) { 
+		help();
+		return 0;
+	}
+
 	while (1) {
 
 		int option_index = -1;
 		c = getopt_long_only(argc, argv, "", long_options, &option_index);
-		if (c == -1) {
-			help();
+		if (c == -1)
 			break;
-		}
 
+		printf("c %d %x\n",c ,option_index);
 		switch (option_index) {
-			case '0':
+			case 0:
 				help();
 				break;
-			case '1':
+			case 1:
 				rcu_test(misc_fd);
 				return;
+			case 2:
+				data.type = IOCTL_USERCU;
+				data.cmdcode = IOCTL_USERCU_READTEST_START;
+				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 			default:
-				printf("hardlock operation not support\n");
 				return -1;
 		}
 	}

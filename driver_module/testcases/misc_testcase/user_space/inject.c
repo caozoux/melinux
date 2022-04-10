@@ -31,9 +31,9 @@ int inject_usage(int argc, char **argv)
 		{"write_proctect",   no_argument, 0,  0 },
 		{"mutex_deplock",   required_argument, 0,  0 },
 		{"spinlock_deplock",   required_argument, 0,  0 },
-		{"irqspinlock_deplock",   required_argument, 0,  0 },
-		{"rcu_hang",   required_argument, 0,  0 },
-		{"softwatchdog_timeout",   required_argument, 0,  0 },
+		{"irqspinlock_deplock",   no_argument, 0,  0 },
+		{"rcu_hang",   no_argument, 0,  0 },
+		{"softwatchdog_timeout",   no_argument, 0,  0 },
 		{0,0,0,0}};
 	int c;
 	struct ioctl_data data;

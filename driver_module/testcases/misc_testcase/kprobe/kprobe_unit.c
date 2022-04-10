@@ -23,6 +23,13 @@ typedef struct {
 	int cpu;
 } kprobe_item;
 
+typedef struct {
+	struct list_head list;
+	struct kprobe kp;
+	char symname[128];
+	int cpu;
+} livepatch_item;
+
 struct kprobe_misc_data {
 	struct list_head head;
 	struct kprobe kp1;
@@ -40,7 +47,7 @@ struct kprobe_misc_data  *kprobe_unit_data;
 static int kprobe_post_handler(struct kprobe *p, struct pt_regs *regs, unsigned long flags);
 static void (*orig_dump_stack_print_info)(const char *log_lvl);
 
-static int add_kprobe_item(char *name, kprobe_pre_handler_t pre_func)
+static int add_kprobe_item(char *name, kprobe_pre_handler_t pre_func, int cpu)
 {
 	kprobe_item *item;
 	int ret;
@@ -48,6 +55,7 @@ static int add_kprobe_item(char *name, kprobe_pre_handler_t pre_func)
 	if (!item)
 		return -ENOMEM; 
 
+	item->cpu =cpu;
 	INIT_LIST_HEAD(&item->list);
 	strncpy(item->symname, name, 128);
 	item->kp.symbol_name = item->symname;
@@ -58,6 +66,7 @@ static int add_kprobe_item(char *name, kprobe_pre_handler_t pre_func)
 	if (ret)
 		goto out;
 
+	printk("register kprobe %s\n", name);
 	return 0;
 out:
 	kfree(item);
@@ -105,14 +114,16 @@ static int kprobe_printk_handler(struct kprobe *p, struct pt_regs *regs)
 
 static int kprobe_hook_handler(struct kprobe *p, struct pt_regs *regs)
 {
-	struct kprobe_misc_data *data = container_of(p, struct kprobe_misc_data, kp_hook);
-	if (data->cpu != -1 ) {
-		if (data->cpu == smp_processor_id())
+	kprobe_item *item= container_of(p, kprobe_item, kp);
+	if (item->cpu != -1 ) {
+		if (item->cpu == smp_processor_id()) {
+			printk("zz %s %d cpu:%d\n", __func__, __LINE__, item->cpu);
 			return 1;
+		}
 		return 0;
 	}
 
-	return 1;
+	return 0;
 }
 
 static int kprobe_dump_stack_handler(struct kprobe *p, struct pt_regs *regs)
@@ -198,14 +209,15 @@ int kprobe_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_d
 			kfree(dump_buf);
 			break;
 		case  IOCTL_USEKRPOBE_KPROBE_HOOK:
-			ret = add_kprobe_item(name, kprobe_hook_handler);
+			printk("zz %s %d \n", __func__, __LINE__);
+			ret = add_kprobe_item(name, kprobe_hook_handler, data->kp_data.cpu);
 			if (ret) {
 				printk("kprobe register:%s faild\n",name);
 				return -EINVAL;
 			}
 			break;
 		case  IOCTL_USEKRPOBE_KPROBE_FUNC:
-			ret = add_kprobe_item(name, kprobe_printk_handler);
+			ret = add_kprobe_item(name, kprobe_printk_handler, data->kp_data.cpu);
 			if (ret) {
 				printk("kprobe register:%s faild\n",name);
 				return -EINVAL;

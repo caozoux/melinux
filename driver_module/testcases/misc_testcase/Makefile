@@ -20,7 +20,7 @@ ifdef CONFIG_ARM64
 $(TARGET)-objs += arm64/gic/gic_entry.o arm64/gic/gic_virtual_device.o
 endif
 
-$(TARGET)-objs += rcu/rcu_test.o
+$(TARGET)-objs += rcu/rcu_unit.o
 $(TARGET)-objs += kernel/task.o kernel/dentry.o kernel/virtual_bus.o  kernel/track.o
 $(TARGET)-objs += block/request.o  block/block_disck.o block/inode.o  block/bio.o block/buffer_head.o block/readwrite.o
 $(TARGET)-objs += kmem/kmem_unit.o kmem/page.o kmem/zone.o kmem/kmemcache.o kmem/resource.o kmem/scan_page.o  kmem/pagecache.o kmem/mem_cg.o kmem/pte.o kmem/task_mem.o kmem/vma.o kmem/hugetlb.o

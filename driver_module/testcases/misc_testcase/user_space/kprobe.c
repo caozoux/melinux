@@ -25,8 +25,8 @@ static const struct option long_options[] = {
 	{"dumpstack",     no_argument, 0,  0 },
 	{"func",     required_argument, 0,  0 },
 	{"hook",     no_argument, 0,  0 },
-	{"cpu",      required_argument, 0,  0 },
 	{"free",     no_argument, 0,  0 },
+	{"cpu",      required_argument, 0,  0 },
 	{"printk",     no_argument, 0,  0 },
 	{0,0,0,0}};
 
@@ -49,7 +49,6 @@ int kprobe_usage(int argc, char **argv)
 	data.kp_data.dump_len= 0;
 	data.kp_data.hook = 0;
 	data.kp_data.free = 0;
-	data.kp_data.cpu = -1;
 
 	while (1) {
 		int option_index = -1;
@@ -90,7 +89,7 @@ int kprobe_usage(int argc, char **argv)
 				break;
 
 			case 5:
-				free=1;
+				cpu=atoi(optarg);
 				break;
 
 			case 6:
@@ -102,7 +101,7 @@ int kprobe_usage(int argc, char **argv)
 		}
 	}
 
-	printf("printk %d name:%s\n", printk, func_name);
+	data.kp_data.cpu = cpu;
 	if (op_dump) {
 		data.kp_data.name = func_name;
 		data.kp_data.len = strlen(func_name);
