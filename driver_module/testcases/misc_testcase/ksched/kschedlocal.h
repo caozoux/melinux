@@ -43,5 +43,7 @@ void print_rq(struct rq *rq, int rq_cpu);
 void print_task(struct rq *rq, struct task_struct *p);
 int ksched_sched_ipi_call_test(void);
 
+void swait_uint_int(void *data);
+void swait_uint_exit(void *data);
 #endif
 

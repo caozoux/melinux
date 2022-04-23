@@ -165,11 +165,13 @@ int sched_unit_init(void)
 	//ksched_sched_ipi_call_test();
 
 	//ksched_rq_scan_vruntime(NULL);
+	swait_uint_int(NULL);
 	return 0;
 }
 
 int sched_unit_exit(void)
 {
+	swait_uint_exit(NULL);
 	return 0;
 }
 

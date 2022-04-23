@@ -92,34 +92,38 @@ static int mercu_read_thread(void *arg)
 	u64 * addr;
 	int udelay_cnt = 20, i;
 	while (!kthread_should_stop()) {
+#if 0
 		trace_printk("addr:%lx +\n",(unsigned long)addr);
 		for (i = 0; i < udelay_cnt; ++i) {
 			udelay(100);
 		}
 		trace_printk("addr:%lx -\n",(unsigned long)addr);
 		schedule_timeout(msecs_to_jiffies(1));
-		//rcu_read_lock();
-		//addr = rcu_dereference(rcu_pointer);
+#endif
+		rcu_read_lock();
+		addr = rcu_dereference(rcu_pointer);
+		printk("rr:%lx \n",(unsigned long)addr);
+		cond_resched();
 		//schedule();
 		//udelay(100);
 		//if (printk_ratelimit())
 
-		//rcu_read_unlock();
+		rcu_read_unlock();
 	}
 	return 0;
 }
 
 static int mercu_write_thread(void *arg)
 {
-	u64 *addr;
-	int cnt = 0;
+	u64 *addr = NULL;
 	while (!kthread_should_stop()) {
 		synchronize_rcu();
-		addr = rcu_dereference(rcu_pointer);
 		addr++;
-		rcu_assign_pointer(rcu_pointer, addr);
+		printk("w:%lx +\n", addr);
+		addr = rcu_dereference(rcu_pointer);
+		rcu_assign_pointer(addr, rcu_pointer);
 		//if (printk_ratelimit())
-		trace_printk("rcu write sync:%d addr:%lx\n", cnt++, addr);
+		printk("w:%lx -\n", addr);
 	}
 	return 0;
 }
@@ -133,22 +137,14 @@ static void rcu_readlock_test_stop(void)
 static int mercu_detech_thread(void *arg)
 {
 	int udelay_cnt = 40000, i;
-	int runcnt=10;
 	while (!kthread_should_stop()) {
-#if 0
-		schedule_timeout(msecs_to_jiffies(10));
-#else
 #if 1
-		msleep(4000);
+		schedule_timeout_uninterruptible(HZ*5);
 #else
 		for (i = 0; i < udelay_cnt; ++i)
 			udelay(100)	;
 #endif
-		cond_resched();
-#endif
 		dump_rcu_rsp();
-		if (runcnt-- <=0)
-			break;
 	}
 	return 0;
 }
@@ -161,7 +157,8 @@ static void rcu_detect_thread_init(void)
 
 static void rcu_detect_thread_exit(void)
 {
-	kthread_stop(rcutest_thread_detect);
+	if (rcutest_thread_detect)
+		kthread_stop(rcutest_thread_detect);
 }
 
 static void rcu_readlock_test_start(void)
@@ -217,8 +214,9 @@ int rcutest_unit_init(void)
 	LOOKUP_SYMS(rcu_num_lvls);
 	LOOKUP_SYMS(rcu_num_nodes);
 	RCU_INIT_POINTER(rcu_pointer, NULL);
-	dump_rcu_rsp();
-	rcu_detect_thread_init();
+	//dump_rcu_rsp();
+	//rcu_detect_thread_init();
+	//rcu_readlock_test_start();
 	return 0;
 }
 
