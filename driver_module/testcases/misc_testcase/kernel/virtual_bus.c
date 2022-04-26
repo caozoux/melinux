@@ -63,7 +63,8 @@ struct device *virtual_get_new_device(void)
 	dev_set_name(dev, "%s", "vir_dev0");
 	//dev->bus = &virme_bus_type;
 	dev->release = virtual_test_device_release;
-	device_add(dev);
+	if (device_add(dev))
+		return NULL;
 	return dev;
 }
 
@@ -91,7 +92,8 @@ int virtual_test_bus_init(void)
 	dev_set_name(&dbd_dt->dev, "%s", "vir_testdev0");
 	dbd_dt->dev.bus = &virme_bus_type;
 	dbd_dt->dev.release = virtual_test_device_release;
-	device_add(&dbd_dt->dev);
+	if (device_add(&dbd_dt->dev))
+		return -EINVAL;
 	return 0;
 }
 

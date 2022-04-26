@@ -58,7 +58,7 @@ void vma_pte_dump(struct vm_area_struct *vma, u64 start_addr, u64 nr_page)
     pud_t *pud;
     pmd_t *pmd;
     pte_t *pte;
-	pte_t  ptet;
+	//pte_t  ptet;
 
     pgd = pgd_offset(vma->vm_mm, addr);
     p4d = p4d_offset(pgd, addr);
@@ -86,7 +86,7 @@ void vma_pte_dump(struct vm_area_struct *vma, u64 start_addr, u64 nr_page)
 
 			pfn = pte_pfn(*pte);
 			page = pfn_to_page(pfn);
-			printk("addr:%llx pte:%llx %llx pageflags:%llx-%llx\n", addr, (u64)pte, *((u64*)pte), pfn, (u64)page->flags);
+			printk("addr:%lx pte:%llx %llx pageflags:%llx-%llx\n", addr, (u64)pte, *((u64*)pte), pfn, (u64)page->flags);
 		}
 	}
 }

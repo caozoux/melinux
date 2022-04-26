@@ -30,7 +30,6 @@ int get_page_rmap_addr(struct page *old)
 	struct anon_vma_chain *avc;
 	unsigned long val;
 	pte_t *ptep, entry;
-	pgoff_t pgoff;
 	pgoff_t pgoff_start, pgoff_end;
 
 	if (PageAnon(old)) {
@@ -46,7 +45,7 @@ int get_page_rmap_addr(struct page *old)
 		anon_vma = (struct anon_vma *)val;
 		pgoff_start = orig_page_to_pgoff(head_page);
 		pgoff_end = pgoff_start + hpage_nr_pages(head_page) - 1;
-		anon_vma_interval_tree_foreach(avc, &anon_vma->rb_root,
+		meanon_vma_interval_tree_foreach(avc, &anon_vma->rb_root,
 				pgoff_start, pgoff_end) {
 			int is_young = 0;
 			struct vm_area_struct *vma = avc->vma;
@@ -72,7 +71,7 @@ void page_info_show(struct page *page)
 	enum lru_list lru;
 
 	//printk("pfn:%lld virt:%llx flag:%llx\n", page_to_pfn(page), page_to_virt(page));
-	printk("pfn:%lld  count:%d\n", page_to_pfn(page), page_count(page));
+	printk("pfn:%ld  count:%d\n", page_to_pfn(page), page_count(page));
 
 	if (PageBuddy(page))
 		printk("page:buddy\n");

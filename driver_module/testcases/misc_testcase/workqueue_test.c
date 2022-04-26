@@ -43,7 +43,6 @@ struct wkq_data {
 } *wkq_dt;
 
 static DEFINE_SPINLOCK(locktest_lock);
-static DEFINE_SPINLOCK(locktest_irqlock);
 
 static void wkq_delay_test(struct work_struct *work)
 {
@@ -118,21 +117,21 @@ int workqueue_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioct
 	switch (data->cmdcode) {
 		case  IOCTL_USEWORKQUEUE_SIG :
 			queue_work(wkq_dt->sigtestworkqueue, &wkq_dt->wq_sigtestwq);
-			DEBUG("workqueue sig\n");
+			MEDEBUG("workqueue sig\n");
 			break;
 		case  IOCTL_USEWORKQUEUE_SIG_SPINLOCK:
 			queue_work(wkq_dt->sigtestworkqueue, &wkq_dt->wq_sigtestwq_spinlock);
-			DEBUG("workqueue sig spinlock\n");
+			MEDEBUG("workqueue sig spinlock\n");
 			break;
 		case  IOCTL_USEWORKQUEUE_SIG_SPINLOCKIRQ:
 			queue_work(wkq_dt->sigtestworkqueue, &wkq_dt->wq_sigtestwq_spinlockirq);
-			DEBUG("workqueue sig spinlock irq\n");
+			MEDEBUG("workqueue sig spinlock irq\n");
 			break;
 	
 		case  IOCTL_USEWORKQUEUE_PERCPU_SPINLOCKIRQ_RACE:
 			queue_work(wkq_dt->workqueue, &wkq_dt->wq_sigtestwq_spinlockirq);
 			queue_work(wkq_dt->sigtestworkqueue, &wkq_dt->wq_sigtestwq_spinlockirq);
-			DEBUG("workqueue sig spinlock irq\n");
+			MEDEBUG("workqueue sig spinlock irq\n");
 			break;
 
 		case  IOCTL_USEWORKQUEUE_PEFORMANCE_DELAY:
@@ -144,10 +143,11 @@ int workqueue_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioct
 			if (!wait_event_interruptible_timeout(wkq_dt->wait, wkq_dt->wq_complete, 100*HZ))
 				ret = -EBUSY;
 			else 
-				copy_to_user((char __user *) data->wq_data.workqueue_performance,  &wkq_dt->performance_exp,
-						8);
+				if (copy_to_user((void __user *) data->wq_data.workqueue_performance,  &wkq_dt->performance_exp, 8))
+					MEWARN("cmd %d copy err\n", cmd);
+			
 #endif
-			DEBUG("workqueue performace test\n");
+			MEDEBUG("workqueue performace test\n");
 			break;
 		default:
 			goto OUT;

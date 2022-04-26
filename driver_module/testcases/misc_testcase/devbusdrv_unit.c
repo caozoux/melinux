@@ -33,7 +33,7 @@ int devbusdrvtest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct 
 		case  IOCTL_USERCU_READTEST_START:
 			break;
 		case  IOCTL_USERCU_READTEST_END:
-			DEBUG("rcu_readlock_test_stop\n")
+			MEDEBUG("rcu_readlock_test_stop\n")
 			//rcu_readlock_test_stop();
 			break;
 		default:

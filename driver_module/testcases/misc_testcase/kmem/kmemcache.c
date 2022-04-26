@@ -87,7 +87,7 @@ int kmem_kmemcache_create(char *name, int size)
 		goto out;
 
 	list_add_tail(&data->list, &kmem_kmemcache_list);
-	DEBUG("slub create:%s %p %s\n", data->kmem_cache->name, data->kmem_cache, data->name);
+	MEDEBUG("slub create:%s %p %s\n", data->kmem_cache->name, data->kmem_cache, data->name);
 	return 0;
 
 out:
@@ -111,7 +111,7 @@ int kmem_kmemcache_create_objs(char *name, int size, int is_free)
 
 	s = data->kmem_cache;
 
-	DEBUG("slub %s size:%d\n", data->kmem_cache->name, size);
+	MEDEBUG("slub %s size:%d\n", data->kmem_cache->name, size);
 
 	if (is_free) {
 		i = 0;

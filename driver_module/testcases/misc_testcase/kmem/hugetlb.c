@@ -23,17 +23,17 @@
 struct hstate (*orig_hstates);
 int (*orig_hugetlb_max_hstate);
 
-#define for_each_orig_hstate(h) \ 
- for ((h) = orig_hstates; (h) < &orig_hstates[*orig_hugetlb_max_hstate]; (h)++)
+#define for_each_orig_hstate(h)   \
+	for ((h) = orig_hstates; (h) < &orig_hstates[*orig_hugetlb_max_hstate]; (h)++)
 
-static dump_hstate_info(struct hstate *h)
+static void dump_hstate_info(struct hstate *h)
 {
 	struct page *page, *next;
 	struct list_head *activa;
-	int i, node;
+	int node;
 
 	//struct page *page = ist_entry(h->hugepage_freelists[node].next,struct page, lru); 
-	printk("order:%lx  nr_huge_pages:%lx\n", h->order, h->nr_huge_pages);
+	printk("order:%x  nr_huge_pages:%lx\n", h->order, h->nr_huge_pages);
 
 	if (h->nr_huge_pages) {
 		printk("free_huge_pages:%lx\n", h->free_huge_pages);

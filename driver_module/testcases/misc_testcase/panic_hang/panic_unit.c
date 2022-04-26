@@ -28,12 +28,6 @@ static u32 *orig_log_first_idx;
 
 //struct kprobe rcu_kprobe;
 
-static int rcu_stall_kprobe(struct kprobe *p, struct pt_regs *regs)
-{
-
-	return 0;
-}
-
 struct printk_log {
 	u64 ts_nsec;        /* timestamp in nanoseconds */
 	u16 len;        /* length of entire record */
@@ -79,7 +73,6 @@ static void dump_panic_log(void)
 	struct printk_log *msg;
 	char *print_buf;
 	u64 print_len = 0;
-	int index;
 
 	print_buf = kmalloc(0x100000, GFP_KERNEL);
 
@@ -131,22 +124,22 @@ int panic_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_dat
 		case IOCTL_PANIC_NOTIFIER:
 			ret = atomic_notifier_chain_register(&panic_notifier_list,
 					&dump_mekmem_notifier);
-			DEBUG("panic notfier %s\n", ret ? "failed" : "successful");
+			MEDEBUG("panic notfier %s\n", ret ? "failed" : "successful");
 			break;
 
 		case IOCTL_PANIC_UNNOTIFIER:
-			DEBUG("panic unnotfier\n");
+			MEDEBUG("panic unnotfier\n");
 			atomic_notifier_chain_unregister(&panic_notifier_list,
 					&dump_mekmem_notifier);
 			break;
 
 		case IOCTL_PANIC_TRIGGER:
-			DEBUG("panic trigger\n");
+			MEDEBUG("panic trigger\n");
 			panic("trigger panic");
 			break;
 
 		case IOCTL_PANIC_LOG:
-			DEBUG("panic dump\n");
+			MEDEBUG("panic dump\n");
 			dump_panic_log();
 			break;
 

@@ -10,7 +10,7 @@ extern struct anon_vma_chain *
 	  unsigned long first, unsigned long last);
 
 extern int (*orig_PageHeadHuge)(struct page *page_head);
-#define anon_vma_interval_tree_foreach(avc, root, start, last)       \
+#define meanon_vma_interval_tree_foreach(avc, root, start, last)       \
 		   for (avc = orig_anon_vma_interval_tree_iter_first(root, start, last); \
 				   avc; avc = orig_anon_vma_interval_tree_iter_next(avc, start, last))
 static inline pgoff_t orig_page_to_pgoff(struct page *page) 

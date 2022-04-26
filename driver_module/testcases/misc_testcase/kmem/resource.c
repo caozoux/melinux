@@ -31,6 +31,6 @@ void resource_scan(void)
 {
 	struct resource *p;
 	for (p = orig_iomem_resource->child; p; p = next_resource(p)) {
-		printk("zz %s name:%s start:%lx end:%lx \n",__func__, p->name, p->start, p->end);
+		printk("zz %s name:%s start:%lx end:%lx \n",__func__, p->name, (unsigned long)p->start, (unsigned long)p->end);
 	}
 }

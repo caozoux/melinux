@@ -22,7 +22,7 @@
 #define THREAD_CNT  	(12)
 
 static atomic_t atomic_test_val1 __attribute__((aligned (128)));
-static struct task_struct *thread_task[THREAD_CNT];
+static __maybe_unused struct task_struct *thread_task[THREAD_CNT];
 
 struct atomic_test_data {
 	struct workqueue_struct *sigtestworkqueue;
@@ -57,12 +57,11 @@ static void atm_sig_test(struct work_struct *work)
 	spin_unlock_irqrestore(&locktest_lock, flags);
 
   	time_cnt_new = get_time_tick() - time_cnt_old;
-  	printk("time:%ld\n", time_cnt_new);
-
+	printk("time_cnt_new:%lx \n",(unsigned long)time_cnt_new);
 }
 
 //mutilpe thread test
-static unsigned long long atm_per_cpu_test(struct work_struct *work)
+static __maybe_unused unsigned long long atm_per_cpu_test(struct work_struct *work)
 {
 	unsigned long k;
 	unsigned long count, flags;
@@ -87,15 +86,12 @@ static unsigned long long atm_per_cpu_test(struct work_struct *work)
 
 	time_cnt_new = get_time_tick() - time_cnt_old;
 	atm_dt->time[cpu] = time_cnt_new;
-	printk("time:%ld\n", time_cnt_new);
+	printk("time_cnt_new:%lx \n", (unsigned long)time_cnt_new);
 	return time_cnt_new;
 }
 
 int atomic_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
-	int ret = -1;
-	int i;
-	int cpu = smp_processor_id();
 
 	switch (data->cmdcode) {
 		case  IOCTL_USEATOMIC_PERFORMANCE:
@@ -111,7 +107,7 @@ int atomic_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_da
 			}
 			queue_work_on(i,atm_dt->sigtestworkqueue, &atm_dt->wq_sigtestwq);
 #endif
-			DEBUG("atomic test\n");
+			MEDEBUG("atomic test\n");
 			break;
 		default:
 			goto OUT;

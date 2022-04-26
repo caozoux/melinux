@@ -207,57 +207,57 @@ int kmem_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_dat
 
 	switch (data->cmdcode) {
 		case  IOCTL_USEKMEM_SHOW:
-			DEBUG("mem_readlock_test_start\n");
+			MEDEBUG("mem_readlock_test_start\n");
 			kmem_dump_state();
 			break;
 
 		case IOCTL_USEKMEM_VMA_SCAN:
 			printk("zz %s %d \n", __func__, __LINE__);
-			DEBUG("mem vma scan\n");
+			MEDEBUG("mem vma scan\n");
 			vma_scan(data);
 			break;
 
 		case IOCTL_USEKMEM_GET_PTE:
-			DEBUG("mem pte get\n");
+			MEDEBUG("mem pte get\n");
 			ptep = get_pte(data->kmem_data.addr, current->mm);
 			data->kmem_data.val = *((u64*) ptep);
 			dump_pte_info((unsigned long)ptep);
 			break;
 
 		case IOCTL_USERCU_READTEST_END:
-			DEBUG("mem_readlock_test_stop\n");
+			MEDEBUG("mem_readlock_test_stop\n");
 			//mem_readlock_test_stop();
 			break;
 
 		case IOCTL_USEKMEM_PAGE_ATTR:
-			DEBUG("kmem page attr\n");
+			MEDEBUG("kmem page attr\n");
 			dump_kernel_page_attr(data, data->kmem_data.pageattr_data.start_pfn,
 					data->kmem_data.pageattr_data.size);
 			break;
 
 		case IOCTL_USEKMEM_TESTBUDDY:
-			DEBUG("kmem buddy page\n");
+			MEDEBUG("kmem buddy page\n");
 			buddy_test();
 			page_test();
 			break;
 
 		case IOCTL_USEKMEM_FULL_PAGE_SCAN:
-			DEBUG("full page scan\n");
+			MEDEBUG("full page scan\n");
 			full_page_scan();
 			break;
 
 		case IOCTL_USEKMEM_SLUB_OP:
 			if (data->kmem_data.slub_ctrl.op == SLUB_OP_CREATE) {
-				DEBUG("slub create\n");
+				MEDEBUG("slub create\n");
 				ret = kmem_kmemcache_create(data->kmem_data.name, data->kmem_data.slub_ctrl.slub_size);
 			} else if (data->kmem_data.slub_ctrl.op == SLUB_OP_REMOVE) {
-				DEBUG("slub remove\n");
+				MEDEBUG("slub remove\n");
 				kmem_kmemcache_remove(data->kmem_data.name);
 			} else if (data->kmem_data.slub_ctrl.op == SLUB_OP_ADD) {
-				DEBUG("slub add\n");
+				MEDEBUG("slub add\n");
 				ret = kmem_kmemcache_create_objs(data->kmem_data.name, data->kmem_data.slub_ctrl.count, 0);
 			} else if (data->kmem_data.slub_ctrl.op == SLUB_OP_DEC) {
-				DEBUG("slub dec\n");
+				MEDEBUG("slub dec\n");
 				ret = kmem_kmemcache_create_objs(data->kmem_data.name, data->kmem_data.slub_ctrl.count, 1);
 			} else {
 				pr_warn("kmem slub operation not support\n");
@@ -304,7 +304,7 @@ OUT:
 	return ret;
 }
 
-static void test1(void)
+static void __maybe_unused test1(void)
 {
 	struct inode *inode;
 

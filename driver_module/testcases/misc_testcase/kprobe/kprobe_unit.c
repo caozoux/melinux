@@ -44,7 +44,7 @@ struct kprobe_misc_data {
 
 struct kprobe_misc_data  *kprobe_unit_data;
 
-static int kprobe_post_handler(struct kprobe *p, struct pt_regs *regs, unsigned long flags);
+static int __maybe_unused kprobe_post_handler(struct kprobe *p, struct pt_regs *regs, unsigned long flags);
 static void (*orig_dump_stack_print_info)(const char *log_lvl);
 
 static int add_kprobe_item(char *name, kprobe_pre_handler_t pre_func, int cpu)
@@ -83,7 +83,6 @@ static void remove_kprobe_item(kprobe_item *item)
 static int remove_kprobe_by_name(char *name)
 {
 	kprobe_item *item;
-	int  i= 0;
 	int ret = -EINVAL;
 
 	list_for_each_entry(item, &kprobe_unit_data->head, list) {
@@ -131,7 +130,7 @@ static int kprobe_dump_stack_handler(struct kprobe *p, struct pt_regs *regs)
 	struct kprobe_misc_data *data = container_of(p, struct kprobe_misc_data, kp1);
 
 	if (!data) {
-		WARN("kprobe data is NULL\n");
+		MEWARN("kprobe data is NULL\n");
 		goto out;
 	}
 
@@ -191,7 +190,7 @@ int kprobe_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_d
 	if (len <= 0)
 		return -EINVAL;
 	if (copy_from_user(name, (char __user *) data->kp_data.name, len)) {
-		ERR("kprobe get sym name failed\n");
+		MEERR("kprobe get sym name failed\n");
 		return -ENOMEM;
 	}
 	name[len] = 0;

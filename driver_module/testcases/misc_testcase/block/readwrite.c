@@ -46,7 +46,6 @@ void file_readwrite_test(void)
 	pgoff_t index, last_index;
 	pgoff_t prev_index;
 	pgoff_t prev_offset;
-	ssize_t ret;
 	int error = 0;
 	gfp_t gfp;
 
@@ -71,11 +70,11 @@ void file_readwrite_test(void)
 		//dentry = list_entry(inode->i_dentry, &inode->i_dentry, d_u.d_alias);
 		dentry = hlist_entry(inode->i_dentry.first, struct dentry, d_u.d_alias);
 
-		printk("zz %s name:%s \n",__func__, (int)dentry->d_iname);
+		printk("zz %s name:%s \n",__func__, dentry->d_iname);
 	}
 
 	init_sync_kiocb(&kiocb, file);
-	kiocb.ki_pos = &ppos;
+	kiocb.ki_pos = ppos;
 	iov_iter_init(&iter, READ, &iov, 1, len);
 
 	index = ppos >> PAGE_SHIFT;

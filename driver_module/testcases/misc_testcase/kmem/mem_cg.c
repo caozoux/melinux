@@ -83,7 +83,7 @@ int scan_lur(struct lruvec *lruvec, int zid, enum lru_list lru)
 
 	start = src;
 	do {
-		struct address_space *mapping;
+		//struct address_space *mapping;
 		struct page *page;
 		//pte_t *ptep, entry;
 		//ptep = get_pte(addr, struct mm_struct *mm)

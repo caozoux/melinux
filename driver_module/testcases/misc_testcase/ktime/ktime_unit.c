@@ -25,6 +25,7 @@
 #include "debug_ctrl.h"
 #include "medelay.h"
 #include "mekernel.h"
+#include "ktimelocal.h"
 
 struct list_head *orig_clockevent_devices;
 
@@ -43,8 +44,6 @@ static void timer_clockevent_device_scan(void)
 
 int ktime_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
-	
-	int ret = -1;
 
 	switch (data->cmdcode) {
 
@@ -61,12 +60,14 @@ int ktime_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_dat
 int ktime_unit_init(void)
 {
 	LOOKUP_SYMS(clockevent_devices);
+	tick_sched_init();
 
 	return 0;
 }
 
 int ktime_unit_exit(void)
 {
+	tick_sched_exit();
 	//*orig_virtio_queue_rq_hook = NULL;
 	return 0;
 }

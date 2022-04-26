@@ -34,51 +34,51 @@ int locktest_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_
 {
 	switch (data->cmdcode) {
 		case IOCTL_HARDLOCK_LOCK:
-			DEBUG("spinlock lock\n");
+			MEDEBUG("spinlock lock\n");
 			spin_lock(&locktest_lock);
 			break;
 		case IOCTL_HARDLOCK_UNLOCK:
-			DEBUG("spinlock unlock\n");
+			MEDEBUG("spinlock unlock\n");
 			spin_unlock(&locktest_lock);
 			break;
 		case IOCTL_HARDLOCK_TRYLOCK:
-			DEBUG("spinlock trylock\n");
+			MEDEBUG("spinlock trylock\n");
 			spin_trylock(&locktest_lock);
 			break;
 		case IOCTL_HARDLOCK_IRQLOCK:
-			DEBUG("spinlock irq lock\n");
+			MEDEBUG("spinlock irq lock\n");
 			//spin_lock_irqsave(&davinci_rtc_lock, flags);
 			spin_lock_irqsave(&locktest_lock, locktest_irqlock_flags);
 			break;
 		case IOCTL_HARDLOCK_IRQUNLOCK:
-			DEBUG("spinlock irq unlock\n");
+			MEDEBUG("spinlock irq unlock\n");
 			spin_unlock_irqrestore(&locktest_lock, locktest_irqlock_flags);
 			break;
 		case IOCTL_HARDLOCK_IRQTRYLOCK:
-			DEBUG("spinlock irq trylock\n");
+			MEDEBUG("spinlock irq trylock\n");
 			break;
 		case IOCTL_SEMAPHORE_DOWN:
-			DEBUG("semaphore down\n");
+			MEDEBUG("semaphore down\n");
 			down(&semaphore_cnt);
 			break;
 		case IOCTL_SEMAPHORE_UP:
-			DEBUG("semaphore up\n");
+			MEDEBUG("semaphore up\n");
 			up(&semaphore_cnt);
 			break;
 		case IOCTL_SEMAPHORE_READ_DOWN:
-			DEBUG("semaphore read down\n");
+			MEDEBUG("semaphore read down\n");
 			down_read(&semaphore_rw);
 			break;
 		case IOCTL_SEMAPHORE_READ_UP:
-			DEBUG("semaphore read up\n");
+			MEDEBUG("semaphore read up\n");
 			up_read(&semaphore_rw);
 			break;
 		case IOCTL_SEMAPHORE_WRITE_DOWN:
-			DEBUG("semaphore write down\n");
+			MEDEBUG("semaphore write down\n");
 			down_write(&semaphore_rw);
 			break;
 		case IOCTL_SEMAPHORE_WRITE_UP:
-			DEBUG("semaphore write up\n");
+			MEDEBUG("semaphore write up\n");
 			up_write(&semaphore_rw);
 			break;
 		default:

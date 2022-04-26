@@ -40,12 +40,12 @@ struct super_block *get_block_by_name(char *name)
 
 int ext2test_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
-	struct super_block *sb, *p = NULL;
+	struct super_block *sb;
 	struct buffer_head *bh;
 	int ret = -1;
 	switch (data->cmdcode) {
 		case IOCTL_USEEXT2_ENUM_SUPBLOCK:
-			DEBUG("ext2test lock\n");
+			MEDEBUG("ext2test lock\n");
 
 			list_for_each_entry(sb, orig_supper_blocks, s_list)
 				printk("supper_block:%s\n", sb->s_id);
@@ -65,9 +65,6 @@ int ext2test_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_
 
 			printk("name:%s sb:%s\n", data->ext2_data.blk_name, sb->s_id);
 			break;
-
-		defalut:
-			goto out;
 	}
 
 out:

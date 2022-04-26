@@ -26,7 +26,7 @@
 
 static struct swait_queue_head swait_wq;
 static int swait_wq_contd = 0;
-static struct task_struct *swait_timeout_kthread;
+static struct task_struct *swait_timeout_kthread =NULL;
 static int debug11 = 0;
 
 static bool swait_check_wake(int *gfp)
@@ -46,11 +46,11 @@ int swait_kthread_run(void *data)
 	while (!kthread_should_stop()) {
 		ret = swait_event_idle_timeout_exclusive(swait_wq,
 				swait_check_wake(&gf), HZ * 5);
-		printk("zz %s ret:%lx %lx\n",__func__, (unsigned long)ret, jiffies);
-		if (debug11++ > 4) {
-			debug11 = 0;
-			break;
-		}
+		//printk("zz %s ret:%lx %lx\n",__func__, (unsigned long)ret, jiffies);
+		//if (debug11++ > 4) {
+		//	debug11 = 0;
+		//	break;
+		//}
 	}
 	return 0;
 }

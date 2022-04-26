@@ -183,11 +183,11 @@ int rcutest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_
 	int ret = -1;
 	switch (data->cmdcode) {
 		case  IOCTL_USERCU_READTEST_START:
-			DEBUG("rcu_readlock_test_start\n")
+			MEDEBUG("rcu_readlock_test_start\n")
 			rcu_readlock_test_start();
 			break;
 		case  IOCTL_USERCU_READTEST_END:
-			DEBUG("rcu_readlock_test_stop\n")
+			MEDEBUG("rcu_readlock_test_stop\n")
 			rcu_readlock_test_stop();
 			break;
 		default:

@@ -90,9 +90,9 @@ struct misc_uint_item unit_list[] =
 
 static struct misc_private_data *misc_data;
 
-void crc32_test(void *buf, unsigned long size)
+void __maybe_unused crc32_test(void *buf, unsigned long size)
 {
-	crc32_le(0, buf, size);
+	//crc32_le(0, buf, size);
 }
 
 static int misc_template_open(struct inode *inode, struct file * file)
@@ -144,12 +144,12 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 		goto OUT;
 	}
 
-	DEBUG("ioctl cmd:%d cmdcode:%x\n", data.type, data.cmdcode);
+	MEDEBUG("ioctl cmd:%d cmdcode:%x\n", data.type, data.cmdcode);
 
 	for(i=0; unit_list[i].type; i++) {
 		if (unit_list[i].type == data.type) {
 			unit_list[i].ioctl(cmd, arg, &data);
-			if (copy_to_user(arg, &data,  sizeof(struct ioctl_data)))
+			if (copy_to_user((void __user *)arg, &data,  sizeof(struct ioctl_data)))
 				dev_err(dev_data->dev, "cmd %d copy err\n", cmd);
 
 			break;

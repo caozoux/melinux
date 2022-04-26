@@ -41,12 +41,12 @@ int cpu_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data 
 
 int cpu_unit_init(void)
 {
-	int cpu, cpu2;
-	int share;
 
 	LOOKUP_SYMS(cpus_share_cache);
 	//printk("zz %s\n", __func__);
 #if 0
+	int cpu, cpu2;
+	int share;
 	cpu = 1;
 	share = orig_cpus_share_cache(cpu, cpu+1);
 	if (share)

@@ -25,10 +25,10 @@ RADIX_TREE(roottest, GFP_ATOMIC);
 #if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 int rxtree_misc_dump(struct radix_tree_root *root)
 {
-	struct radix_tree_node *node = root->rnode, *node_iter, **slot;
-	struct radix_tree_node *child;
-	unsigned long maxindex;
-	void *p, *n;
+	struct radix_tree_node __maybe_unused  *node = root->rnode, *node_iter, **slot;
+	struct radix_tree_node __maybe_unused  *child;
+	unsigned long __maybe_unused  maxindex;
+	void __maybe_unused   *p, *n;
 	int i;
 
 #if 1
@@ -50,7 +50,7 @@ int rxtree_misc_dump(struct radix_tree_root *root)
 	for (i = 0; i < RADIX_TREE_MAP_SIZE; i++) {
 			if (node->slots[i]) {
 				slot = node->slots[i];
-				printk("zz %s slot:%lx lx\n",__func__, (unsigned long)slot, (unsigned long)*slot);
+				printk("zz %s slot:%lx %lx\n",__func__, (unsigned long)slot, (unsigned long)*slot);
 				//node_iter = rcu_dereference_raw(node->slots[i]);
 #if 0
 			printk("zz %s shift:%lx offset:%lx count:%lx exceptional:%lx"
@@ -77,9 +77,7 @@ int radixtree_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioct
 	int ret = 0;
 	void *p;
 	struct radix_tree_node *rx_node;
-	int test_cnt = 10;
 	int count = data->radix_data.count;
-	int index;
 
 #if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	rx_node = rxtree_misc_data->root.rnode;
@@ -107,7 +105,7 @@ int radixtree_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioct
 		case  IOCTL_USERAIDIXTREE_DEL:
 			p = radix_tree_delete(&rxtree_misc_data->root, data->radix_data.index);
 			if (!p) {
-				ERR("rx tree delete %d failed\n", data->radix_data.index);
+				MEERR("rx tree delete %d failed\n", data->radix_data.index);
 				ret = -EINVAL;
 				break;
 			}
@@ -117,12 +115,13 @@ int radixtree_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioct
 		case  IOCTL_USERAIDIXTREE_GET:
 			p = radix_tree_lookup(&rxtree_misc_data->root, data->radix_data.index);
 			if (!p) {
-				ERR("rx tree get %d failed\n", data->radix_data.index);
+				MEERR("rx tree get %d failed\n", data->radix_data.index);
 				ret = -EINVAL;
 				break;
 			}
 
-			copy_to_user((char __user *) data->radix_data.buf, p, data->radix_data.buf_len);
+			if (copy_to_user((char __user *) data->radix_data.buf, p, data->radix_data.buf_len))
+				MEERR("copy failed\n");
 			break;
 
 		case  IOCTL_USERAIDIXTREE_DUMP:
