@@ -18,6 +18,7 @@ static void help(void)
 	printf("kprobe --hook      hook specify function and no call the real function\n");
 	printf("kprobe --printk    kprobe specify function and printk function call\n");
 	printf("kprobe --free      hook specify function and no call the real function\n");
+	printf("kprobe --retprintk  kretprobe specify function and printk function call\n");
 }
 
 static const struct option long_options[] = {
@@ -28,6 +29,7 @@ static const struct option long_options[] = {
 	{"free",     no_argument, 0,  0 },
 	{"cpu",      required_argument, 0,  0 },
 	{"printk",     no_argument, 0,  0 },
+	{"retprintk",     no_argument, 0,  0 },
 	{0,0,0,0}};
 
 int kprobe_usage(int argc, char **argv)
@@ -38,6 +40,7 @@ int kprobe_usage(int argc, char **argv)
 	int op_dump = 0;
 	int hook=0, free = 0, printk=0;
 	int cpu = -1;
+	int is_ret = 0;
 
 	if (argc <= 1) { 
 		help();
@@ -96,6 +99,11 @@ int kprobe_usage(int argc, char **argv)
 				printk=1;
 				break;
 
+			case 7:
+				printk=1;
+				is_ret=1;
+				break;
+
 			default:
 				break;
 		}
@@ -111,6 +119,16 @@ int kprobe_usage(int argc, char **argv)
 			return 0;
 		} 
 		printf("%s\n", data.kp_data.dump_buf);
+		return 0;
+	} else if (is_ret) {
+		data.kp_data.name = func_name;
+		data.kp_data.len = strlen(func_name);
+		data.cmdcode = IOCTL_USEKRPOBE_KRETPROBE_FUNC;
+		ret = ioctl(misc_fd, sizeof(struct ioctl_data), &data);
+		if (ret) {
+			printf("kprobe failed\n");
+			return 0;
+		} 
 		return 0;
 	} else if (hook) {
 		data.cmdcode = IOCTL_USEKRPOBE_KPROBE_HOOK;

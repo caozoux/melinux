@@ -20,20 +20,37 @@
 #include "debug_ctrl.h"
 #include "medelay.h"
 
-static struct hrtimer inject_timer;
+static struct hrtimer inject_timer1;
+static struct hrtimer inject_timer2;
 
 
-static enum hrtimer_restart inject_timer_func(struct hrtimer *timer)
+static enum hrtimer_restart inject_timer_func1(struct hrtimer *timer)
 {
 	ktime_t now;
 	int i;
 
-	printk("zz %s now:%ld +\n",__func__, (unsigned long)ktime_get());
-	//for (i = 0; i < 10000; ++i) {
-	for (i = 0; i < 1000; ++i) {
+	trace_printk("zz %s now1:%ld +\n",__func__, (unsigned long)ktime_get());
+	for (i = 0; i < 10; ++i) {
 		udelay(100);
 	}
-	printk("zz %s now:%ld -\n",__func__, (unsigned long)ktime_get());
+	trace_printk("zz %s now1:%ld -\n",__func__, (unsigned long)ktime_get());
+ 	now = ktime_get();
+	//hrtimer_forward(timer, now, NSEC_PER_SEC / HZ);
+	hrtimer_forward(timer, now, (NSEC_PER_SEC/HZ)/100);
+	return HRTIMER_RESTART;
+	//return HRTIMER_NORESTART;
+}
+
+static enum hrtimer_restart inject_timer_func2(struct hrtimer *timer)
+{
+	ktime_t now;
+	int i;
+
+	trace_printk("zz %s now2:%ld +\n",__func__, (unsigned long)ktime_get());
+	for (i = 0; i < 10; ++i) {
+		udelay(100);
+	}
+	trace_printk("zz %s now2:%ld -\n",__func__, (unsigned long)ktime_get());
  	now = ktime_get();
 	//hrtimer_forward(timer, now, NSEC_PER_SEC / HZ);
 	hrtimer_forward(timer, now, (NSEC_PER_SEC/HZ)/10);
@@ -45,18 +62,27 @@ static enum hrtimer_restart inject_timer_func(struct hrtimer *timer)
 static void inject_hrtime_timeout_start(void)
 {
 	ktime_t kt;
-	hrtimer_init(&inject_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
-	inject_timer.function = inject_timer_func;
+	hrtimer_init(&inject_timer1, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
+	inject_timer1.function = inject_timer_func1;
 	kt = ktime_add_us(ktime_get(), (NSEC_PER_SEC/HZ)/10 );
 
-	hrtimer_set_expires(&inject_timer, kt);
-	hrtimer_start_expires(&inject_timer, HRTIMER_MODE_ABS_PINNED);
+	hrtimer_set_expires(&inject_timer1, kt);
+	hrtimer_start_expires(&inject_timer1, HRTIMER_MODE_ABS_PINNED);
+
+
+	hrtimer_init(&inject_timer2, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
+	inject_timer2.function = inject_timer_func2;
+	kt = ktime_add_us(ktime_get(), (NSEC_PER_SEC/HZ)/10 );
+
+	hrtimer_set_expires(&inject_timer2, kt);
+	hrtimer_start_expires(&inject_timer2, HRTIMER_MODE_ABS_PINNED);
 	MEDEBUG("inject_hrtime_timeout_start\n");
 }
 
 static void inject_hrtime_timeout_exit(void)
 {
-	hrtimer_cancel(&inject_timer); 
+	hrtimer_cancel(&inject_timer1); 
+	hrtimer_cancel(&inject_timer2); 
 	MEDEBUG("inject_hrtime_timeout_exit\n");
 }
 
@@ -94,13 +120,13 @@ int inject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_da
 
 int inject_unit_init(void)
 {
-	inject_hrtime_timeout_start();
+	//inject_hrtime_timeout_start();
 	return 0;
 }
 
 int inject_unit_exit(void)
 {
-	inject_hrtime_timeout_exit();
+	//inject_hrtime_timeout_exit();
 	return 0;
 }
 

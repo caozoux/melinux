@@ -32,6 +32,7 @@ $(TARGET)-objs += time/time_unit.o
 $(TARGET)-objs += inject/inject_unit.o
 $(TARGET)-objs += kprobe/kprobe_unit.o
 $(TARGET)-objs += ktime/ktime_unit.o ktime/hrtime.o ./ktime/tick-sched.o
+$(TARGET)-objs += kvm/kvm_unit.o
 
 
 all:

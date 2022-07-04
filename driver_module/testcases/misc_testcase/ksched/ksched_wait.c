@@ -23,11 +23,10 @@
 #include "debug_ctrl.h"
 #include "medelay.h"
 
-
 static struct swait_queue_head swait_wq;
-static int swait_wq_contd = 0;
+//static int swait_wq_contd = 0;
 static struct task_struct *swait_timeout_kthread =NULL;
-static int debug11 = 0;
+//static int debug11 = 0;
 
 static bool swait_check_wake(int *gfp)
 {

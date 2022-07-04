@@ -42,7 +42,8 @@ static int *orig_rcu_num_nodes;
 			(rnp) < &(rsp)->node[*orig_rcu_num_nodes]; (rnp)++)
 		
 
-struct task_struct *rcutest_thread_read;
+struct task_struct *rcutest_thread_read1;
+struct task_struct *rcutest_thread_read2;
 // assigned rcu thread
 struct task_struct *rcutest_thread_assigned;
 struct task_struct *rcutest_thread_detect;
@@ -101,37 +102,48 @@ static int mercu_read_thread(void *arg)
 		schedule_timeout(msecs_to_jiffies(1));
 #endif
 		rcu_read_lock();
+		trace_printk("zzrr ++\n");
 		addr = rcu_dereference(rcu_pointer);
-		printk("rr:%lx \n",(unsigned long)addr);
-		cond_resched();
-		//schedule();
+		udelay(1);
+		trace_printk("zzrr:%lx \n",addr);
 		//udelay(100);
-		//if (printk_ratelimit())
-
+		trace_printk("zzrr --\n");
 		rcu_read_unlock();
+		//schedule_timeout(msecs_to_jiffies(1000));
+		//schedule_timeout_uninterruptible(1);
+		//cond_resched();
+		schedule_timeout(msecs_to_jiffies(1));
 	}
 	return 0;
 }
 
 static int mercu_write_thread(void *arg)
 {
-	u64 *addr = NULL;
+	u64 *new, *old;
 	while (!kthread_should_stop()) {
+		old = rcu_dereference(rcu_pointer);
+		new = kmalloc(PAGE_SIZE, GFP_KERNEL);
+		rcu_assign_pointer(rcu_pointer, new);
+		trace_printk("zzww %lx -\n", new);
 		synchronize_rcu();
-		addr++;
-		printk("w:%lx +\n", addr);
-		addr = rcu_dereference(rcu_pointer);
-		rcu_assign_pointer(addr, rcu_pointer);
+		trace_printk("zzww +\n");
+		kfree(old);
+		udelay(100);
 		//if (printk_ratelimit())
-		printk("w:%lx -\n", addr);
 	}
 	return 0;
 }
 
 static void rcu_readlock_test_stop(void)
 {
-	kthread_stop(rcutest_thread_read);
-	kthread_stop(rcutest_thread_assigned);
+	if (rcutest_thread_read1)
+		kthread_stop(rcutest_thread_read1);
+
+	if (rcutest_thread_read2)
+		kthread_stop(rcutest_thread_read2);
+
+	if (rcutest_thread_assigned)
+		kthread_stop(rcutest_thread_assigned);
 }
 
 static int mercu_detech_thread(void *arg)
@@ -164,14 +176,16 @@ static void rcu_detect_thread_exit(void)
 static void rcu_readlock_test_start(void)
 {
 	// read rcu thread
-	u64 *addr;	
+	u64 *addr;
 	//addr = kmalloc(PAGE_SIZE * 16, GFP_KERNEL);
 	addr = NULL;
 	rcu_assign_pointer(rcu_pointer, addr);
 
-	rcutest_thread_read = kthread_create(mercu_read_thread, (void *)NULL, "mercu_read_thread");
+	rcutest_thread_read1 = kthread_create(mercu_read_thread, (void *)NULL, "mercu_read_thread");
+	rcutest_thread_read2 = kthread_create(mercu_read_thread, (void *)NULL, "mercu_read_thread");
 	rcutest_thread_assigned = kthread_create(mercu_write_thread, (void *)NULL, "mercu_write_thread");
-	wake_up_process(rcutest_thread_read);
+	wake_up_process(rcutest_thread_read1);
+	wake_up_process(rcutest_thread_read2);
 	wake_up_process(rcutest_thread_assigned);
 	return;
 
@@ -216,13 +230,16 @@ int rcutest_unit_init(void)
 	RCU_INIT_POINTER(rcu_pointer, NULL);
 	//dump_rcu_rsp();
 	//rcu_detect_thread_init();
+	
 	//rcu_readlock_test_start();
 	return 0;
 }
 
 int rcutest_unit_exit(void)
 {
-	rcu_detect_thread_exit();
+	//rcu_detect_thread_exit();
+	
+	//rcu_readlock_test_stop();
 	return 0;
 }
 

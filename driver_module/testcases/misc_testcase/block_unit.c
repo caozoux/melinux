@@ -44,9 +44,9 @@ void misc_virtio_queue_rq_hook(struct blk_mq_hw_ctx *hctx, const struct blk_mq_q
 int block_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
 	
-	int ret = -1;
-	int i;
-	int cpu = smp_processor_id();
+	//int ret = -1;
+	//int i;
+	//int cpu = smp_processor_id();
 
 	switch (data->cmdcode) {
 		case  IOCTL_USEBLOCK_INDOE:

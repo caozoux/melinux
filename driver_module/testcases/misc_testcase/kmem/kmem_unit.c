@@ -345,7 +345,7 @@ int kmem_unit_init(void)
 	//start_node_scan_thread();
 	//enumerate_node_memcg();
 	//test1();
-	enum_hugetlb();
+	//enum_hugetlb();
 	return 0;
 } 
 

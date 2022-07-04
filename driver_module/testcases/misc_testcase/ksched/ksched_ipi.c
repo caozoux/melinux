@@ -50,3 +50,4 @@ int ksched_sched_ipi_call_test(void)
 	}
 	return 0;
 }
+

@@ -44,10 +44,8 @@ static void timer_clockevent_device_scan(void)
 
 int ktime_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
-
 	switch (data->cmdcode) {
-
-		case   IOCTL_USEKTIME_DEV_SCAN:
+		case IOCTL_USEKTIME_DEV_SCAN:
 			timer_clockevent_device_scan();
 			break;
 
@@ -61,6 +59,7 @@ int ktime_unit_init(void)
 {
 	LOOKUP_SYMS(clockevent_devices);
 	tick_sched_init();
+	print_cpu_hrtimer(0);
 
 	return 0;
 }

@@ -91,6 +91,10 @@ int inject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_da
 int inject_unit_init(void);
 int inject_unit_exit(void);
 
+int kvm_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data);
+int kvm_unit_init(void);
+int kvm_unit_exit(void);
+
 FUNC_UNIT(locktest);
 FUNC_UNIT(hwpci);
 FUNC_UNIT(statickey);

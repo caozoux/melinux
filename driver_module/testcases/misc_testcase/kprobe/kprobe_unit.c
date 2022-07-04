@@ -19,8 +19,10 @@
 typedef struct {
 	struct list_head list;
 	struct kprobe kp;
+	struct kretprobe ret_kp;
 	char symname[128];
 	int cpu;
+	int is_ret; //kretprobe
 } kprobe_item;
 
 typedef struct {
@@ -32,9 +34,10 @@ typedef struct {
 
 struct kprobe_misc_data {
 	struct list_head head;
-	struct kprobe kp1;
-	struct kprobe kp_printk;
-	struct kprobe kp_hook;
+	struct kprobe kp1; //dump stack kprobe
+	struct kprobe kp_printk; //printk kprobe function
+	struct kprobe kp_hook; 
+	struct kretprobe kpret_printk; 
 	struct completion kprobe_compl;
 	wait_queue_head_t wait;
 	u8 kprobe_complete;
@@ -47,7 +50,8 @@ struct kprobe_misc_data  *kprobe_unit_data;
 static int __maybe_unused kprobe_post_handler(struct kprobe *p, struct pt_regs *regs, unsigned long flags);
 static void (*orig_dump_stack_print_info)(const char *log_lvl);
 
-static int add_kprobe_item(char *name, kprobe_pre_handler_t pre_func, int cpu)
+//static int add_kprobe_item(char *name, kprobe_pre_handler_t pre_func, int cpu, int is_ret)
+static int add_kprobe_item(char *name, void *pre_func, int cpu, int is_ret)
 {
 	kprobe_item *item;
 	int ret;
@@ -58,15 +62,23 @@ static int add_kprobe_item(char *name, kprobe_pre_handler_t pre_func, int cpu)
 	item->cpu =cpu;
 	INIT_LIST_HEAD(&item->list);
 	strncpy(item->symname, name, 128);
-	item->kp.symbol_name = item->symname;
-	item->kp.pre_handler = pre_func;
+	if (is_ret) {
+		item->ret_kp.kp.symbol_name = item->symname;
+		item->ret_kp.handler= pre_func;
+		ret = register_kretprobe(&item->ret_kp);
+		if (ret)
+			goto out;
+	} else {
+		item->kp.symbol_name = item->symname;
+		item->kp.pre_handler = pre_func;
+		ret = register_kprobe(&item->kp);
+		if (ret)
+			goto out;
+	}
+
 
 	list_add_tail(&item->list, &kprobe_unit_data->head);
-   	ret = register_kprobe(&item->kp);
-	if (ret)
-		goto out;
-
-	printk("register kprobe %s\n", name);
+	printk("register %s %s\n", name, is_ret ? "kretprobe": "kprobe");
 	return 0;
 out:
 	kfree(item);
@@ -75,7 +87,10 @@ out:
 
 static void remove_kprobe_item(kprobe_item *item)
 {
-   	unregister_kprobe(&item->kp);
+	if (item->is_ret)
+   		unregister_kretprobe(&item->ret_kp);
+	else
+   		unregister_kprobe(&item->kp);
 	list_del(&item->list);
 	kfree(item);
 }
@@ -102,12 +117,13 @@ static int kprobe_post_handler(struct kprobe *p, struct pt_regs *regs, unsigned 
 
 static int kprobe_printk_handler(struct kprobe *p, struct pt_regs *regs)
 {
-	struct kprobe_misc_data *data = container_of(p, struct kprobe_misc_data, kp_printk);
+	printk("zz %s %d \n", __func__, __LINE__);
+	return 0;
+}
 
-	if (data->cpu != -1 && data->cpu == smp_processor_id())
-		printk("zz %s %d \n", __func__, __LINE__);
-	else
-		printk("zz %s %d \n", __func__, __LINE__);
+static int kretprobe_printk_handler(struct kretprobe_instance *ri, struct pt_regs *regs)
+{
+	printk("zz %s %d \n", __func__, __LINE__);
 	return 0;
 }
 
@@ -209,14 +225,21 @@ int kprobe_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_d
 			break;
 		case  IOCTL_USEKRPOBE_KPROBE_HOOK:
 			printk("zz %s %d \n", __func__, __LINE__);
-			ret = add_kprobe_item(name, kprobe_hook_handler, data->kp_data.cpu);
+			ret = add_kprobe_item(name, kprobe_hook_handler, data->kp_data.cpu, 0);
 			if (ret) {
 				printk("kprobe register:%s faild\n",name);
 				return -EINVAL;
 			}
 			break;
 		case  IOCTL_USEKRPOBE_KPROBE_FUNC:
-			ret = add_kprobe_item(name, kprobe_printk_handler, data->kp_data.cpu);
+			ret = add_kprobe_item(name, kprobe_printk_handler, data->kp_data.cpu, 0);
+			if (ret) {
+				printk("kprobe register:%s faild\n",name);
+				return -EINVAL;
+			}
+			break;
+		case  IOCTL_USEKRPOBE_KRETPROBE_FUNC:
+			ret = add_kprobe_item(name, kretprobe_printk_handler, data->kp_data.cpu, 1);
 			if (ret) {
 				printk("kprobe register:%s faild\n",name);
 				return -EINVAL;
