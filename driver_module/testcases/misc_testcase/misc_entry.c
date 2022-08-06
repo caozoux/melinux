@@ -14,6 +14,7 @@
 #include <linux/crc32.h>
 #include <linux/module.h>
 #include "template_iocmd.h"
+#include "mekernel.h"
 #include "misc_ioctl.h"
 #include "debug_ctrl.h"
 
@@ -49,6 +50,8 @@
 #define MISC_NAME "misc_template"
 
 static int enable;
+struct mutex *orig_text_mutex;
+TEXT_DECLARE()
 
 struct misc_private_data {
 	int flag;		
@@ -176,68 +179,22 @@ ARRT_MARCO_READ(enable);
 ARRT_MARCO_WRITE(enable);
 ARRT_MARCO(enable);
 
+int golable_sysm_init(void)
+{
+	TEXT_SYMS()
+
+	return 0;
+}
+
 static int __init miscdriver_init(void)
 {
 	int ret;
 	int i=0;
 	int init_offset =0;
 
-#if 0
-	if (kmem_unit_init()) {
-		pr_err("atomic init failed\n");
-		goto out0;
-	}
+	if (golable_sysm_init())
+		return -EINVAL;
 
-	if (atomic_unit_init()) {
-		pr_err("atomic init failed\n");
-		goto out0;
-	}
-
-	if (devbusdrvtest_unit_init()) {
-		pr_err("devbusdrvtest_init failed\n");
-		goto out0;
-	}
-
-	if (ext2test_unit_init()) {
-		pr_err("ext2test_unit_init failed\n");
-		goto out0;
-	}
-
-	if(msr_unit_init()) {
-		pr_err("msr_unit_init failed\n");
-		goto out0;
-	}
-
-	if(rcutest_unit_init()) {
-		pr_err("rcutest_unit_init failed\n");
-		goto out0;
-	}
-
-	if(kprobe_unit_init()) {
-		pr_err("kprobe_unit_init failed\n");
-		goto out0;
-	}
-
-	if(showstack_unit_init()) {
-		pr_err("showstack_unit_init failed\n");
-		goto out0;
-	}
-
-	if(workqueue_unit_init()) {
-		pr_err("showstack_unit_init failed\n");
-		goto out0;
-	}
-
-	if(locktest_init()) {
-		pr_err("locktest_init failed\n");
-		goto out0;
-	}
-
-	if(raidtree_unit_init()) {
-		pr_err("locktest_init failed\n");
-		goto out0;
-	}
-#else
 	for(i=0; unit_list[i].type; i++) {
 		if (unit_list[i].init()) {
 			printk("%s init failed\n", unit_list[i].u_name);
@@ -246,7 +203,6 @@ static int __init miscdriver_init(void)
 		}
 		init_offset++;
 	}
-#endif
 
 	misc_data = kzalloc(sizeof(struct misc_private_data), GFP_KERNEL);
 	if (!misc_data) {

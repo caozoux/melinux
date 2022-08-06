@@ -51,8 +51,11 @@ void task_file_enum(struct task_struct *task)
 		return;
 	for(fd = 0; fd <files_fdtable(files)->max_fds; fd++) {
 		struct file *f;
-		char name[10+1];
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 		f = fcheck_files(files, fd);
+#else
+		files_lookup_fd_rcu(files, fd);
+#endif
 		//f = files_lookup_fd_rcu(files,fd);
 		if (!f)
 			continue;

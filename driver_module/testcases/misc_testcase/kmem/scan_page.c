@@ -9,9 +9,10 @@
 #include <linux/delay.h>
 #include <linux/swap.h>
 #include <linux/swapops.h>
+#include <linux/version.h>
 #include <linux/page_idle.h>
 #include <linux/sched.h>
-#include <linux/sched/types.h>
+#include <uapi/linux/sched/types.h>
 //#include <asm/tlb.h>
 
 #include "../template_iocmd.h"
@@ -83,5 +84,7 @@ void  start_node_scan_thread(void)
 	struct sched_param param = { .sched_priority = 0 };
 
 	thread = kthread_run(kidled, NULL, "kidled");
+#if LINUX_VERSION_CODE  <  KERNEL_VERSION(5,0,0)
 	sched_setscheduler(thread, SCHED_IDLE, &param);
+#endif
 }

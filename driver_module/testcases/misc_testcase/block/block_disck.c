@@ -20,6 +20,10 @@
 #include <linux/delay.h>
 #include <linux/blkdev.h>
 
+#if LINUX_VERSION_CODE >  KERNEL_VERSION(5,0,0)
+#include <linux/backing-dev-defs.h>
+#endif
+
 #include <asm/stacktrace.h>
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
@@ -45,7 +49,7 @@ static void scan_wb_info(struct bdi_writeback *wb)
 	}
 }
 
-static void scan_disk_bdi_wb_list(struct backing_dev_info *bdi)
+static void __maybe_unused scan_disk_bdi_wb_list(struct backing_dev_info *bdi)
 {
 	 struct bdi_writeback *wb;
 
@@ -65,7 +69,7 @@ static void scan_disk_bdi_wb_list(struct backing_dev_info *bdi)
 	 }
 }
 
-static void scan_disk_bdi_list(void)
+static void __maybe_unused scan_disk_bdi_list(void)
 {
 	struct backing_dev_info *bdi;
 	rcu_read_lock();
@@ -77,7 +81,7 @@ static void scan_disk_bdi_list(void)
 
 static void  dump_disk_info(struct gendisk *disk)
 {
-#if 1
+#if 0
 	struct backing_dev_info *info;
 	struct request_queue *rq;
 

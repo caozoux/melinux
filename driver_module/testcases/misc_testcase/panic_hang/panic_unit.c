@@ -12,6 +12,10 @@
 #include <linux/swapops.h>
 #include <linux/page_idle.h>
 #include <linux/version.h>
+
+#if LINUX_VERSION_CODE >  KERNEL_VERSION(5,0,0)
+#include<linux/panic_notifier.h>
+#endif
 //#include <asm/tlb.h>
 
 #include "../template_iocmd.h"

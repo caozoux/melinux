@@ -11,7 +11,6 @@
 #include <linux/version.h>
 #include <linux/delay.h>
 #include <linux/timekeeper_internal.h>
-#include <kernel/sched/sched.h>
 #include <linux/efi.h>
 
 #include <asm/stacktrace.h>

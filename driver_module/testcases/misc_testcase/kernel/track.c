@@ -11,7 +11,9 @@
 #include <linux/pci.h>
 #include <linux/msi.h>
 #include <linux/irq.h>
+#include <linux/version.h>
 #include <linux/list.h>
+#include <linux/stacktrace.h>
 
 #ifdef CONFIG_ARM64
 #include <linux/irqchip/arm-gic-common.h>
@@ -38,6 +40,7 @@ void print_track(const char *s, struct track *t, unsigned long pr_time)
 #endif
 int get_current_track(struct track *track, unsigned long addr)
 {
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 #ifndef CONFIG_STACKTRACE
 	return -EINVLID;
 #else
@@ -60,6 +63,7 @@ int get_current_track(struct track *track, unsigned long addr)
 	track->cpu = smp_processor_id();
 	track->pid = current->pid;
 	track->when = jiffies;
+#endif
 #endif
 	return 0;
 }

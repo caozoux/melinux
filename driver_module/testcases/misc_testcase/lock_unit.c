@@ -11,6 +11,7 @@
 #include <linux/poll.h>
 #include <linux/of.h>
 #include <linux/kthread.h>
+#include <linux/version.h>
 #include <linux/reboot.h>
 #include <linux/uaccess.h>
 #include <linux/notifier.h>
@@ -85,8 +86,10 @@ int locktest_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_
 			goto OUT;
 	}
 
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	printk("semaphore_cnt %d\n", semaphore_cnt.count);
 	printk("semaphore_rw: %ld\n", atomic_long_read(&semaphore_rw.count));
+#endif
 OUT:
 	return 0;
 }

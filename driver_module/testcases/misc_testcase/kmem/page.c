@@ -44,7 +44,11 @@ int get_page_rmap_addr(struct page *old)
 		val &= ~PAGE_MAPPING_FLAGS;
 		anon_vma = (struct anon_vma *)val;
 		pgoff_start = orig_page_to_pgoff(head_page);
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 		pgoff_end = pgoff_start + hpage_nr_pages(head_page) - 1;
+#else
+		pgoff_end = pgoff_start + thp_nr_pages(head_page) - 1;
+#endif
 		meanon_vma_interval_tree_foreach(avc, &anon_vma->rb_root,
 				pgoff_start, pgoff_end) {
 			int is_young = 0;

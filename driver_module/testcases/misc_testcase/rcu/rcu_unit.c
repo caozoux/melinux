@@ -14,25 +14,29 @@
 #include <linux/reboot.h>
 #include <linux/uaccess.h>
 #include <linux/notifier.h>
+#include <linux/version.h>
 #include <linux/interrupt.h>
 #include <linux/rcupdate.h>
 #include <linux/delay.h>
 #include <linux/irq_work.h>
-
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
 #include "debug_ctrl.h"
+
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 #include "kernel/rcu/tree.h"
 #include "kernel/rcu/rcu.h"
+#endif
 
 
-static unsigned long cnt_test;
+//static unsigned long cnt_test;
 static void *rcu_pointer;
 
 static struct list_head *orig_rcu_struct_flavors;
 static int *orig_rcu_num_lvls;
 static int *orig_rcu_num_nodes;
 
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 #define orig_for_each_rcu_flavor(rsp) \
 	list_for_each_entry((rsp), orig_rcu_struct_flavors, flavors)
 
@@ -40,6 +44,7 @@ static int *orig_rcu_num_nodes;
 #define orig_rcu_for_each_leaf_node(rsp, rnp) \
 	for ((rnp) = orig_rcu_first_leaf_node(rsp); \
 			(rnp) < &(rsp)->node[*orig_rcu_num_nodes]; (rnp)++)
+#endif
 		
 
 struct task_struct *rcutest_thread_read1;
@@ -57,6 +62,7 @@ struct task_struct *rcutest_thread_detect;
 
 static void dump_rcu_rsp(void)
 {
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	struct rcu_state *rsp;
 	struct rcu_node *rnp;
 	int cpu;
@@ -86,14 +92,15 @@ static void dump_rcu_rsp(void)
 #endif
 
 	}
+#endif
 }
 
 static int mercu_read_thread(void *arg)
 {
 	u64 * addr;
-	int udelay_cnt = 20, i;
 	while (!kthread_should_stop()) {
 #if 0
+		int udelay_cnt = 20, i;
 		trace_printk("addr:%lx +\n",(unsigned long)addr);
 		for (i = 0; i < udelay_cnt; ++i) {
 			udelay(100);
@@ -105,7 +112,7 @@ static int mercu_read_thread(void *arg)
 		trace_printk("zzrr ++\n");
 		addr = rcu_dereference(rcu_pointer);
 		udelay(1);
-		trace_printk("zzrr:%lx \n",addr);
+		trace_printk("zzrr:%llx \n", (u64)addr);
 		//udelay(100);
 		trace_printk("zzrr --\n");
 		rcu_read_unlock();
@@ -124,7 +131,7 @@ static int mercu_write_thread(void *arg)
 		old = rcu_dereference(rcu_pointer);
 		new = kmalloc(PAGE_SIZE, GFP_KERNEL);
 		rcu_assign_pointer(rcu_pointer, new);
-		trace_printk("zzww %lx -\n", new);
+		trace_printk("zzww %llx -\n", (u64)new);
 		synchronize_rcu();
 		trace_printk("zzww +\n");
 		kfree(old);
@@ -148,11 +155,11 @@ static void rcu_readlock_test_stop(void)
 
 static int mercu_detech_thread(void *arg)
 {
-	int udelay_cnt = 40000, i;
 	while (!kthread_should_stop()) {
 #if 1
 		schedule_timeout_uninterruptible(HZ*5);
 #else
+		int udelay_cnt = 40000, i;
 		for (i = 0; i < udelay_cnt; ++i)
 			udelay(100)	;
 #endif
@@ -161,13 +168,13 @@ static int mercu_detech_thread(void *arg)
 	return 0;
 }
 
-static void rcu_detect_thread_init(void)
+static void  __maybe_unused  rcu_detect_thread_init(void)
 {
 	rcutest_thread_detect = kthread_create(mercu_detech_thread, (void *)NULL, "mercu_detech_thread");
 	wake_up_process(rcutest_thread_detect);
 }
 
-static void rcu_detect_thread_exit(void)
+static void __maybe_unused rcu_detect_thread_exit(void)
 {
 	if (rcutest_thread_detect)
 		kthread_stop(rcutest_thread_detect);

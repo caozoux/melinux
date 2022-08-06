@@ -13,7 +13,6 @@
 #include <linux/version.h>
 #include <linux/delay.h>
 #include <linux/timekeeper_internal.h>
-#include <kernel/sched/sched.h>
 
 #include <asm/stacktrace.h>
 #include "template_iocmd.h"

@@ -11,6 +11,10 @@
 #include <linux/swapops.h>
 #include <linux/page_idle.h>
 #include <linux/mm_inline.h>
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >  KERNEL_VERSION(5,0,0)
+#include <linux/memcontrol.h>
+#endif
 //#include <asm/tlb.h>
 
 #include "../template_iocmd.h"
@@ -41,6 +45,7 @@ unsigned long (*orig_try_to_free_mem_cgroup_pages)(struct mem_cgroup *memcg, uns
 static inline struct lruvec *local_mem_cgroup_lruvec(struct mem_cgroup *memcg,
                            struct pglist_data *pgdat)
 {
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
     struct mem_cgroup_per_node *mz; 
     struct lruvec *lruvec;
 
@@ -66,6 +71,9 @@ out:
         lruvec->pgdat = pgdat;
 
     return lruvec;
+#else
+    return NULL;
+#endif
 }
 
 //LRU_INACTIVE_ANON
@@ -134,13 +142,16 @@ static void dump_memcg_subsys(struct cgroup_subsys  *subsys)
 static void dump_memcg_css(struct cgroup_subsys_state *css)
 {
 	//percpu_ref_put(&css->refcnt);
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	printk("ref:%lx\n", atomic_long_read(&css->refcnt.count));
+#endif
 	dump_memcg_cgroup(css->cgroup);
 	dump_memcg_subsys(css->ss);
 }
 
 static void dump_memcg_info(struct mem_cgroup *memcg)
 {
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	printk("cgroup name:%s\n", memcg->css.cgroup->kn->name);
 	//name = cfile.file->f_path.dentry->d_name.name;
 	printk("memory counts:%ld\n",page_counter_read(&memcg->memory));
@@ -148,11 +159,13 @@ static void dump_memcg_info(struct mem_cgroup *memcg)
 	printk("memsw counts:%ld\n",page_counter_read(&memcg->memsw));
 	printk("kmem counts:%ld\n",page_counter_read(&memcg->kmem));
 	dump_memcg_css(&memcg->css);
+#endif
 	//memory swap memsw kmem
 }
 
 static void scan_root_memcg(void)
 {
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	struct mem_cgroup *iter;
 	struct cgroup_subsys_state *css;
 	int size;
@@ -161,6 +174,8 @@ static void scan_root_memcg(void)
 		if (!strcmp("test", css->cgroup->kn->name)) {
 			pg_data_t *pgdat = first_online_pgdat();
 			struct lruvec *lruvec = local_mem_cgroup_lruvec(iter, pgdat);
+			if (!lruvec)
+				break;
 			dump_memcg_info(iter);
 			size = scan_lur(lruvec, ZONE_DMA32, LRU_INACTIVE_FILE);
 			printk("zz %s size:%lx LRU_INACTIVE_FILE\n",__func__, (unsigned long)size);
@@ -173,6 +188,7 @@ static void scan_root_memcg(void)
 		}
 		//orig_try_to_free_mem_cgroup_pages(iter, 12,GFP_KERNEL,false);
 	}
+#endif
 }
 
 int enumerate_node_memcg(void)

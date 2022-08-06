@@ -23,7 +23,7 @@ $(TARGET)-objs += rcu/rcu_unit.o
 $(TARGET)-objs += kernel/task.o kernel/dentry.o kernel/virtual_bus.o  kernel/track.o
 $(TARGET)-objs += block/request.o  block/block_disck.o block/inode.o  block/bio.o block/buffer_head.o block/readwrite.o
 $(TARGET)-objs += kmem/kmem_unit.o kmem/page.o kmem/zone.o kmem/kmemcache.o kmem/resource.o kmem/scan_page.o  kmem/pagecache.o kmem/mem_cg.o kmem/pte.o kmem/task_mem.o kmem/vma.o kmem/hugetlb.o
-$(TARGET)-objs += ksched/ksched_unit.o  ksched/ksched_debug.o  ksched/ksched_ipi.o ksched/ksched_wait.o
+$(TARGET)-objs += ksched/ksched_unit.o  ksched/ksched_debug.o  ksched/ksched_ipi.o ksched/ksched_wait.o ksched/ksched_rt.o
 $(TARGET)-objs += ktree/ktree_rbtree_unit.o ktree/radixtree_unit.o
 $(TARGET)-objs += pci/pci_unit.o
 $(TARGET)-objs += efi/efi_unit.o
@@ -33,6 +33,7 @@ $(TARGET)-objs += inject/inject_unit.o
 $(TARGET)-objs += kprobe/kprobe_unit.o
 $(TARGET)-objs += ktime/ktime_unit.o ktime/hrtime.o ./ktime/tick-sched.o
 $(TARGET)-objs += kvm/kvm_unit.o
+$(TARGET)-objs += khook/khook.o
 
 
 all:

@@ -28,6 +28,7 @@
 #include "ktimelocal.h"
 
 struct list_head *orig_clockevent_devices;
+extern int (*orig_tick_program_event)(ktime_t expires, int force);
 
 static void timer_clockevent_device_scan(void)
 {
@@ -48,6 +49,8 @@ int ktime_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_dat
 		case IOCTL_USEKTIME_DEV_SCAN:
 			timer_clockevent_device_scan();
 			break;
+		case IOCTL_USEKTIME_HOOK_HRTIMER_TIMEOUT:
+			break;
 
 		default:
 			break;
@@ -58,6 +61,7 @@ int ktime_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_dat
 int ktime_unit_init(void)
 {
 	LOOKUP_SYMS(clockevent_devices);
+	LOOKUP_SYMS(tick_program_event);
 	tick_sched_init();
 	print_cpu_hrtimer(0);
 

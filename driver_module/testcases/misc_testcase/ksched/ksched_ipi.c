@@ -12,6 +12,11 @@
 #include <linux/interrupt.h>
 #include <linux/version.h>
 #include <linux/delay.h>
+#if LINUX_VERSION_CODE >  KERNEL_VERSION(5,0,0)
+extern void flush_tlb_mm_range(struct mm_struct *mm, unsigned long start,
+	unsigned long end, unsigned int stride_shift,
+	bool freed_tables);
+#endif
 #include <linux/timekeeper_internal.h>
 #include <kernel/sched/sched.h>
 

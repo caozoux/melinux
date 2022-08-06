@@ -1,5 +1,6 @@
 #ifndef __ME_KMEM_VMA_H__
 #define __ME_KMEM_VMA_H__
+#include <linux/version.h>
 
 extern struct anon_vma_chain *
 (*orig_anon_vma_interval_tree_iter_first)(struct rb_root_cached *root,
@@ -32,7 +33,11 @@ vma_address(struct page *page, struct vm_area_struct *vma)
 {
 	 unsigned long start, end;
 	 start = __vma_address(page, vma);
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	 end = start + PAGE_SIZE * (hpage_nr_pages(page) - 1);
+#else
+	 end = start + PAGE_SIZE * (thp_nr_pages(page) - 1);
+#endif
 	 VM_BUG_ON_VMA(end < vma->vm_start || start >= vma->vm_end, vma);
 	 return max(start, vma->vm_start);
 }

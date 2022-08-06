@@ -155,7 +155,9 @@ static void page_test(void)
 	buf = kmalloc(PAGE_SIZE * 4 , GFP_KERNEL);
 	page = virt_to_page(buf);
 	zone = page_zone(page);
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	pcp = &this_cpu_ptr(zone->pageset)->pcp;
+#endif
 	pfn = page_to_pfn(page);
 	page_info_show(page);
 	kfree(buf);

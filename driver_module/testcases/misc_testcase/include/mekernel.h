@@ -3,6 +3,7 @@
 
 #include <linux/blkdev.h>
 #include <melib.h>
+#include "hotfix_util.h"
 
 #define TRACK_ADDRS_COUNT 16
 struct track {
@@ -12,6 +13,11 @@ struct track {
 	int pid;
 	unsigned long when;
 };
+
+extern struct mutex *orig_text_mutex;
+
+extern void * (*orig_text_poke_bp)(void *addr, \
+						const void *opcode, size_t len, void *handler);
 
 
 void task_file_enum(struct task_struct *task);

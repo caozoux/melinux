@@ -70,6 +70,7 @@ void request_flag_dump(struct request *req)
 	{
 		printk("     REQ_OP_WRITE_ZEROES/* write the zero filled sector many times */	\n");
 	}
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	if (req_op(req) == REQ_OP_SCSI_IN)
 	{
 		printk("     REQ_OP_SCSI_IN	/* SCSI passthrough using struct scsi_request */	\n");
@@ -78,6 +79,7 @@ void request_flag_dump(struct request *req)
 	{
 		printk("     REQ_OP_SCSI_OUT	/* SCSI passthrough using struct scsi_request */	\n");
 	}
+#endif
 	if (req_op(req) == REQ_OP_DRV_IN)
 	{
 		printk("     REQ_OP_DRV_IN	/* Driver private requests */	\n");
@@ -140,7 +142,7 @@ void request_flag_dump(struct request *req)
 	printk("end\n");
 }
 
-static void dump_request_queue(struct request_queue *req_queue)
+static void __maybe_unused dump_request_queue(struct request_queue *req_queue)
 {
 
 }
@@ -168,15 +170,15 @@ static void dump_request(struct request *req)
 
 #if 1
 	bio_next = req->bio;
-	printk("sector:%ld bi_size:%lx bi_idx:%d bi_bvec_done:%lx\n"
-			, bio_next->bi_iter.bi_sector
-			, bio_next->bi_iter.bi_size
+	printk("sector:%lld bi_size:%llx bi_idx:%lld bi_bvec_done:%llx\n"
+			, (u64)bio_next->bi_iter.bi_sector
+			, (u64)bio_next->bi_iter.bi_size
 #if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
-			, bio_next->bi_iter.bi_done
+			, (u64)bio_next->bi_iter.bi_done
 #else
 			, 0
 #endif
-			, bio_next->bi_iter.bi_bvec_done);
+			, (u64)bio_next->bi_iter.bi_bvec_done);
 	for_each_bio(bio_next) {
 		bio_for_each_segment(iv, bio_next, iter) {
 			printk("iv_len:%x bi_idx:%d\n", iv.bv_len, iter.bi_idx);
@@ -206,7 +208,6 @@ static void dump_request(struct request *req)
 void merequest_list_dump(struct request *req)
 {
 	struct request *next_rq;
-	int i;
 	struct gendisk *rq_disk;
 
 	rq_disk = req->rq_disk;
@@ -214,7 +215,7 @@ void merequest_list_dump(struct request *req)
 		//printk("zz %s req:%lx \n",__func__, (unsigned long)req);
 		dump_request(req);
 		list_for_each_entry(next_rq, &req->queuelist, queuelist) {
-			printk("req:%lx %d@%lx \n", next_rq, req);
+			printk("req:%llx %llx \n", (u64)next_rq, (u64)req);
 		}
 	}
 }

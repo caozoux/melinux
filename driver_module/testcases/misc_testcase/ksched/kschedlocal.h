@@ -5,6 +5,7 @@ typedef struct task_group *rt_rq_iter_t;
 
 static inline struct task_group *next_task_group(struct task_group *tg)
 {
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
     do {
         tg = list_entry_rcu(tg->list.next,
             typeof(struct task_group), list);
@@ -14,6 +15,9 @@ static inline struct task_group *next_task_group(struct task_group *tg)
         tg = NULL;
 
     return tg;
+#else
+	return NULL;
+#endif
 }
 
 
@@ -32,11 +36,13 @@ extern struct rq *orig_runqueues;
 #define for_each_leaf_cfs_rq(rq, cfs_rq) \
     list_for_each_entry_rcu(cfs_rq, &rq->leaf_cfs_rq_list, leaf_cfs_rq_list)
 
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 static inline struct task_struct *task_of(struct sched_entity *se)
 {
 	SCHED_WARN_ON(!entity_is_task(se));
 	return container_of(se, struct task_struct, se);
 }
+#endif
 
 void ksched_print_cpu(int cpu);
 void print_rq(struct rq *rq, int rq_cpu);
@@ -45,5 +51,6 @@ int ksched_sched_ipi_call_test(void);
 
 void swait_uint_int(void *data);
 void swait_uint_exit(void *data);
+void dump_rt_list_busy(void);
 #endif
 

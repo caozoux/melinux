@@ -29,12 +29,15 @@
 #include "ktimelocal.h"
 #include "kernel/time/tick-sched.h"
 
+#define print_name_offset(sym) trace_printk("<%pK>\n", sym)
 extern struct hrtimer_cpu_base *orig_hrtimer_bases;
 
-static void print_name_offset(void *sym)
+DEFINE_ORIG_FUNC(int, tick_program_event, 2, ktime_t, expires, int, force)
 {
-	trace_printk("<%pK>\n", sym);
+	return old_tick_program_event(expires, force);
 }
+
+HOOKFUNC_OPERATION(tick_program_event);
 
 static void
 print_timer(struct hrtimer *taddr, struct hrtimer *timer,
@@ -115,3 +118,26 @@ void print_cpu_hrtimer(int cpu)
 	 }
 }
 
+#if 0
+int install_tick_program_event(void)
+{
+	JUMP_INIT(tick_program_event);
+
+	get_online_cpus();
+	mutex_lock(orig_text_mutex);
+	JUMP_INSTALLWITHOLD(tick_program_event);
+	mutex_unlock(orig_text_mutex);
+	put_online_cpus();
+	return 0;
+}
+
+int remove_tick_program_event(void)
+{
+	get_online_cpus();
+	mutex_lock(orig_text_mutex);
+	JUMP_REMOVE(tick_program_event);
+	mutex_unlock(orig_text_mutex);
+	put_online_cpus();
+	return 0;
+}
+#endif

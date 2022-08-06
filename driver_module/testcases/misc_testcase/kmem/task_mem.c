@@ -10,6 +10,10 @@
 #include <linux/slab.h>
 #include <linux/version.h>
 
+#if LINUX_VERSION_CODE >  KERNEL_VERSION(5,0,0)
+#include <linux/pagewalk.h>
+#endif
+
 #include "../template_iocmd.h"
 #include "../misc_ioctl.h"
 #include "../debug_ctrl.h"
@@ -174,6 +178,7 @@ static void smaps_pmd_entry(pmd_t *pmd, unsigned long addr,
 static int smaps_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end,
 			 struct mm_walk *walk)
 {
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	struct vm_area_struct *vma = walk->vma;
 	pte_t *pte;
 	spinlock_t *ptl;
@@ -204,6 +209,7 @@ static int smaps_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end,
 	pte_unmap_unlock(pte - 1, ptl);
 out:
 	cond_resched();
+#endif
 	return 0;
 }
 
@@ -261,26 +267,42 @@ int vma_scan(struct ioctl_data *data)
  	}
 
 	mm = task->mm;
+
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	down_read(&mm->mmap_sem);
+#else
+	mmap_read_lock(mm);
+#endif
 
 	for (vma = mm->mmap; vma; vma = vma->vm_next) {
 #if 0
 		data->log_buf += sprintf(data->log_buf, "%d: %lx~%lx\n", index++, vma->vm_start, vma->vm_end);
 		vma_scan_map_page_list(task, vma);
 #else
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 		struct mm_walk smaps_walk = {
 			.pmd_entry = smaps_pte_range,
 			.mm = vma->vm_mm,
 		};
 		smaps_walk.private = &mss;
-
-		//printk("zz %s vm_start:%lx vm_end:%lx \n",__func__, (unsigned long)vma->vm_start, (unsigned long)vma->vm_end);
 		//orig_walk_page_vma(vma, &smaps_walk);
+#else
+		struct mm_walk_ops smaps_walk = {
+			.pmd_entry = smaps_pte_range,
+		};
+		//orig_walk_page_vma(vma, &smaps_walk, NULL);
+#endif
+
 		vma_pte_dump(vma, vma->vm_start, (vma->vm_end - vma->vm_start)>>PAGE_SHIFT);
 #endif
 	}
 
+#if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	up_read(&mm->mmap_sem);
+#else
+	mmap_read_unlock(mm);
+#endif
+
 	dump_mss_info(&mss);
 
 	return copy_to_user(&data->kmem_data.mss, &mss, sizeof(struct mem_size_stats));

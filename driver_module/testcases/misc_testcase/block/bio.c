@@ -29,28 +29,28 @@
 
 void bio_dump_data(struct bio *bio)
 {
-	struct bvec_iter iter;
+	//struct bvec_iter iter;
 	struct bio_vec      *bi_vecs;
 	int i;
 	bi_vecs = bio->bi_io_vec;
 
-	printk("bi_phys_segments:%lx bi_vcnt:%d bi_max_vecs:%d bi_size:%x bi_idx:%d bi_done:%x bi_bvec_dong:%x op:%lx\n"
+	printk("bi_phys_segments:%llx bi_vcnt:%lld bi_max_vecs:%lld bi_size:%llx bi_idx:%lld bi_done:%llx bi_bvec_dong:%llx op:%llx\n"
 #if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
-			, bio->bi_phys_segments
+			, (u64)bio->bi_phys_segments
 #else
 			,0
 #endif
-			, bio->bi_vcnt
-			, bio->bi_max_vecs
-			, bio->bi_iter.bi_size
-			, bio->bi_iter.bi_idx
+			, (u64)bio->bi_vcnt
+			, (u64)bio->bi_max_vecs
+			, (u64)bio->bi_iter.bi_size
+			, (u64)bio->bi_iter.bi_idx
 #if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
-			, bio->bi_iter.bi_done
+			, (u64)bio->bi_iter.bi_done
 #else
 			,0
 #endif
-			, bio->bi_iter.bi_bvec_done
-			, bio_op(bio)
+			, (u64)bio->bi_iter.bi_bvec_done
+			, (u64)bio_op(bio)
 		 	);
 
 	for (i = 0; i <= bio->bi_vcnt; ++i) {
