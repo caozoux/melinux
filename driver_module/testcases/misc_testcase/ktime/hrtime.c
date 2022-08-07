@@ -37,7 +37,6 @@ DEFINE_ORIG_FUNC(int, tick_program_event, 2, ktime_t, expires, int, force)
 	return old_tick_program_event(expires, force);
 }
 
-HOOKFUNC_OPERATION(tick_program_event);
 
 static void
 print_timer(struct hrtimer *taddr, struct hrtimer *timer,

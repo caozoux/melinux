@@ -34,6 +34,7 @@ $(TARGET)-objs += kprobe/kprobe_unit.o
 $(TARGET)-objs += ktime/ktime_unit.o ktime/hrtime.o ./ktime/tick-sched.o
 $(TARGET)-objs += kvm/kvm_unit.o
 $(TARGET)-objs += khook/khook.o
+$(TARGET)-objs += ./kdiagnose/kdiagnose_unit.o
 
 
 all:

@@ -77,9 +77,7 @@ OUT:
 int hwpci_unit_init(void)
 {
 	LOOKUP_SYMS(pci_bus_type);
-	orig_virtio_bus = (void *)kallsyms_lookup_name("virtio_bus");
-	if (orig_virtio_bus == NULL)
-		orig_virtio_bus = orig_pci_bus_type;
+	LOOKUP_SYMS(virtio_bus);
 
 	return 0;
 }

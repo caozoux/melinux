@@ -71,17 +71,5 @@
 	rt (*old_##name)(__MAP(x, __SC_DECL, __VA_ARGS__)); \
 	rt new_##name(__MAP(x, __SC_DECL, __VA_ARGS__))
 
-#define HOOKFUNC_OPERATION(kernfunc)  \
-	int install_##kernfunc(void) \
-	{  \
-		JUMP_INIT(##kernfunc); \
-		get_online_cpus(); \
-		mutex_lock(orig_text_mutex); \
-		JUMP_INSTALLWITHOLD(##kernfunc); \
-		mutex_unlock(orig_text_mutex);\
-		put_online_cpus(); \
-		return 0; \
-	}
-
 
 #endif

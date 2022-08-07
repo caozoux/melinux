@@ -95,6 +95,10 @@ int kvm_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data 
 int kvm_unit_init(void);
 int kvm_unit_exit(void);
 
+int kdiagnose_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data);
+int kdiagnose_unit_init(void);
+int kdiagnose_unit_exit(void);
+
 FUNC_UNIT(locktest);
 FUNC_UNIT(hwpci);
 FUNC_UNIT(statickey);

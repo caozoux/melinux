@@ -73,10 +73,8 @@ out:
 
 int ext2test_unit_init(void)
 {
-	orig_supper_blocks = (void*)kallsyms_lookup_name("super_blocks"); 
-	if (!orig_supper_blocks)
-		return 1;
 
+	LOOKUP_SYMS(supper_blocks);
 	return 0;
 }
 

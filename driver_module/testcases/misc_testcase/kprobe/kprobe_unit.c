@@ -264,13 +264,13 @@ int kprobe_unit_init(void)
 {
 	kprobe_unit_data = kmalloc(sizeof(struct kprobe_misc_data), GFP_KERNEL);
 	INIT_LIST_HEAD(&kprobe_unit_data->head);
-	orig_dump_stack_print_info = (void*)kallsyms_lookup_name("dump_stack_print_info");
+	LOOKUP_SYMS(dump_stack_print_info);
 	return 0;
 }
 
 int kprobe_unit_exit(void)
 {
-	orig_dump_stack_print_info = (void*)kallsyms_lookup_name("dump_stack_print_info");
+	kfree(kprobe_unit_data);
 	return 0;
 
 }

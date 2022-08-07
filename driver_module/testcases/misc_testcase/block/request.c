@@ -49,10 +49,10 @@ void request_flag_dump(struct request *req)
 	}
 
 #if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
-	if (req_op(req) == REQ_OP_ZONE_REPORT)
-	{
-		printk("     REQ_OP_ZONE_REPORT/* get zone information */	\n");
-	}
+	//if (req_op(req) == REQ_OP_ZONE_REPORT)
+	//{
+	//	printk("     REQ_OP_ZONE_REPORT/* get zone information */	\n");
+	//}
 #endif
 	if (req_op(req) == REQ_OP_SECURE_ERASE)
 	{
