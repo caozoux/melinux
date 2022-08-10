@@ -319,6 +319,7 @@ static void __maybe_unused test1(void)
 
 int kmem_unit_init(void)
 {
+#if 0
 	LOOKUP_SYMS(vm_zone_stat);
 	LOOKUP_SYMS(vm_numa_stat);
 	LOOKUP_SYMS(vm_node_stat);
@@ -343,6 +344,7 @@ int kmem_unit_init(void)
 	LOOKUP_SYMS(PageHeadHuge);
 	LOOKUP_SYMS(hstates);
 	LOOKUP_SYMS(hugetlb_max_hstate);
+#endif
 
 	//start_node_scan_thread();
 	//enumerate_node_memcg();

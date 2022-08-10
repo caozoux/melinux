@@ -30,6 +30,7 @@ enum ioctl_cmdtype {
 	IOCTL_PCI,
 	IOCTL_PANIC,
 	IOCTL_INJECT,
+	IOCTL_TRACE,
 };
 
 enum IOCTL_TYPE {
@@ -172,6 +173,17 @@ enum IOCTL_PCI_SUB {
 	IOCTL_PCI_DISABLE, //disable pci device
 };
 
+enum IOCTL_TRACE_SUB{
+	IOCTL_TRACE_NONE = 0,
+	IOCTL_TRACE_NULL,
+	//softirq hwirq hrtimer timer
+	IOCTL_TRACE_IRQ_ALL,
+	IOCTL_TRACE_IRQ_HRTIMER,
+	IOCTL_TRACE_IRQ_SOFTTIMER,
+	IOCTL_TRACE_IRQ_HWIRQ,
+	IOCTL_TRACE_IRQ_SOFTIRQ,
+};
+
 enum IOCTL_INJECT_SUB{
 	IOCTL_INJECT_NONE = 0,
 	IOCTL_INJECT_NULL,
@@ -297,6 +309,17 @@ struct ioctl_data {
 		struct pci_ioctl {
 			
 		} pci_data;
+		struct trace_ioctl {
+			// ctrl en or dis
+			int enable; 
+			// set waning throd value
+			struct throd_rq_set {
+				int hwirq;
+				int softirq;
+				int hrtimer;
+				int softtimer;
+			}thro_set;
+		} trace_data;
 	};
 	unsigned long args[5];
 	char *log_buf;

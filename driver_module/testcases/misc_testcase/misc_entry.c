@@ -49,6 +49,8 @@
 
 #define MISC_NAME "misc_template"
 
+unsigned long (*cust_kallsyms_lookup_name)(const char *name);
+int init_dump_info = 0;
 static int enable;
 struct mutex *orig_text_mutex;
 TEXT_DECLARE()
@@ -85,6 +87,7 @@ struct misc_uint_item unit_list[] =
 	MISC_UNIT(panic, IOCTL_PANIC),
 	MISC_UNIT(time, IOCTL_PANIC),
 	MISC_UNIT(inject, IOCTL_INJECT),
+	MISC_UNIT(kdiagnose, IOCTL_TRACE),
 #ifdef CONFIG_ARM64
 	//MISC_UNIT(arm64gic, IOCTL_USEBLOCK),
 #endif
@@ -192,6 +195,8 @@ static int __init miscdriver_init(void)
 	int i=0;
 	int init_offset =0;
 
+	cust_kallsyms_lookup_name = 0xffffffff90ba3f80;
+	
 	if (golable_sysm_init())
 		return -EINVAL;
 

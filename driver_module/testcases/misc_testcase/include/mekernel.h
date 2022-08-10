@@ -14,6 +14,8 @@ struct track {
 	unsigned long when;
 };
 
+extern int init_dump_info;
+
 extern struct mutex *orig_text_mutex;
 
 extern void * (*orig_text_poke_bp)(void *addr, \

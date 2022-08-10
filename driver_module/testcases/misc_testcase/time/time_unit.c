@@ -18,6 +18,7 @@
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
 #include "debug_ctrl.h"
+#include "mekernel.h"
 #include "medelay.h"
 
 #define CLOCK_TO_NS(cs) (u64) ((cs->read(cs) * cs->mult) >> cs->shift)
@@ -37,14 +38,16 @@ static void dump_clocksource_emun(void)
 
 int time_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
-
 	return 0;
 }
 
 int time_unit_init(void)
 {
 	LOOKUP_SYMS(clocksource_list);
-	dump_clocksource_emun();
+
+	if (init_dump_info)
+		dump_clocksource_emun();
+
 	return 0;
 }
 

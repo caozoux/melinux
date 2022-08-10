@@ -18,6 +18,7 @@
 #include "misc_ioctl.h"
 #include "debug_ctrl.h"
 #include "medelay.h"
+#include "mekernel.h"
 
 struct efi *orig_efi;
 
@@ -30,7 +31,8 @@ int efi_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data 
 int efi_unit_init(void)
 {
 	LOOKUP_SYMS(efi);
-	printk("zjz %s efi:%lx %lx\n",__func__, (unsigned long)orig_efi, (unsigned long) orig_efi->reset_system);
+	if (init_dump_info)
+		MEDEBUG("efi reset_system:%lx", (unsigned long) orig_efi->reset_system);
 	//orig_efi->reset_system( EFI_RESET_COLD, EFI_SUCCESS, 0, NULL); 
 	//orig_efi->reset_system( EFI_RESET_WARM, EFI_SUCCESS, 0, NULL); 
 	return 0;

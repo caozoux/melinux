@@ -28,6 +28,7 @@ bool freed_tables);
 #include "misc_ioctl.h"
 #include "kschedlocal.h"
 #include "debug_ctrl.h"
+#include "mekernel.h"
 #include "medelay.h"
 
 struct tk_core {
@@ -143,25 +144,16 @@ int sched_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_dat
 
 int sched_unit_init(void)
 {
-	ktime_t now1, now2;
-	struct timekeeper *tk;
-	ktime_t base;
-	u64 nsecs;
 
 	LOOKUP_SYMS(runqueues);
 	LOOKUP_SYMS(tk_core);
 #if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 	LOOKUP_SYMS(find_task_by_vpid);
 #endif
-	tk = &orig_tk_core->timekeeper;
-	base = tk->tkr_mono.base;
-	nsecs = tk->tkr_mono.xtime_nsec;
-	now2 = ktime_add_ns(base, nsecs);
 
-	now1 = ktime_get();
-
-	printk("zz %s now1:%lx now2:%lx base:%lx\n",__func__, (unsigned long)now1, (unsigned long)now2, (unsigned long)base);
-	dump_rt_list_busy();
+	if (init_dump_info) {
+		dump_rt_list_busy();
+	}
 #if 0
 	ksched_scan_rq(NULL);
 	ksched_sched_clock_test(NULL);

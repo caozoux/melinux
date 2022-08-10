@@ -15,6 +15,7 @@
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
 #include "debug_ctrl.h"
+#include "mekernel.h"
 
 typedef struct {
 	struct list_head list;

@@ -19,6 +19,7 @@
 #include "../../template_iocmd.h"
 #include "../../misc_ioctl.h"
 #include "../../debug_ctrl.h"
+#include "mekernel.h"
 
 struct bus_type *orig_pci_bus_type;
 struct bus_type *orig_virtio_bus;

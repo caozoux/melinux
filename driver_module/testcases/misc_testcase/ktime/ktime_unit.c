@@ -62,8 +62,8 @@ int ktime_unit_init(void)
 {
 	LOOKUP_SYMS(clockevent_devices);
 	LOOKUP_SYMS(tick_program_event);
-	tick_sched_init();
-	print_cpu_hrtimer(0);
+	//tick_sched_init();
+	//print_cpu_hrtimer(0);
 
 	return 0;
 }

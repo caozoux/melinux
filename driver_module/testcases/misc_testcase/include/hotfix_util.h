@@ -4,6 +4,7 @@
 #include <linux/version.h>
 #include <linux/syscalls.h>
 
+#if 0
 #define LOOKUP_SYMS(name) do {							\
 		orig_##name = (void *)kallsyms_lookup_name(#name);		\
 		if (!orig_##name) {						\
@@ -11,6 +12,16 @@
 			return -EINVAL;						\
 		}								\
 	} while (0)
+#else
+extern unsigned long (*cust_kallsyms_lookup_name)(const char *name);
+#define LOOKUP_SYMS(name) do {							\
+		orig_##name = (void *)cust_kallsyms_lookup_name(#name);		\
+		if (!orig_##name) {						\
+			pr_err("kallsyms_lookup_name: %s\n", #name);		\
+			return -EINVAL;						\
+		}								\
+	} while (0)
+#endif
 
 #define RELATIVEJUMP_SIZE   5
 

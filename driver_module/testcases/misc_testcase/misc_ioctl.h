@@ -3,6 +3,7 @@
 #include "template_iocmd.h"
 #include <linux/kallsyms.h>
 
+#if 0
 #define LOOKUP_SYMS(name) do {							\
 		orig_##name = (void *)kallsyms_lookup_name(#name);		\
 		if (!orig_##name) {						\
@@ -10,6 +11,7 @@
 			return -EINVAL;						\
 		}								\
 	} while (0)
+#endif
 
 #define FUNC_UNIT(name) \
 	int name##_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_data *data); \
@@ -116,4 +118,5 @@ FUNC_UNIT(efi);
 FUNC_UNIT(panic);
 FUNC_UNIT(time);
 FUNC_UNIT(inject);
+FUNC_UNIT(kdiagnose);
 #endif

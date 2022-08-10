@@ -24,14 +24,15 @@
 #include "../template_iocmd.h"
 #include "../misc_ioctl.h"
 #include "../debug_ctrl.h"
+#include "mekernel.h"
 
-static struct list_head *orig_supper_blocks;
+static struct list_head *orig_super_blocks;
 
 struct super_block *get_block_by_name(char *name)
 {
 	struct super_block *sb;
 
-	list_for_each_entry(sb, orig_supper_blocks, s_list)
+	list_for_each_entry(sb, orig_super_blocks, s_list)
 		if (strcmp(sb->s_id, name))
 			return sb;
 
@@ -47,7 +48,7 @@ int ext2test_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_
 		case IOCTL_USEEXT2_ENUM_SUPBLOCK:
 			MEDEBUG("ext2test lock\n");
 
-			list_for_each_entry(sb, orig_supper_blocks, s_list)
+			list_for_each_entry(sb, orig_super_blocks, s_list)
 				printk("supper_block:%s\n", sb->s_id);
 
 			ret = 0;
@@ -74,7 +75,7 @@ out:
 int ext2test_unit_init(void)
 {
 
-	LOOKUP_SYMS(supper_blocks);
+	LOOKUP_SYMS(super_blocks);
 	return 0;
 }
 

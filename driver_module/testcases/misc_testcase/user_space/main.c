@@ -173,6 +173,7 @@ static struct memisc_func all_funcs[] = {
 	{"pci", pci_usage},
 	{"panic", panic_usage},
 	{"inject", inject_usage},
+	{"diagnose", kdiagnose_usage},
 };
 
 static int usage_help(int argc, char **argv)

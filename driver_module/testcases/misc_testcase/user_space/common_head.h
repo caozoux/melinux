@@ -16,6 +16,7 @@ int ksched_usage(int argc, char **argv);
 int pci_usage(int argc, char **argv);
 int panic_usage(int argc, char **argv);
 int inject_usage(int argc, char **argv);
+int kdiagnose_usage(int argc, char **argv);
 
 #endif
 

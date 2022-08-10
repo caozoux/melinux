@@ -67,6 +67,13 @@ int block_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_dat
 	return 0;
 }
 
+int syms_init(void)
+{
+	LOOKUP_SYMS(virtio_queue_rq_hook);
+	return 0;
+
+}
+
 int block_unit_init(void)
 {
 #if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
@@ -75,13 +82,6 @@ int block_unit_init(void)
 	LOOKUP_SYMS(bdev_lock);
 	LOOKUP_SYMS(bdi_list);
 
-	orig_virtio_queue_rq_hook = (void *)kallsyms_lookup_name("virtio_queue_rq_hook");
-	if (!orig_virtio_queue_rq_hook) {
-		pr_warn("kallsyms_lookup_name: %s failed\n", "virtio_queue_rq_hook");
-	} else {
-		*orig_virtio_queue_rq_hook = (virtio_hook) misc_virtio_queue_rq_hook;
-		pr_info("hook virtio_queue_rq_hook\n");
-	}
 	
 	//scan_block_dev_disk();
 	//file_readwrite_test();

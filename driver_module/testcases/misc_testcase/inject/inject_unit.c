@@ -88,7 +88,7 @@ static void inject_hrtime_timeout_exit(void)
 int inject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
 	void *inject_pointer = NULL;
-	MEDEBUG("%s %d\n", __func__, data->cmdcode)
+	MEDEBUG("%s %d\n", __func__, data->cmdcode);
 	switch (data->cmdcode) {
 		case IOCTL_INJECT_NULL:
 			printk("zz %s %d \n", __func__, __LINE__);

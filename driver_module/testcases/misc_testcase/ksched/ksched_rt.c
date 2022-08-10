@@ -25,8 +25,8 @@ extern void flush_tlb_mm_range(struct mm_struct *mm, unsigned long start,
 
 void dump_rt_list_busy(void)
 {
-	struct sched_rt_entity *rt_se = &current->rt;
-	struct rt_rq *rt_rq = rt_se->rt_rq;
-	printk("zz %s rt_rq:%lx \n",__func__, (unsigned long)rt_rq);
+	//struct sched_rt_entity *rt_se = &current->rt;
+	//struct rt_rq *rt_rq = rt_se->rt_rq;
+	//printk("zz %s rt_rq:%lx \n",__func__, (unsigned long)rt_rq);
 	
 }

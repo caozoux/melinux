@@ -14,6 +14,7 @@
 #include <linux/nmi.h>
 #include <linux/sysfs.h>
 #include <linux/kasan.h>
+#include "mekernel.h"
 
 #ifndef CONFIG_ARM64
 #include <asm/cpu_entry_area.h>
@@ -23,15 +24,6 @@
 #include <asm/stacktrace.h>
 #include "template_iocmd.h"
 
-#define  LOOKUP_SYMBOLEX(name, sym) do {\
-		orig_##name = (void*)kallsyms_lookup_name(sym); \
-		if (!orig_##name) {\
-			pr_err("find %s failed\n", #name); \
-			return -EINVAL; \
-		} 									\
-	} while(0)
-
-#define  LOOKUP_SYMBOL(name) LOOKUP_SYMBOLEX(name,#name)
 
 #ifndef CONFIG_ARM64
 static unsigned long *(*orig_unwind_get_return_address_ptr)(struct unwind_state *state);
@@ -184,12 +176,12 @@ void misc_show_stack(char *log_buf, struct task_struct *task, unsigned long *sp)
 
 int showstack_unit_init(void)
 {
-	LOOKUP_SYMBOL(unwind_get_return_address_ptr);
-	LOOKUP_SYMBOL(__kernel_text_address);
-	LOOKUP_SYMBOL(get_stack_info);
-	LOOKUP_SYMBOL(stack_type_name);
-	LOOKUP_SYMBOL(show_regs_if_on_stack);
-	LOOKUP_SYMBOL(ftrace_graph_ret_addr);
+	LOOKUP_SYMS(unwind_get_return_address_ptr);
+	LOOKUP_SYMS(__kernel_text_address);
+	LOOKUP_SYMS(get_stack_info);
+	LOOKUP_SYMS(stack_type_name);
+	LOOKUP_SYMS(show_regs_if_on_stack);
+	LOOKUP_SYMS(ftrace_graph_ret_addr);
 	return 0;
 }
 #else

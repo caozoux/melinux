@@ -156,12 +156,14 @@ int panic_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_dat
 
 int panic_unit_init(void)
 {
+#if 0
 	LOOKUP_SYMS(log_buf);
 	LOOKUP_SYMS(log_buf_len);
 	LOOKUP_SYMS(log_next_idx);
 	LOOKUP_SYMS(log_next_seq);
 	LOOKUP_SYMS(log_first_idx);
 	LOOKUP_SYMS(log_first_seq);
+#endif
 	return 0;
 }
 

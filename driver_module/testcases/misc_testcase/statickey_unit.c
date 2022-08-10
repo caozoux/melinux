@@ -23,6 +23,7 @@
 #include "misc_ioctl.h"
 #include "debug_ctrl.h"
 #include "medelay.h"
+#include "mekernel.h"
 
 DEFINE_STATIC_KEY_FALSE(caps_ready);
 
@@ -33,16 +34,19 @@ int statickey_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl
 
 int statickey_unit_init(void)
 {
-	if (static_branch_likely(&caps_ready)) {
-		printk("first caps_ready true\n");
-	} else {
-		printk("first caps_ready false\n");
-	}
-	static_branch_enable(&caps_ready);
-	if (static_branch_likely(&caps_ready)) {
-		printk("second caps_ready true\n");
-	} else {
-		printk("second caps_ready false\n");
+
+	if (init_dump_info) {
+		if (static_branch_likely(&caps_ready)) {
+			printk("first caps_ready true\n");
+		} else {
+			printk("first caps_ready false\n");
+		}
+		static_branch_enable(&caps_ready);
+		if (static_branch_likely(&caps_ready)) {
+			printk("second caps_ready true\n");
+		} else {
+			printk("second caps_ready false\n");
+		}
 	}
 
 	return 0;

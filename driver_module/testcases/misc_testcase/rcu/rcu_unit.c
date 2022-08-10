@@ -22,6 +22,7 @@
 #include "template_iocmd.h"
 #include "misc_ioctl.h"
 #include "debug_ctrl.h"
+#include "mekernel.h"
 
 #if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 #include "kernel/rcu/tree.h"
@@ -204,11 +205,11 @@ int rcutest_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioctl_
 	int ret = -1;
 	switch (data->cmdcode) {
 		case  IOCTL_USERCU_READTEST_START:
-			MEDEBUG("rcu_readlock_test_start\n")
+			MEDEBUG("rcu_readlock_test_start\n");
 			rcu_readlock_test_start();
 			break;
 		case  IOCTL_USERCU_READTEST_END:
-			MEDEBUG("rcu_readlock_test_stop\n")
+			MEDEBUG("rcu_readlock_test_stop\n");
 			rcu_readlock_test_stop();
 			break;
 		default:
@@ -231,6 +232,7 @@ OUT:
 
 int rcutest_unit_init(void)
 {
+#if 0
 	LOOKUP_SYMS(rcu_struct_flavors);
 	LOOKUP_SYMS(rcu_num_lvls);
 	LOOKUP_SYMS(rcu_num_nodes);
@@ -239,6 +241,7 @@ int rcutest_unit_init(void)
 	//rcu_detect_thread_init();
 	
 	//rcu_readlock_test_start();
+#endif
 	return 0;
 }
 
