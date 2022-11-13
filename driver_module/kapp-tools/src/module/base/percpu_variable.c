@@ -6,6 +6,7 @@
 #include <linux/mm.h>
 #include <linux/version.h>
 #include <linux/tracepoint.h>
+#include <linux/slab.h>
 #include <hotfix_util.h>
 #include <kpercpu.h>
 

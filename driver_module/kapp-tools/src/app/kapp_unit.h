@@ -9,7 +9,7 @@
 #include <sys/stat.h>
 #include <ksysd_ioctl.h>
 #include <ksysdata.h>
-#include "gflags/gflags.h"
+#include <list>
 
 #define MODULE_ENTRY(name) \
 	if (FLAGS_##name) \
@@ -24,6 +24,20 @@
 
 #define DEV_NAME "/dev/ksysd"
 
+typedef int (*cmd_func)(int argc, char **argv);
+struct kapp_func {
+	const char* name;
+	cmd_func func;
+};
+
+struct cmdargs {
+	const char* name;
+	cmd_func func;
+	const char* help;
+};
+
+
+typedef struct kapp_func struct_func;
 
 class ktools_ioctl {
 	static int mFd;
@@ -54,7 +68,6 @@ public:
 	}
 };
 
-extern std::string globle_unit;
 typedef int (*unit_fp)(int argc, char **argv);
 int unit_kinject(int argc, char** argv);
 int unit_kprobe(int argc, char** argv);

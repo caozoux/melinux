@@ -8,7 +8,7 @@ typedef struct {
 
 struct percpu_data {
 	int cpu;
-	struct percpu_runtime_stat
+	percpu_runtime_stat stat;
 };
 
 struct percpu_data *get_ksys_percpu(void);

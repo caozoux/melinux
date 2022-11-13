@@ -8,6 +8,7 @@
 #include <linux/bitops.h>
 
 #include <ksysd.h>
+#include <kpercpu.h>
 #include "ksysdata.h"
 #include "ksysd_ioctl.h"
 #include "ioctl_kprobe.h"
@@ -79,7 +80,7 @@ static void trace_sched_switch_entry_hit(void *__data, bool preempt, struct task
 		struct sched_entity *se = &prev->se;
 		struct percpu_data *pcpu_d = get_ksys_percpu();
 
-		pcpu_d = prev_task = next;
+		pcpu_d->stat.prev_task = next;
 		trace_printk("prev:%s exec_runtime:%lld %lld %lld\n", prev->comm, se->sum_exec_runtime, se->prev_sum_exec_runtime, se->sum_exec_runtime - se->prev_sum_exec_runtime);
 	}
 	//trace_printk("prev:%s pid:%d next:%s \n", prev->comm, prev->pid, next->comm);
@@ -116,7 +117,7 @@ int ktrace_unit_ioctl_func(unsigned int cmd, unsigned long size, struct ioctl_ks
 	int ret = 0;
 	struct ktrace_ioctl kioctl;
 
-	MEDEBUG("subcmd:%d\n", (int)data->subcmd);
+	DBG("subcmd:%d\n", (int)data->subcmd);
 	if (copy_from_user(&kioctl, (char __user *)data->data, sizeof(struct ktrace_ioctl))) {
 		printk("ioctl data copy err\n");
 		ret = -EFAULT;

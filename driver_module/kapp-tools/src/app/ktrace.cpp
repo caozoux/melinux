@@ -8,7 +8,7 @@
 
 using namespace std;
 
-DEFINE_string_alias(unit, "", "\n"
+DEFINE_string(ktraceunit, "", "\n"
 //DEFINE_string(unit, "", "\n"
 "rcu\n"
 "sched_switch\n"

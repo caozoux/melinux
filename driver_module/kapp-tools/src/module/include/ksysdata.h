@@ -52,4 +52,5 @@ struct ksysd_uint_item {
 int base_func_init(void);
 FUNC_UNIT(kprobe);
 FUNC_UNIT(ktrace);
+FUNC_UNIT(kinject);
 #endif /* ifndef __KSYS_DATA_H__ */

@@ -53,6 +53,7 @@ struct ksysd_uint_item unit_list[] =
 {
 	KSYSD_UNIT(kprobe, IOCTL_USEKPROBE),
 	KSYSD_UNIT(ktrace, IOCTL_KTRACE),
+	KSYSD_UNIT(kinject, IOCTL_INJECT),
 };
 
 static int ksysd_template_open(struct inode *inode, struct file * file)
@@ -108,11 +109,7 @@ OUT:
 static int extra_module_init(u64 address, int *init_offset)
 {
 	int i;
-	//int result = 0;
 
-
-	cust_kallsyms_lookup_name = (void *)address;
-	
 	if (golable_sysm_init())
 		return -EINVAL;
 
@@ -120,17 +117,11 @@ static int extra_module_init(u64 address, int *init_offset)
 
 		unit_list[i].init();
 
-#if 0
-		if (result < 0) {
-			printk("%s init failed\n", unit_list[i].u_name);
-			return -EINVAL;
-		}
-#endif
 		(*init_offset)++;
 	}
 
 	has_init = 1;
-	MEDEBUG("complete unit init\n");
+	DBG("complete unit init\n");
 	return  0;
 }
 
@@ -149,25 +140,11 @@ static long ksysd_template_unlocked_ioctl(struct file *file, unsigned int size, 
 		goto OUT;
 	}
 
-	MEDEBUG("cmd:%d\n", (int)ctl_data.cmd);
+	DBG("cmd:%d\n", (int)ctl_data.cmd);
 
-	if (ctl_data.cmd == IOCTL_INIT) {
-		if (ctl_data.subcmd == IOCTL_USEINIT_CHECK) {
-			if (has_init)
-				return  0;
-			return -EINVAL;
-		} else if (ctl_data.subcmd == IOCTL_USEINIT_INIT) {
-			if (extra_module_init((u64)ctl_data.data, &init_offset)) {
-				// some module init failed
-				for(i=0; i < init_offset; i++)
-					unit_list[i].exit();
-			}
-		}
-	} else {
-		for(i=0; unit_list[i].type; i++) {
-			if (unit_list[i].type == ctl_data.cmd)
-				ret = unit_list[i].ioctl(ctl_data.cmd, sizeof(struct ioctl_ksdata), &ctl_data);
-		}
+	for(i=0; unit_list[i].type; i++) {
+		if (unit_list[i].type == ctl_data.cmd)
+			ret = unit_list[i].ioctl(ctl_data.cmd, sizeof(struct ioctl_ksdata), &ctl_data);
 	}
 
 OUT:
@@ -194,6 +171,7 @@ ARRT_MARCO(enable);
 static int __init ksys_tool_init(void)
 {
 	int ret;
+	int i;
 
 	ksysd_data = kzalloc(sizeof(struct ksysd_data), GFP_KERNEL);
 	if (!ksysd_data) {
@@ -215,9 +193,20 @@ static int __init ksys_tool_init(void)
 		pr_err("percpu variable init failed\n");
 		goto out3;
 	}
+
+	for(i=0; unit_list[i].type; i++) {
+		if (unit_list[i].init()) {
+			ERR("%s init failed\n", unit_list[i].u_name);
+			goto out4;
+		}
+	}
 	printk("ksysddriver load \n");
 
 	return 0;
+out4:
+	for(; i>=0; i--) {
+		unit_list[i].exit();
+	}
 out3:
 	device_remove_file(ksysd_dev.this_device, &dev_attr_enable);
 out2:
