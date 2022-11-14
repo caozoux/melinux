@@ -54,7 +54,8 @@ void task_file_enum(struct task_struct *task)
 #if LINUX_VERSION_CODE <  KERNEL_VERSION(5,0,0)
 		f = fcheck_files(files, fd);
 #else
-		files_lookup_fd_rcu(files, fd);
+		//files_lookup_fd_rcu(files, fd);
+		f = fcheck_files(files, fd);
 #endif
 		//f = files_lookup_fd_rcu(files,fd);
 		if (!f)

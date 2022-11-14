@@ -92,6 +92,7 @@ static void dump_kernel_page_attr(struct ioctl_data *data, u64 start_pfn, u64 si
 
 static inline unsigned long __mephys_addr_nodebug(unsigned long x)
 {
+#if 0
 	 unsigned long y = x - __START_KERNEL_map;
 	 printk("%lx\n", x - __START_KERNEL_map_test);
 	 printk("zz %s x:%lx y:%lx %lx\n",__func__, (unsigned long)x, (unsigned long)y, __START_KERNEL_map);
@@ -100,6 +101,9 @@ static inline unsigned long __mephys_addr_nodebug(unsigned long x)
 	 x = y + ((x > y) ? phys_base : (__START_KERNEL_map - PAGE_OFFSET));
 
 	 return x;
+#else
+	 return 0;
+#endif
 }
 
 static void buddy_test(void)

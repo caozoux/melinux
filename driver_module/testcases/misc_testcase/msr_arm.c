@@ -12,6 +12,7 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+#if 0
 #include <linux/module.h>
 
 #include <linux/types.h>
@@ -40,7 +41,7 @@
 #include <linux/kallsyms.h>
 #include "misc_ioctl.h"
 
-#ifndef CONFIG_X86
+//#ifndef CONFIG_X86
 #include <asm/sysreg.h>
 #include "msr_arm.h"
 #define AARCH64_INSN_SF_BIT	BIT(31)

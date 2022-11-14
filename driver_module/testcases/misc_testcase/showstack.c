@@ -190,5 +190,6 @@ void misc_show_stack(char *log_buf, struct task_struct *task, unsigned long *sp)
 }
 int showstack_unit_init(void)
 {
+	return 0;
 }
 #endif

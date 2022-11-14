@@ -24,6 +24,7 @@ int pud_huge(pud_t pud)
 
 pte_t *get_pte(unsigned long addr, struct mm_struct *mm)
 {
+#if 0
     pgd_t *pgd = pgd_offset(mm, addr);
     p4d_t *p4d = p4d_offset(pgd, addr);
     pud_t *pud = pud_offset(p4d, addr);
@@ -43,12 +44,14 @@ pte_t *get_pte(unsigned long addr, struct mm_struct *mm)
 
 	if (pte_present(*pte))
     	return pte;
+#endif
 
 	return NULL;
 }
 
 void vma_pte_dump(struct vm_area_struct *vma, u64 start_addr, u64 nr_page)
 {
+#if 0
 	unsigned long addr = vma->vm_start, end = addr + nr_page * PAGE_SIZE;
 	struct page *page;
 	u64 pfn;
@@ -89,5 +92,6 @@ void vma_pte_dump(struct vm_area_struct *vma, u64 start_addr, u64 nr_page)
 			printk("addr:%lx pte:%llx %llx pageflags:%llx-%llx\n", addr, (u64)pte, *((u64*)pte), pfn, (u64)page->flags);
 		}
 	}
+#endif
 }
 

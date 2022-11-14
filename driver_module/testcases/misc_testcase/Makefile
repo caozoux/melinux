@@ -9,7 +9,7 @@ KERSRC ?=/export/disk1T/zoucao.zcdisk/cach/ck/
 obj-m := $(TARGET).o
 
 #KBUILD_CFLAGS
-ccflags-y += -I$(PWD)/include -I$(PWD)/$(PRIV_INC) -I$(PWD)/../ -I$(PWD)/lib -Wuninitialized -I$(KERHSRC)
+ccflags-y += -I$(PWD)/include -I$(PWD)/$(PRIV_INC) -I$(PWD)/../ -I$(PWD)/lib -Wuninitialized -I$(KERHSRC) -I$(PWD)/kdiagnose/include
 
 $(TARGET)-objs := misc_entry.o page_test.o  showstack.o workqueue_test.o lock_unit.o msr_arm.o  block/ext2_test.o atomic_entry.o devbusdrv_unit.o  hw/pci/pci_unit.o statickey_unit.o  cpu_unit.o block_unit.o cpu_unit.o
 
@@ -34,7 +34,7 @@ $(TARGET)-objs += kprobe/kprobe_unit.o
 $(TARGET)-objs += ktime/ktime_unit.o ktime/hrtime.o ./ktime/tick-sched.o
 $(TARGET)-objs += kvm/kvm_unit.o
 $(TARGET)-objs += khook/khook.o
-$(TARGET)-objs += ./kdiagnose/kdiagnose_unit.o ./kdiagnose/trace/irq_trace.o ./kdiagnose/base/base.o
+$(TARGET)-objs += ./kdiagnose/kdiagnose_unit.o ./kdiagnose/trace/irq_trace.o ./kdiagnose/base/base.o ./kdiagnose/kdiagnose_timer.o
 
 
 all:

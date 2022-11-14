@@ -13,6 +13,7 @@
 
 #define DEV_NAME "/dev/misc_template"
 
+static int usage_help(int argc, char **argv);
 typedef int (*misc_fp)(int argc, char **argv);
 
 struct memisc_func {
@@ -27,32 +28,6 @@ struct ping_data {
 
 int misc_fd;
 char *glog_buf;
-
-static int usage_help(int argc, char **argv);
-void usage_limit_help()
-{
-	printf("help:  -t [optcode:softlock/hwlock/mem/rcu] -o optcode\n");
-	printf("       -s softlock: test softlock \n");
-	printf("       -w hwlock:   hw lock \n");
-	printf("          1:   hw lock \n");
-	printf("          2:   hw unlock \n");
-	printf("          3:   hw trylock \n");
-	printf("          4:   hw irqlock \n");
-	printf("          5:   hw irqunlock \n");
-	printf("          6:   hw irqtrylock \n");
-	printf("       -r rcu:      hw lock \n");
-	printf("       -m mem:      test mem\n");
-	printf("       -q workqueue:      test workqueue\n");
-	printf("          1 timemisc:   run workqueue\n");
-	printf("          2 timemisc:   run workqueue spinlock\n");
-	printf("          3 timemisc:   test workqueue spinlockirq\n");
-	printf("          4 timemisc:   test workqueue  percpu spinlockirq\n");
-	printf("          5 timemisc:   caculte the workqueue time from queue to run\n");
-	printf("       -k funcname  dumpstack of kernel function \n");
-	printf("       -a atomic    atomic performance\n");
-	printf("       mem:         -o  dump    show the page pgd pud pmd pte info\n");
-	printf("       mem:         -o  vmmax   test the max vmlloc support \n");
-}
 
 static int hardlock_test(int fd, struct ioctl_data *data)
 {
@@ -72,95 +47,65 @@ static int atomic_test(int fd ,struct ioctl_data *data)
 	return ioctl(fd, sizeof(struct ioctl_data), data);
 }
 
-static int normal_usage(int argc, char **argv)
+static unsigned long get_kallsyms_lookup_address(void)
 {
-	struct ioctl_data data;
-	char ch;
-	int ret;
-	char name[128];
+#define BUF_SIZE (0x1000000)
+    char *buf;
+    int fd;
+    unsigned long ret = 0;
+    int i, len;
+    char kallsyms_str[17]={0};
+    char *str;
+    buf= malloc(BUF_SIZE);
+    if (!buf)
+        return ret;
 
-    while ((ch = getopt(argc, argv, "hsw:m:k:a")) != -1)
-  	{
-		switch (ch) {
+    fd=open("/proc/kallsyms", O_RDONLY);
+    if (fd<0) {
+        free(malloc);
+        return ret;
+    }
 
-			case 'h':
-				usage_limit_help();
-				break;
+    len = 0;
+    str = buf;
+    do {
+        len = read(fd, str, BUF_SIZE);
+        str += len;
+    } while(len > 0);
+    //str=strstr(buf, " T kallsyms_lookup_address\n");
+    str=strstr(buf, " T kallsyms_lookup_name");
+    if (!str)
+        goto out;
 
-			case 'a':
-				data.type = IOCTL_USEATOMIC ;
-				data.cmdcode = IOCTL_USEATOMIC_PERFORMANCE;
-				atomic_test(misc_fd, &data);
-				break;
+    str -= 16;
+    strncpy(kallsyms_str, str, 16);
+	kallsyms_str[16] = 0;
 
-			case 's':
-				data.type = IOCTL_SOFTLOCK;
-				break;
-
-			case 'w':
-				ch = optarg[0];
-				data.type = IOCTL_HARDLOCK;
-				switch (ch) {
-					case '1':
-						data.cmdcode = IOCTL_HARDLOCK_LOCK;
-						break;
-					case '2':
-						data.cmdcode = IOCTL_HARDLOCK_UNLOCK;
-						break;
-					case '3':
-						data.cmdcode = IOCTL_HARDLOCK_TRYLOCK;
-						break;
-					case '4':
-						data.cmdcode = IOCTL_HARDLOCK_IRQLOCK;
-						break;
-					case '5':
-						data.cmdcode = IOCTL_HARDLOCK_IRQUNLOCK;
-						break;
-					case '6':
-						data.cmdcode = IOCTL_HARDLOCK_IRQTRYLOCK;
-						break;
-					default:
-						printf("hardlock operation not support\n");
-						return -1;
-				}
-				return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
-
-			case 'm':
-				data.type = IOCTL_MEM;
-				data.cmdcode = IOCTL_TYPE_VMALLOC_MAX;
-				break;
-
-			case 'k':
-				data.type = IOCTL_USEKPROBE;
-				data.cmdcode = IOCTL_USEKRPOBE_FUNC_DUMP;
-				printf("%s\n", optarg);
-				strcpy(name, optarg);
-				data.kp_data.name = name;
-				data.kp_data.len = strlen(name);
-				data.kp_data.dump_buf= malloc(4096);
-				data.kp_data.dump_len= 4096;
-				ret = kprobe_test(misc_fd, &data);
-				if (ret) {
-					printf("kprobe failed\n");
-					return 0;
-				}
-
-				printf("%s\n", data.kp_data.dump_buf);
-
-				break;
-			default:
-				usage_limit_help();
-				return 0;
-		}
-	}
+    ret = strtoull(kallsyms_str, NULL, 16);
 
 out:
-	return -1;
+    free(buf);
+    close(fd);
+    return ret;
+}
+
+int env_init(void)
+{
+	struct ioctl_data data;
+	unsigned long address;
+
+	ioctl_data_init(&data);
+	data.type = IOCTL_INIT;
+	address = get_kallsyms_lookup_address();
+	if (!address)
+		return 0;
+	
+	data.init_data.kallsyms_func = address;
+	return ioctl(misc_fd, sizeof(struct ioctl_data), &data);
 }
 
 static struct memisc_func all_funcs[] = {
 	{"help", usage_help},
-	{"normal", normal_usage},
 	{"kmem", kmem_usage},
 	{"ktime", ktime_usage},
 	{"block", block_usage},
@@ -179,37 +124,13 @@ static struct memisc_func all_funcs[] = {
 static int usage_help(int argc, char **argv)
 {
 	int i;
-#if 0
-	static const struct option long_options[] = {
-		{"input",     required_argument, 0,  0 },
-		{"output",     required_argument, 0,  0 },
-		{"output",     required_argument, 0,  0 },
-		{0,0,0,0}};
-	int c;
-	int __attribute__ ((unused)) ret;
-
-	while (1) {
-		int option_index = -1;
-		c = getopt_long_only(argc, argv, "", long_options, &option_index);
-		if ( c == -1 )
-			break;
-		if (option_index == 0) {
-			usage_help();
-		} else if (option_index == 1) {
-			
-		}
-	}
-#else
 	char *help[2]  = { "help", NULL};
-	usage_limit_help();
+	printf("init  initailziation module\n");
 	for (i = 0; i < sizeof(all_funcs) / sizeof(struct memisc_func); i++) {
 			if (strcmp("help", all_funcs[i].name) != 0) {
 				all_funcs[i].func(argc - 1, help);
 			}
 	}
-	//printf("kmem --help\n");
-	//printf("block --help\n");
-#endif
 }
 
 void ioctl_data_init(struct ioctl_data *data)
@@ -238,7 +159,11 @@ int main(int argc, char *argv[])
 	}
 
 	for (i = 0; i < sizeof(all_funcs) / sizeof(struct memisc_func); i++) {
-		if (strcmp(argv[1], all_funcs[i].name) == 0) {
+		if (strcmp(argv[1], "init") == 0) {
+			printf("run init\n");
+			env_init();
+			break;
+		} else if (strcmp(argv[1], all_funcs[i].name) == 0) {
 			all_funcs[i].func(argc - 1, argv + 1);
 			break;
 		}

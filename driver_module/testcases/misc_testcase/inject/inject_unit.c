@@ -19,44 +19,40 @@
 #include "debug_ctrl.h"
 #include "medelay.h"
 
-static struct hrtimer inject_timer1;
-static struct hrtimer inject_timer2;
+struct inject_timer_data {
+	struct hrtimer inject_timer;
+	unsigned int delay_us;
+} inject_tm_data;
+
+//static struct hrtimer inject_timer1;
+//static struct hrtimer inject_timer2;
 
 
-static enum hrtimer_restart inject_timer_func1(struct hrtimer *timer)
+static enum hrtimer_restart inject_hrtime_func(struct hrtimer *timer)
 {
+	struct inject_timer_data *data = container_of(timer, struct inject_timer_data, inject_timer);
 	ktime_t now;
-	int i;
 
-	trace_printk("zz %s now1:%ld +\n",__func__, (unsigned long)ktime_get());
-	for (i = 0; i < 10; ++i) {
-		udelay(100);
-	}
-	trace_printk("zz %s now1:%ld -\n",__func__, (unsigned long)ktime_get());
+	udelay(data->delay_us);
  	now = ktime_get();
-	//hrtimer_forward(timer, now, NSEC_PER_SEC / HZ);
 	hrtimer_forward(timer, now, (NSEC_PER_SEC/HZ)/100);
 	return HRTIMER_RESTART;
 	//return HRTIMER_NORESTART;
 }
 
-static enum hrtimer_restart inject_timer_func2(struct hrtimer *timer)
+static void inject_hrtime_start(int udelay)
 {
-	ktime_t now;
-	int i;
+	ktime_t kt;
+	inject_tm_data.delay_us = udelay;
+	hrtimer_init(&inject_tm_data.inject_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
+	inject_tm_data.inject_timer.function = inject_hrtime_func;
+	kt = ktime_add_us(ktime_get(), inject_tm_data.delay_us);
 
-	trace_printk("zz %s now2:%ld +\n",__func__, (unsigned long)ktime_get());
-	for (i = 0; i < 10; ++i) {
-		udelay(100);
-	}
-	trace_printk("zz %s now2:%ld -\n",__func__, (unsigned long)ktime_get());
- 	now = ktime_get();
-	//hrtimer_forward(timer, now, NSEC_PER_SEC / HZ);
-	hrtimer_forward(timer, now, (NSEC_PER_SEC/HZ)/10);
-	return HRTIMER_RESTART;
-	//return HRTIMER_NORESTART;
+	hrtimer_set_expires(&inject_tm_data.inject_timer, kt);
+	hrtimer_start_expires(&inject_tm_data.inject_timer, HRTIMER_MODE_ABS_PINNED);
 }
 
+#if 0
 // inject hrtime long runtime to cause hrtime delta
 static void inject_hrtime_timeout_start(void)
 {
@@ -84,14 +80,28 @@ static void inject_hrtime_timeout_exit(void)
 	hrtimer_cancel(&inject_timer2); 
 	MEDEBUG("inject_hrtime_timeout_exit\n");
 }
+#endif
+
+static DEFINE_SPINLOCK(irq_spinlock);
+
+static void inject_irq_spinlock(unsigned long usec)
+{
+	unsigned long flags;
+	spin_lock_init(&irq_spinlock);
+	spin_lock_irqsave(&irq_spinlock, flags);
+	printk("zz %s used:%lx \n",__func__, (unsigned long)usec);
+	mdelay(usec);
+	spin_unlock_irqrestore(&irq_spinlock, flags);
+}
 
 int inject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_data *data)
 {
 	void *inject_pointer = NULL;
+	struct inject_ioctl *inject_data =  &data->inject_data;
+
 	MEDEBUG("%s %d\n", __func__, data->cmdcode);
 	switch (data->cmdcode) {
 		case IOCTL_INJECT_NULL:
-			printk("zz %s %d \n", __func__, __LINE__);
 			MEDEBUG("inject NULL pointer");
 			*(int *)inject_pointer = 0;
 			break;
@@ -105,10 +115,16 @@ int inject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_da
 		case IOCTL_INJECT_SPINLOCK_DEPLOCK:
 			break;
 		case IOCTL_INJECT_IRQSPINLOCK_DEPLOCK:
+			MEDEBUG("inject irq_spinlock %ld",data->inject_data.time);
+			inject_irq_spinlock(data->inject_data.time);
 			break;
 		case IOCTL_INJECT_RUC_HANG:
 			break;
 		case IOCTL_INJECT_SOFTWATCHDOG_TIMEOUT:
+			break;
+		case IOCTL_INJECT_HRTIMER:
+			MEDEBUG("inject hrtimer udealy:%ld\n",data->inject_data.time);
+			inject_hrtime_start(inject_data->time);
 			break;
 		default:
 			break;
@@ -119,13 +135,11 @@ int inject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_da
 
 int inject_unit_init(void)
 {
-	//inject_hrtime_timeout_start();
 	return 0;
 }
 
 int inject_unit_exit(void)
 {
-	//inject_hrtime_timeout_exit();
 	return 0;
 }
 

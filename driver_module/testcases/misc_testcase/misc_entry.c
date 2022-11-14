@@ -96,9 +96,32 @@ struct misc_uint_item unit_list[] =
 
 static struct misc_private_data *misc_data;
 
-void __maybe_unused crc32_test(void *buf, unsigned long size)
+int golable_sysm_init(void)
 {
-	//crc32_le(0, buf, size);
+	TEXT_SYMS()
+
+	return 0;
+}
+
+static int extra_module_init(u64 address, int *init_offset)
+{
+	int i;
+
+	cust_kallsyms_lookup_name = address;
+	
+	if (golable_sysm_init())
+		return -EINVAL;
+
+	for(i=0; unit_list[i].type; i++) {
+		if (unit_list[i].init()) {
+			printk("%s init failed\n", unit_list[i].u_name);
+			return -EINVAL;
+		}
+		(*init_offset)++;
+	}
+
+	MEDEBUG("complete unit init\n");
+	return  0;
 }
 
 static int misc_template_open(struct inode *inode, struct file * file)
@@ -140,7 +163,7 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 	int ret = 0;
 	struct ioctl_data data;
 	struct misc_private_data  *dev_data;
-	int i;
+	int i, init_offset = 0;
 
 	dev_data = (struct misc_private_data *) file->private_data;
 
@@ -152,15 +175,25 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 
 	MEDEBUG("ioctl cmd:%d cmdcode:%x\n", data.type, data.cmdcode);
 
-	for(i=0; unit_list[i].type; i++) {
-		if (unit_list[i].type == data.type) {
-			unit_list[i].ioctl(cmd, arg, &data);
-			if (copy_to_user((void __user *)arg, &data,  sizeof(struct ioctl_data)))
-				dev_err(dev_data->dev, "cmd %d copy err\n", cmd);
+	if (data.type == IOCTL_INIT) {
+		if (extra_module_init(data.init_data.kallsyms_func, &init_offset)) {
+			// some module init failed
+			for(i=0; i < init_offset; i++)
+				unit_list[i].exit();
+		}
+	} else {
+		for(i=0; unit_list[i].type; i++) {
+			if (unit_list[i].type == data.type) {
 
-			break;
+				unit_list[i].ioctl(cmd, arg, &data);
+				if (copy_to_user((void __user *)arg, &data,  sizeof(struct ioctl_data)))
+					dev_err(dev_data->dev, "cmd %d copy err\n", cmd);
+
+				break;
+			}
 		}
 	}
+
 OUT:
 	return ret;
 }
@@ -182,32 +215,11 @@ ARRT_MARCO_READ(enable);
 ARRT_MARCO_WRITE(enable);
 ARRT_MARCO(enable);
 
-int golable_sysm_init(void)
-{
-	TEXT_SYMS()
-
-	return 0;
-}
-
 static int __init miscdriver_init(void)
 {
 	int ret;
-	int i=0;
-	int init_offset =0;
-
-	cust_kallsyms_lookup_name = 0xffffffff90ba3f80;
 	
-	if (golable_sysm_init())
-		return -EINVAL;
-
-	for(i=0; unit_list[i].type; i++) {
-		if (unit_list[i].init()) {
-			printk("%s init failed\n", unit_list[i].u_name);
-			ret = -EINVAL;
-			goto out0;
-		}
-		init_offset++;
-	}
+	cust_kallsyms_lookup_name = NULL;
 
 	misc_data = kzalloc(sizeof(struct misc_private_data), GFP_KERNEL);
 	if (!misc_data) {
@@ -231,7 +243,6 @@ static int __init miscdriver_init(void)
 	return 0;
 
 #if 0
-out3:
 	device_remove_file(misc_dev.this_device, &dev_attr_enable);
 #endif
 
@@ -240,31 +251,18 @@ out2:
 out1:
 	kfree(misc_data);
 	return ret;
-out0:
-	for(i=0; i < init_offset; i++)
-		unit_list[i].exit();
-
-	ret = -EINVAL;
-	return ret;
 }
 
 static void __exit miscdriver_exit(void)
 {
 	int i;
-#if 1
-	for(i=0; unit_list[i].type; i++)
-		unit_list[i].exit();
 
-#else
+	//has initalazition
+	if (cust_kallsyms_lookup_name)
+		for(i=0; unit_list[i].type; i++) {
+			unit_list[i].exit();
+		}
 
-	kmem_unit_exit();
-	atomic_unit_exit();
-	devbusdrvtest_unit_exit();
-	raidtree_unit_exit();
-	ext2test_unit_exit();
-	workqueue_unit_exit();
-	msr_unit_exit();
-#endif
 	//misctest_workquere_exit();
 	device_remove_file(misc_dev.this_device, &dev_attr_enable);
 	misc_deregister(&misc_dev);

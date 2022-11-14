@@ -40,6 +40,8 @@ struct tk_core *orig_tk_core;
 
 static struct task_struct *(*orig_find_task_by_vpid)(pid_t vnr);
 
+
+
 struct rq *orig_runqueues;
 
 int ksach_sacn_cfs_rq(void)
@@ -59,6 +61,7 @@ int ksach_sacn_cfs_rq(void)
 /* scan rq all node of task_timeline */
 int ksched_rq_scan_vruntime(struct ioctl_data *data)
 {
+#if 0
 	struct rq *rq;
 	int cpu;
 	struct cfs_rq *cfs_rq, *pos;
@@ -78,6 +81,7 @@ int ksched_rq_scan_vruntime(struct ioctl_data *data)
 			}
 		}
 	}
+#endif
 	return 0;
 }
 

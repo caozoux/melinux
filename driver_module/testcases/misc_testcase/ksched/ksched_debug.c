@@ -129,12 +129,14 @@ void ksched_print_cpu(int cpu)
 {
 	struct rq *rq = cpu_rq(cpu);
 
+#ifdef CONFIG_X86
 	{
 		unsigned int freq = cpu_khz ? : 1;
 
 		printk("cpu#%d, %u.%03u MHz\n",
 			   cpu, freq / 1000, (freq % 1000));
 	}
+#endif
 
 #if 0
 	P_RQ(nr_running);
@@ -400,12 +402,14 @@ void ksched_print_cpu(int cpu)
 	struct rq *rq = cpu_rq(cpu);
 	unsigned long flags;
 
+#ifdef CONFIG_X86
 	{
 		unsigned int freq = cpu_khz ? : 1;
 
 		printk("cpu#%d, %u.%03u MHz\n",
 			   cpu, freq / 1000, (freq % 1000));
 	}
+#endif
 
 
 	printk("nr_running:%lx \n",(unsigned long)rq->nr_running);

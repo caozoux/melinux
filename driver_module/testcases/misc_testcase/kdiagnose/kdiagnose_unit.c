@@ -6,6 +6,7 @@
 #include <linux/mm.h>
 #include <linux/version.h>
 
+#include <kdiagnose_timer.h>
 #include "../template_iocmd.h"
 #include "../misc_ioctl.h"
 #include "../debug_ctrl.h"
@@ -27,7 +28,7 @@ int kdiagnose_unit_ioctl_func(unsigned int  cmd, unsigned long addr, struct ioct
 
 	switch (data->cmdcode) {
 		case  IOCTL_TRACE_IRQ_ALL:
-			MEDEBUG("IRQALL\n");
+			MEDEBUG("irq trace all\n");
 			if (data->trace_data.enable) {
 				if (!irq_trace_install()) {
 					ret = -EINVAL;	
@@ -48,6 +49,11 @@ out:
 	return ret;
 }
 
+void test_data(void *data)
+{
+	printk("zz %s %d \n", __func__, __LINE__);
+}
+
 int kdiagnose_unit_init(void)
 {
 	int i;
@@ -66,6 +72,16 @@ int kdiagnose_unit_init(void)
 	for (i = 0; i < 32; ++i) {
 		kd_percpu_data[i] = &kd_list[i];
 	}
+
+#if 0
+	diagnose_hrtime_init();
+	{
+		struct dg_mt_timer *testtimer;
+		kmalloc(sizeof(struct dg_mt_timer), GFP_KERNEL);
+		testtimer->func=test_data;
+		register_hrtime_moninter(testtimer);
+	}
+#endif
 
 	return 0;
 }

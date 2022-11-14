@@ -31,6 +31,7 @@ enum ioctl_cmdtype {
 	IOCTL_PANIC,
 	IOCTL_INJECT,
 	IOCTL_TRACE,
+	IOCTL_INIT,
 };
 
 enum IOCTL_TYPE {
@@ -193,6 +194,7 @@ enum IOCTL_INJECT_SUB{
 	IOCTL_INJECT_IRQSPINLOCK_DEPLOCK,
 	IOCTL_INJECT_RUC_HANG,
 	IOCTL_INJECT_SOFTWATCHDOG_TIMEOUT,
+	IOCTL_INJECT_HRTIMER,
 };
 
 enum IOCTL_KVM_SUB{
@@ -320,6 +322,12 @@ struct ioctl_data {
 				int softtimer;
 			}thro_set;
 		} trace_data;
+		struct init_ioctl {
+			unsigned long kallsyms_func;
+		} init_data;
+		struct inject_ioctl {
+			unsigned long time;
+		} inject_data;
 	};
 	unsigned long args[5];
 	char *log_buf;

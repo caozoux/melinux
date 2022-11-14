@@ -13,7 +13,7 @@
 #include <linux/page_idle.h>
 #include <linux/version.h>
 
-#if LINUX_VERSION_CODE >  KERNEL_VERSION(5,0,0)
+#if LINUX_VERSION_CODE >  KERNEL_VERSION(5,11,0)
 #include<linux/panic_notifier.h>
 #endif
 //#include <asm/tlb.h>
