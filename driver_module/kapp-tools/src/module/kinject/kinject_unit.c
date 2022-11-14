@@ -28,6 +28,11 @@ int kinject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_k
 			kinject_test_statickey(kioctl.enable);
 		case IOCTL_USEKINJECT_HRTIMER:
 			return kinject_timer_func(data->subcmd, &kioctl);
+
+		case IOCTL_INJECT_SLUB_CTRL:
+		case IOCTL_INJECT_SLUB_OVERWRITE:
+			return kinject_slub_func(data->subcmd, &kioctl);
+
 		default:
 			break;
 	}
@@ -40,12 +45,14 @@ OUT:
 int kinject_unit_init(void)
 {
 	kinject_timer_init();
+	kinject_slub_init();
 	return 0;
 }
 
 int kinject_unit_exit(void)
 {
 	kinject_timer_remove();
+	kinject_slub_remove();
 	return 0;
 }
 

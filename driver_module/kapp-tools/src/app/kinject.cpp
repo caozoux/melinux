@@ -7,7 +7,7 @@
 
 int hrtimer_args_handle(int argc, char **argv);
 int statickey_args_handle(int argc, char **argv);
-
+int slub_args_handle(int argc, char **argv);
 struct cmdargs kinject_args[] = {
 	{"--statickey",statickey_args_handle, 
 		"\n"
@@ -20,8 +20,86 @@ struct cmdargs kinject_args[] = {
 		"     --dis disable\n"
 		"     -t timer mis vaul\n"
 	},
+	{"--slub", slub_args_handle,
+		"\n"
+		"     --en enable \n"
+		"     --dis disable\n"
+		"     --overwrite inject slub overwrite\n"
+	},
 };
 
+int slub_args_handle(int argc, char **argv)
+{
+	int c;
+	struct ioctl_ksdata data;
+	struct kinject_ioctl kinject_data;
+
+	static int slub_enable, slub_disable;
+	static int slub_overwrite;
+	int time=0;
+	int ret;
+
+	kinject_data.enable = 0;
+
+	data.data = &kinject_data;
+	data.len = sizeof(struct kinject_ioctl);
+
+	static struct option slub_opts[] = {
+		{ "en",no_argument,&slub_enable,1},
+		{ "dis",no_argument,&slub_disable,1},
+		{ "overwrite",no_argument,&slub_overwrite,1},
+		{     0,    0,    0,    0},
+	};
+
+	while((c = getopt_long(argc, argv, "", slub_opts, NULL)) != -1)
+	{
+		switch(c) {
+			case 't':
+				time = atoi(optarg);
+				break;
+			default:
+				break;
+		}
+	}
+
+	if (slub_enable) {
+		kinject_data.enable = 1;
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_SLUB_CTRL,
+				(void*)&data, sizeof(struct ioctl_ksdata));
+		if (ret) {
+			printf("inject start slub failed\n");
+			return -1;
+		} else {
+			return 0;
+		}
+	}
+
+	if (slub_disable) {
+		kinject_data.enable = 0;
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_SLUB_CTRL,
+				(void*)&data, sizeof(struct ioctl_ksdata));
+		if (ret) {
+			printf("inject stop slub failed\n");
+			return -1;
+		} else {
+			return 0;
+		}
+	}
+
+	if (slub_overwrite) {
+		kinject_data.enable = 0;
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_SLUB_OVERWRITE,
+				(void*)&data, sizeof(struct ioctl_ksdata));
+		if (ret) {
+			printf("inject stop slub failed\n");
+			return -1;
+		} else {
+			return 0;
+		}
+	}
+
+	return 0;
+}
 int statickey_args_handle(int argc, char **argv)
 {
 	static int key_enable, key_disable;

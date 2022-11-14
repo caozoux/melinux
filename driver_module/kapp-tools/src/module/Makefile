@@ -4,7 +4,6 @@ TARGET := ksys_tool
 
 KERVER =$(shell uname -r)
 #KERSRC ?= /lib/modules/$(KERVER)/build
-KERSRC ?= /home/zc/github/cache/chushi-linux/
 
 obj-m := $(TARGET).o
 
@@ -22,7 +21,7 @@ endif
 $(TARGET)-objs += kprobe/kprobe_unit.o
 $(TARGET)-objs += base/base.o base/percpu_variable.o
 $(TARGET)-objs += ktrace/ktrace_unit.o
-$(TARGET)-objs += ./kinject/kinject_test.o ./kinject/kinject_unit.o  ./kinject/kinject_timer.o
+$(TARGET)-objs += ./kinject/kinject_test.o ./kinject/kinject_unit.o  ./kinject/kinject_timer.o ./kinject/kinject_slub.o
 
 
 

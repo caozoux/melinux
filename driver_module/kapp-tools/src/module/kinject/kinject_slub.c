@@ -4,6 +4,7 @@
 #include <linux/clk.h>
 #include <linux/io.h>
 #include <linux/mm.h>
+#include <linux/slub_def.h>
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <ksioctl/kinject_ioctl.h>
@@ -25,6 +26,8 @@ struct kmem_kmemcache_data {
 	struct kmem_cache *kmem_cache;
 };
 
+struct kmem_kmemcache_data *kinject_kmem;
+
 struct kmem_kmemcache_data *kmem_kmemcache_get_item(char *name)
 {
 	struct kmem_kmemcache_data *data;
@@ -36,6 +39,7 @@ struct kmem_kmemcache_data *kmem_kmemcache_get_item(char *name)
 	return NULL;
 }
 
+#if 0
 void kmem_kmemcache_remove(char *name)
 {
 
@@ -61,15 +65,9 @@ failed:
 
 };
 
-int kmem_kmemcache_create(char *name, int size)
+struct kmem_kmemcache_data * kmem_kmemcache_create(char *name, int size)
 {
-	struct kmem_kmemcache_data *data;
-	data = kmalloc(__GFP_ZERO, sizeof(struct kmem_kmemcache_data));
-	if (!data)
-		return -EINVAL;
 
-	INIT_LIST_HEAD(&data->list);
-	INIT_LIST_HEAD(&data->item_list);
 	strcpy(data->name, name);
 
 	data->kmem_cache = kmem_cache_create(data->name, size, 0,
@@ -80,20 +78,66 @@ int kmem_kmemcache_create(char *name, int size)
 
 	list_add_tail(&data->list, &kmem_kmemcache_list);
 	DBG("slub create:%s %p %s\n", data->kmem_cache->name, data->kmem_cache, data->name);
-	return 0;
+	return data;
 
 out:
 	kfree(data);
-	return -EINVAL;
+	return NULL;
 }
+#endif
 
+int kinject_slub_overwrite(void)
+{
+	char *data;
+	data = kmem_cache_zalloc(kinject_kmem->kmem_cache, GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data[65] = 0;
+	//kmem_cache_free(kinject_kmem->kmem_cache, data);
+	return 0;
+}
 
 int kinject_slub_init(void)
 {
+	kinject_kmem = kmalloc(__GFP_ZERO, sizeof(struct kmem_kmemcache_data));
+	if (!kinject_kmem)
+		return -1;
+	INIT_LIST_HEAD(&kinject_kmem->list);
 	return 0;
 }
 
 void kinject_slub_remove(void)
 {
+	if (kinject_kmem->kmem_cache)
+		kmem_cache_destroy(kinject_kmem->kmem_cache);
 
+	kfree(kinject_kmem);
 }
+
+int kinject_slub_func(enum IOCTL_INJECT_SUB cmd, struct kinject_ioctl *data)
+{
+	switch (cmd) {
+		case IOCTL_INJECT_SLUB_CTRL:
+			if (data->enable) {
+				kinject_kmem->kmem_cache = kmem_cache_create("kinject_64", 64, 0,
+						   SLAB_HWCACHE_ALIGN | SLAB_POISON,
+						   NULL);
+				if (!kinject_kmem->kmem_cache)
+					return -EINVAL;
+			} else {
+				kmem_cache_destroy(kinject_kmem->kmem_cache);
+			}
+			break;
+		case IOCTL_INJECT_SLUB_OVERWRITE:
+			if (!kinject_kmem->kmem_cache)
+				return -EINVAL;
+			kinject_slub_overwrite();
+			break;
+		default:
+			break;
+	}
+
+	return 0;
+}
+
