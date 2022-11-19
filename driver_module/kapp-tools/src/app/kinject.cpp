@@ -1,5 +1,7 @@
 #include <iostream>
 #include <getopt.h>
+#include <time.h>
+#include <unistd.h>
 #include <string.h>
 #include <ksioctl/kinject_ioctl.h>
 
@@ -8,6 +10,8 @@
 int hrtimer_args_handle(int argc, char **argv);
 int statickey_args_handle(int argc, char **argv);
 int slub_args_handle(int argc, char **argv);
+int rwsem_args_handle(int argc, char **argv);
+
 struct cmdargs kinject_args[] = {
 	{"--statickey",statickey_args_handle, 
 		"\n"
@@ -26,7 +30,89 @@ struct cmdargs kinject_args[] = {
 		"     --dis disable\n"
 		"     --overwrite inject slub overwrite\n"
 	},
+	{"--rwsem", rwsem_args_handle,
+		"\n"
+		"     --wrdown enable \n"
+		"     --wrup enable \n"
+		"     --rddown enable \n"
+		"     --rdup enable \n"
+		"     --mmap_sem_downwrite \n"
+		"     --mmap_sem_upwrite \n"
+		"     --msg  print out msg\n"
+	},
 };
+
+int rwsem_args_handle(int argc, char **argv)
+{
+	int c;
+	struct ioctl_ksdata data;
+	struct kinject_ioctl kinject_data;
+
+	static int rwsem_wr_down,rwsem_wr_up;
+	static int rwsem_rd_down,rwsem_rd_up;
+	static int rwsem_mmapsem_downwrite, rwsem_mmapsem_upwrite;
+	int time=0;
+	int ret;
+	char *msg = NULL;
+
+	kinject_data.enable = 0;
+
+	data.data = &kinject_data;
+	data.len = sizeof(struct kinject_ioctl);
+
+	static struct option slub_opts[] = {
+		{ "wrdown",no_argument,&rwsem_wr_down,1},
+		{ "wrup",no_argument,&rwsem_wr_up,1},
+		{ "rddown",no_argument,&rwsem_rd_down,1},
+		{ "rdup",no_argument,&rwsem_rd_up,1},
+		{ "mmap_sem_downwrite",no_argument,&rwsem_mmapsem_downwrite,1},
+		{ "mmap_sem_upwrite",no_argument,&rwsem_mmapsem_upwrite,1},
+		{ "msg",required_argument,NULL,'m'},
+		{     0,    0,    0,    0},
+	};
+
+	while((c = getopt_long(argc, argv, "", slub_opts, NULL)) != -1)
+	{
+		switch(c) {
+			case 'm':
+				msg = optarg;
+				break;
+			default:
+				break;
+		}
+	}
+
+	if (rwsem_wr_down)
+		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_RWSEM_WRITEDOWN,
+				(void*)&data, sizeof(struct ioctl_ksdata));
+
+	if (rwsem_wr_up)
+		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_RWSEM_WRITEUP,
+				(void*)&data, sizeof(struct ioctl_ksdata));
+
+	if (rwsem_rd_up)
+		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_RWSEM_READUP,
+				(void*)&data, sizeof(struct ioctl_ksdata));
+
+	if (rwsem_rd_down)
+		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_RWSEM_READDOWN,
+				(void*)&data, sizeof(struct ioctl_ksdata));
+
+	if (rwsem_mmapsem_downwrite)
+		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_MMAP_SEM_WRITEDWON,
+				(void*)&data, sizeof(struct ioctl_ksdata));
+
+	if (rwsem_mmapsem_upwrite)
+		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_MMAP_SEM_WRITEUP,
+				(void*)&data, sizeof(struct ioctl_ksdata));
+
+    if (msg)
+		printf("%s\n", msg);
+	while(1) {
+		sleep(1);
+	}
+	return 0;
+}
 
 int slub_args_handle(int argc, char **argv)
 {

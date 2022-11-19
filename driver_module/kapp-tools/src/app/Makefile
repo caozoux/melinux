@@ -1,10 +1,7 @@
 cflags += -I../ -I../module/include/
 lflags += -lpthread
 #lflags += -lgflags
-static_libs :=-static-libstdc++ -static-libgcc
-static_libs += -Bstatic /home/zc/github/gflags/lib/libgflags.a
-static_libs += /home/zc/github/gflags/lib/libgflags_nothreads.a
-
+#static_libs :=-static-libstdc++ -static-libgcc
 
 CC := g++
 

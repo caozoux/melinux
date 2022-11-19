@@ -100,7 +100,7 @@ int kinject_slub_overwrite(void)
 
 int kinject_slub_init(void)
 {
-	kinject_kmem = kmalloc(__GFP_ZERO, sizeof(struct kmem_kmemcache_data));
+	kinject_kmem = kzalloc(__GFP_ZERO, sizeof(struct kmem_kmemcache_data));
 	if (!kinject_kmem)
 		return -1;
 	INIT_LIST_HEAD(&kinject_kmem->list);

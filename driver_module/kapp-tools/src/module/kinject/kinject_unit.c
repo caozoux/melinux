@@ -32,6 +32,14 @@ int kinject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_k
 		case IOCTL_INJECT_SLUB_CTRL:
 		case IOCTL_INJECT_SLUB_OVERWRITE:
 			return kinject_slub_func(data->subcmd, &kioctl);
+		case IOCTL_INJECT_RWSEM_WRITEDOWN:
+		case IOCTL_INJECT_RWSEM_WRITEUP:
+		case IOCTL_INJECT_RWSEM_READDOWN:
+		case IOCTL_INJECT_RWSEM_READUP:
+		case IOCTL_INJECT_MMAP_SEM_WRITEDWON:
+		case IOCTL_INJECT_MMAP_SEM_WRITEUP:
+			kinject_rwsem_func(data->subcmd, &kioctl);
+			break;
 
 		default:
 			break;
@@ -46,6 +54,7 @@ int kinject_unit_init(void)
 {
 	kinject_timer_init();
 	kinject_slub_init();
+	kinject_rwsem_init();
 	return 0;
 }
 
@@ -53,6 +62,7 @@ int kinject_unit_exit(void)
 {
 	kinject_timer_remove();
 	kinject_slub_remove();
+	kinject_rwsem_remove();
 	return 0;
 }
 

@@ -10,5 +10,10 @@ void kinject_timer_remove(void);
 
 int kinject_slub_init(void);
 void kinject_slub_remove(void);
+
+
+int kinject_rwsem_func(enum IOCTL_INJECT_SUB cmd, struct kinject_ioctl *data);
+int kinject_rwsem_init(void);
+void kinject_rwsem_remove(void);
 #endif
 
