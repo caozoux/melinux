@@ -1,9 +1,9 @@
 PWD = $(shell pwd)  
 
-TARGET := medma_test
+TARGET := module_template
 
 obj-m := $(TARGET).o  
-$(TARGET)-objs := dmatest_entry.o
+$(TARGET)-objs := example.o
 all:
 	$(MAKE) -C /lib/modules/`uname -r`/build/ M=$(PWD) modules  
 		
