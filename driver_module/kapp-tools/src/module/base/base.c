@@ -27,16 +27,16 @@ static void probe_tracepoint(struct tracepoint *tp, void *priv)
 }
 
 static void orig_for_each_tracepoint_range(
-                tracepoint_ptr_t *begin, tracepoint_ptr_t *end,
+                struct tracepoint *begin, struct tracepoint *end,
                 void (*fct)(struct tracepoint *tp, void *priv),
                 void *priv)
 {
-        tracepoint_ptr_t *iter;
+        struct tracepoint *iter;
 
         if (!begin)
                 return;
-        for (iter = begin; iter < end; iter++)
-                fct(tracepoint_ptr_deref(iter), priv);
+        //for (iter = begin; iter < end; iter++)
+        //       fct(tracepoint_ptr_deref(iter), priv);
 }
 
 static void for_each_moudule_trace_point(
@@ -55,8 +55,8 @@ static void for_each_moudule_trace_point(
     list_for_each_entry(tp_mod, orig_tracepoint_module_list, list) {
             mod = tp_mod->mod;
             if (mod->num_tracepoints) {
-                orig_for_each_tracepoint_range((mod->tracepoints_ptrs),
-            mod->tracepoints_ptrs + mod->num_tracepoints, fct, priv);
+               // orig_for_each_tracepoint_range((mod->tracepoints_ptrs),
+            //mod->tracepoints_ptrs + mod->num_tracepoints, fct, priv);
           }
     }
 

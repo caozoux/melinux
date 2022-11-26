@@ -22,6 +22,7 @@ $(TARGET)-objs += kprobe/kprobe_unit.o
 $(TARGET)-objs += base/base.o base/percpu_variable.o
 $(TARGET)-objs += ktrace/ktrace_unit.o
 $(TARGET)-objs += ./kinject/kinject_test.o ./kinject/kinject_unit.o  ./kinject/kinject_timer.o ./kinject/kinject_slub.o ./kinject/kinject_sem.o
+$(TARGET)-objs += ./kmem/kmem_dump.o ./kmem/kmem_unit.o
 
 
 
