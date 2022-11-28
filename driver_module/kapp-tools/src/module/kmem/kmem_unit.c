@@ -11,18 +11,18 @@
 #include "ksysd_ioctl.h"
 #include "kmem_local.h"
 
-int kmem_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_ksdata *data)
+int kmem_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_ksdata *ksdata)
 {
 	struct kmem_ioctl kioctl;
 	int ret;
 
-	if (copy_from_user(&kioctl, (char __user *)data->data, sizeof(struct kmem_ioctl))) {
+	if (copy_from_user(&kioctl, (char __user *)ksdata->data, ksdata->len)) {
 		pr_err("ioctl data copy err\n");
 		ret = -EFAULT;
 		goto OUT;
 	}
 
-	switch (data->subcmd) {
+	switch (ksdata->subcmd) {
 		case IOCTL_USEKMEM_DUMP:
 			ret = kmem_dump_func(&kioctl);
 			break;

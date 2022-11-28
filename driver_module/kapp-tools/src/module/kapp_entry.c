@@ -4,6 +4,7 @@
 #include <linux/clk.h>
 #include <linux/io.h>
 #include <linux/mm.h>
+#include <linux/kprobes.h>
 #include <linux/module.h>
 
 #include<linux/miscdevice.h>
@@ -47,7 +48,6 @@ struct mutex *orig_text_mutex;
 TEXT_DECLARE()
 static struct ksysd_data *ksysd_data;
 static int enable;
-static int has_init = 0;
 
 struct ksysd_uint_item unit_list[] =
 {
@@ -98,7 +98,7 @@ int golable_sysm_init(void)
 
 	ret = base_func_init();
 	if (ret) {
-		pr_err("base init failed\n");
+		ERR("base init failed\n");
 		goto OUT;
 	}
 
@@ -107,31 +107,12 @@ OUT:
 	return ret;
 }
 
-static int extra_module_init(u64 address, int *init_offset)
-{
-	int i;
-
-	if (golable_sysm_init())
-		return -EINVAL;
-
-	for(i=0; unit_list[i].type; i++) {
-
-		unit_list[i].init();
-
-		(*init_offset)++;
-	}
-
-	has_init = 1;
-	DBG("complete unit init\n");
-	return  0;
-}
-
 static long ksysd_template_unlocked_ioctl(struct file *file, unsigned int size, unsigned long data)
 {
 	int ret = 0;
 	struct ioctl_ksdata ctl_data; 
 	struct ksysd_private_data  *dev_data;
-	int i, init_offset = 0;
+	int i;
 
 	dev_data = (struct ksysd_private_data *) file->private_data;
 
@@ -169,10 +150,40 @@ ARRT_MARCO_READ(enable);
 ARRT_MARCO_WRITE(enable);
 ARRT_MARCO(enable);
 
+static int (*ksys_kallsyms_on_each_symbol)(int (*fn)(void *, const char *,
+		struct module *, unsigned long),void *data);
+
+static int symbol_walk_callback(void *data, const char *name,
+		struct module *mod, unsigned long addr)
+{
+	if (strcmp(name, "kallsyms_lookup_name") == 0) {
+		cust_kallsyms_lookup_name = (void *)addr;
+		return addr;
+	}
+
+	return 0;
+}
+
+static int get_kallsyms_lookup_name(void)
+{
+	int ret;
+	ksys_kallsyms_on_each_symbol = &kallsyms_on_each_symbol;
+	ret = ksys_kallsyms_on_each_symbol(symbol_walk_callback, NULL);
+	if (!ret || !cust_kallsyms_lookup_name)
+		return -EINVAL;
+
+	return 0;
+}
+
 static int __init ksys_tool_init(void)
 {
 	int ret;
 	int i;
+
+	if (get_kallsyms_lookup_name()) {
+		ERR("get_kallsyms_lookup_name failed\n");
+		return -EINVAL;
+	}
 
 	ksysd_data = kzalloc(sizeof(struct ksysd_data), GFP_KERNEL);
 	if (!ksysd_data) {
@@ -181,7 +192,7 @@ static int __init ksys_tool_init(void)
 
 	ret = misc_register(&ksysd_dev);
 	if (ret) {
-		pr_err(" ksysd register err\n");
+		ERR(" ksysd register err\n");
 		goto out1;
 	}
 
@@ -191,7 +202,7 @@ static int __init ksys_tool_init(void)
 
 	ksysd_data->dev = ksysd_dev.this_device;
 	if (percpu_variable_init()) {
-		pr_err("percpu variable init failed\n");
+		ERR("percpu variable init failed\n");
 		goto out3;
 	}
 
@@ -201,7 +212,7 @@ static int __init ksys_tool_init(void)
 			goto out4;
 		}
 	}
-	printk("ksysddriver load \n");
+	INFO("ksysddriver load \n");
 
 	return 0;
 out4:
@@ -229,7 +240,7 @@ static void __exit ksys_tool_exit(void)
 	device_remove_file(ksysd_dev.this_device, &dev_attr_enable);
 	misc_deregister(&ksysd_dev);
 	kfree(ksysd_data);
-	printk("ksysddriver unload \n");
+	INFO("ksysddriver unload \n");
 }
 
 module_init(ksys_tool_init);

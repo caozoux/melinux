@@ -4,6 +4,7 @@
 #include <linux/io.h>
 #include <linux/mm.h>
 #include <linux/module.h>
+#include <linux/nodemask.h>
 #include <linux/uaccess.h>
 #include <ksioctl/kmem_ioctl.h>
 
@@ -13,17 +14,18 @@
 
 static void dump_watermemory(void)
 {
-	 for_each_populated_zone(zone) {
-		 struct zone *zone;
-	 }
+	int nid;
+	for_each_online_node(nid) {
+
+	}
 }
 
-int kmem_dump_func(struct kmem_ioctl *data)
+int kmem_dump_func(struct kmem_ioctl *kmem_data)
 {
-
 	int ret = 0;
 	struct kmem_dump dump_data;
-	if (copy_from_user(&dump_data, (char __user *)data->data, sizeof(struct kmem_dump))) {
+
+	if (copy_from_user(&dump_data, (char __user *)kmem_data->data, sizeof(struct kmem_dump))) {
 		pr_err("ioctl data copy err\n");
 		ret = -EFAULT;
 		goto OUT;

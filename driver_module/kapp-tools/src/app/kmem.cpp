@@ -20,7 +20,6 @@ struct cmdargs kmem_args[] = {
 int kmemdump_args_handle(int argc, char **argv)
 {
 	int c;
-	struct ioctl_ksdata data;
 	struct kmem_ioctl kmem_data;
 	struct kmem_dump  dump_data;
 
@@ -29,11 +28,6 @@ int kmemdump_args_handle(int argc, char **argv)
 	char *msg = NULL;
 
 	kmem_data.enable = 0;
-	kmem_data.data = &dump_data;
-	kmem_data.len = sizeof(struct kmem_dump);
-
-	data.data = &kmem_data;
-	data.len = sizeof(struct kmem_ioctl);
 
 	static struct option slub_opts[] = {
 		{ "water",no_argument,&dump_water,1},
@@ -53,15 +47,25 @@ int kmemdump_args_handle(int argc, char **argv)
 	}
 
 	if (dump_water) {
+
+		kmem_data.data = &dump_data;
+		kmem_data.len = sizeof(struct kmem_dump);
+		printf("zz %s data:%lx len:%lx \n",__func__, (unsigned long)kmem_data.data, (unsigned long)kmem_data.len);
+
 		dump_data.dumpcmd = IOCTL_USEKMEM_DUMP_MEMORYWARTER;
 		ktools_ioctl::kioctl(IOCTL_KMEM, (int)IOCTL_USEKMEM_DUMP,
-				(void*)&data, sizeof(struct ioctl_ksdata));
+				(void*)&kmem_data, sizeof(struct kmem_ioctl));
 	}
 
 	if (dump_memcss) {
+		kmem_data.subcmd = IOCTL_USEKMEM_DUMP;
+
+		kmem_data.data = &dump_data;
+		kmem_data.len = sizeof(struct kmem_dump);
+
 		dump_data.dumpcmd = IOCTL_USEKMEM_DUMP_EACH_CSS;
 		ktools_ioctl::kioctl(IOCTL_KMEM, (int)IOCTL_USEKMEM_DUMP,
-				(void*)&data, sizeof(struct ioctl_ksdata));
+				(void*)&kmem_data, sizeof(struct kmem_ioctl));
 	}
 
 	return 0;

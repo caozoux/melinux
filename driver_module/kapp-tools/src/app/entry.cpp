@@ -24,6 +24,7 @@ struct unit_func {
 static struct unit_func all_funcs[] = {
 	//{"help", usage_help},
     {"inject", unit_kinject},
+    {"kmem", unit_kmem},
 //    {"kprobe", unit_kprobe},
 //    {"ktrace", unit_ktrace},
 };
