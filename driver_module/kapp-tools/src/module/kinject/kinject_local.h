@@ -15,5 +15,9 @@ void kinject_slub_remove(void);
 int kinject_rwsem_func(enum IOCTL_INJECT_SUB cmd, struct kinject_ioctl *data);
 int kinject_rwsem_init(void);
 void kinject_rwsem_remove(void);
+
+
+
+int kinject_stack_segmet_func(enum IOCTL_INJECT_SUB cmd, struct kinject_ioctl *data);
 #endif
 

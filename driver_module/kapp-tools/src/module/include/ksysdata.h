@@ -54,4 +54,5 @@ FUNC_UNIT(kprobe);
 FUNC_UNIT(ktrace);
 FUNC_UNIT(kinject);
 FUNC_UNIT(kmem);
+FUNC_UNIT(kdevice);
 #endif /* ifndef __KSYS_DATA_H__ */

@@ -55,6 +55,7 @@ struct ksysd_uint_item unit_list[] =
 	KSYSD_UNIT(ktrace, IOCTL_KTRACE),
 	KSYSD_UNIT(kinject, IOCTL_INJECT),
 	KSYSD_UNIT(kmem, IOCTL_KMEM),
+	KSYSD_UNIT(kdevice, IOCTL_KDEVICE),
 };
 
 static int ksysd_template_open(struct inode *inode, struct file * file)

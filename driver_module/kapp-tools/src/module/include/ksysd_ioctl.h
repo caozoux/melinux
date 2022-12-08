@@ -30,6 +30,8 @@ enum ioctl_cmdtype {
 	IOCTL_INIT,
 	IOCTL_KTRACE,
 	IOCTL_KMEM,
+	//device module
+	IOCTL_KDEVICE, 
 };
 
 enum IOCTL_TYPE {
