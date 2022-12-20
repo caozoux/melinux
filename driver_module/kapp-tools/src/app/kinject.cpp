@@ -11,6 +11,7 @@ int hrtimer_args_handle(int argc, char **argv);
 int statickey_args_handle(int argc, char **argv);
 int slub_args_handle(int argc, char **argv);
 int rwsem_args_handle(int argc, char **argv);
+int stack_args_handle(int argc, char **argv);
 
 struct cmdargs kinject_args[] = {
 	{"--statickey",statickey_args_handle, 
@@ -39,6 +40,10 @@ struct cmdargs kinject_args[] = {
 		"     --mmap_sem_downwrite \n"
 		"     --mmap_sem_upwrite \n"
 		"     --msg  print out msg\n"
+	},
+	{"--stack", stack_args_handle,
+		"\n"
+		"     --overwrite inject stack overwrite\n"
 	},
 };
 
@@ -98,13 +103,13 @@ int rwsem_args_handle(int argc, char **argv)
 		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_RWSEM_READDOWN,
 				(void*)&data, sizeof(struct ioctl_ksdata));
 
-	if (rwsem_mmapsem_downwrite)
-		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_MMAP_SEM_WRITEDWON,
-				(void*)&data, sizeof(struct ioctl_ksdata));
+	//if (rwsem_mmapsem_downwrite)
+    //		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_MMAP_SEM_WRITEDWON,
+    //				(void*)&data, sizeof(struct ioctl_ksdata));
 
-	if (rwsem_mmapsem_upwrite)
-		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_MMAP_SEM_WRITEUP,
-				(void*)&data, sizeof(struct ioctl_ksdata));
+	//if (rwsem_mmapsem_upwrite)
+    //		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_MMAP_SEM_WRITEUP,
+	//			(void*)&data, sizeof(struct ioctl_ksdata));
 
     if (msg)
 		printf("%s\n", msg);
@@ -112,6 +117,39 @@ int rwsem_args_handle(int argc, char **argv)
 		sleep(1);
 	}
 	return 0;
+}
+
+int stack_args_handle(int argc, char **argv)
+{
+	int c;
+	int ret;
+	struct ioctl_ksdata data;
+	struct kinject_ioctl kinject_data;
+	static int stack_overwrite;
+
+	kinject_data.enable = 0;
+
+	data.data = &kinject_data;
+	data.len = sizeof(struct kinject_ioctl);
+
+	static struct option slub_opts[] = {
+		{ "overwrite",no_argument,&stack_overwrite,1},
+		{     0,    0,    0,    0},
+	};
+
+	while((c = getopt_long(argc, argv, "", slub_opts, NULL)) != -1)
+	{
+		switch(c) {
+			default:
+				break;
+		}
+	}
+
+	if (stack_overwrite)
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_STACK_OVERWRITE,
+				(void*)&data, sizeof(struct ioctl_ksdata));
+
+	return ret;
 }
 
 int slub_args_handle(int argc, char **argv)

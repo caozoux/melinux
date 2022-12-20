@@ -32,12 +32,12 @@ int kinject_rwsem_func(enum IOCTL_INJECT_SUB cmd, struct kinject_ioctl *data)
 			printk("zz %s %d \n", __func__, __LINE__);
 			up_read(&kinject_sem);
 			break;
-		case IOCTL_INJECT_MMAP_SEM_WRITEDWON:
-			down_write(&current->mm->mmap_sem);
-			break;
-		case IOCTL_INJECT_MMAP_SEM_WRITEUP:
-			up_write(&current->mm->mmap_sem);
-			break;
+		//case IOCTL_INJECT_MMAP_SEM_WRITEDWON:
+		//	down_write(&current->mm->mmap_sem);
+		//	break;
+		//case IOCTL_INJECT_MMAP_SEM_WRITEUP:
+		//	up_write(&current->mm->mmap_sem);
+		//	break;
 		default:
 			break;
 	}

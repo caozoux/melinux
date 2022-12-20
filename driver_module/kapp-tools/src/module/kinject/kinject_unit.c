@@ -23,9 +23,9 @@ int kinject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_k
 	}
 
 	switch (data->subcmd) {
-		case IOCTL_USEKINJECT_TEST:
+		//case IOCTL_USEKINJECT_TEST:
 			//kinject_test(&kioctl);
-			kinject_test_statickey(kioctl.enable);
+		//kinject_test_statickey(kioctl.enable);
 		case IOCTL_USEKINJECT_HRTIMER:
 			return kinject_timer_func(data->subcmd, &kioctl);
 
@@ -36,9 +36,10 @@ int kinject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_k
 		case IOCTL_INJECT_RWSEM_WRITEUP:
 		case IOCTL_INJECT_RWSEM_READDOWN:
 		case IOCTL_INJECT_RWSEM_READUP:
-		case IOCTL_INJECT_MMAP_SEM_WRITEDWON:
-		case IOCTL_INJECT_MMAP_SEM_WRITEUP:
 			kinject_rwsem_func(data->subcmd, &kioctl);
+			break;
+		case IOCTL_INJECT_STACK_OVERWRITE:
+			return kinject_stack_segmet_func(data->subcmd, &kioctl);
 			break;
 
 		default:

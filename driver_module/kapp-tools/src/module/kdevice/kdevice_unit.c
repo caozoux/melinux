@@ -132,7 +132,7 @@ int kdevice_unit_init(void)
 	if (kdevice_unit_sym_init())	
 		return -EINVAL;
 
-	kdevice_scan_net_device();
+	//kdevice_scan_net_device();
 	return 0;
 }
 
