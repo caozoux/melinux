@@ -24,7 +24,7 @@
 #include <poll.h>
 #include <ctype.h>
 #include <assert.h>
-#include <bpf/bpf.h>
+#include "bpf.h"
 #include "bpf_load.h"
 #include "perf-sys.h"
 

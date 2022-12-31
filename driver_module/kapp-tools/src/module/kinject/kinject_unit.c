@@ -42,6 +42,11 @@ int kinject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_k
 			return kinject_stack_segmet_func(data->subcmd, &kioctl);
 			break;
 
+		case IOCTL_INJECT_SPINLOCK_DEPLOCK:
+		case IOCTL_INJECT_IRQSPINLOCK_DEPLOCK:
+			kinject_lock_func(data->subcmd, &kioctl);
+			break;
+
 		default:
 			break;
 	}

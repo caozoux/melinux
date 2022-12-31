@@ -22,11 +22,14 @@ int kmemdump_args_handle(int argc, char **argv)
 	int c;
 	struct kmem_ioctl kmem_data;
 	struct kmem_dump  dump_data;
+	struct ioctl_ksdata data;
 
 	static int dump_water,dump_memcss;
 	int ret;
 	char *msg = NULL;
 
+	data.data = &kmem_data;
+	data.len = sizeof(struct kmem_ioctl);
 	kmem_data.enable = 0;
 
 	static struct option slub_opts[] = {
@@ -54,7 +57,7 @@ int kmemdump_args_handle(int argc, char **argv)
 
 		dump_data.dumpcmd = IOCTL_USEKMEM_DUMP_MEMORYWARTER;
 		ktools_ioctl::kioctl(IOCTL_KMEM, (int)IOCTL_USEKMEM_DUMP,
-				(void*)&kmem_data, sizeof(struct kmem_ioctl));
+				&data, sizeof(struct kmem_ioctl));
 	}
 
 	if (dump_memcss) {
@@ -65,7 +68,7 @@ int kmemdump_args_handle(int argc, char **argv)
 
 		dump_data.dumpcmd = IOCTL_USEKMEM_DUMP_EACH_CSS;
 		ktools_ioctl::kioctl(IOCTL_KMEM, (int)IOCTL_USEKMEM_DUMP,
-				(void*)&kmem_data, sizeof(struct kmem_ioctl));
+				&data, sizeof(struct kmem_ioctl));
 	}
 
 	return 0;

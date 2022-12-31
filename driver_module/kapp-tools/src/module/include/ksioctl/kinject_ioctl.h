@@ -36,6 +36,10 @@ struct kinject_ioctl {
 	struct inject_test {
 		enum IOCTL_USEKINJECT_SUBTEST cmd;
 	} test_data;
+	struct inject_lock{
+		//lock ms time
+		int lock_ms;
+	} lock;
 	//int threshold;
 };
 

@@ -52,19 +52,21 @@ public:
 		return ktools_ioctl::mFd;
 	}
 
-	static int kioctl(ioctl_cmdtype cmd, int subcmd, void *data, int len)
+	static int kioctl(ioctl_cmdtype cmd, int subcmd, struct ioctl_ksdata *data, int len)
 	{
-		struct ioctl_ksdata iodata;
 		int fd = ktools_ioctl::getFd();
+		//struct ioctl_ksdata iodata;
+		//struct ioctl_ksdata *pdata = data;
 		if (fd <= 0) {
 			fprintf(stderr, "open %s failed\n", DEV_NAME);
 			return -1;
 		}
-		iodata.cmd= cmd;
-		iodata.subcmd= subcmd;
-		iodata.data = data;
-		iodata.len = len;
-		return ioctl(fd, sizeof(struct ioctl_ksdata), (void*)&iodata);
+
+		data->cmd= cmd;
+		data->subcmd= subcmd;
+		data->len = len;
+
+		return ioctl(fd, sizeof(struct ioctl_ksdata), (void*)data);
 	}
 };
 

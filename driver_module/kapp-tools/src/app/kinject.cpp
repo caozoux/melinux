@@ -12,6 +12,7 @@ int statickey_args_handle(int argc, char **argv);
 int slub_args_handle(int argc, char **argv);
 int rwsem_args_handle(int argc, char **argv);
 int stack_args_handle(int argc, char **argv);
+int lock_args_handle(int argc, char **argv);
 
 struct cmdargs kinject_args[] = {
 	{"--statickey",statickey_args_handle, 
@@ -44,6 +45,12 @@ struct cmdargs kinject_args[] = {
 	{"--stack", stack_args_handle,
 		"\n"
 		"     --overwrite inject stack overwrite\n"
+	},
+	{"--lock", lock_args_handle,
+		"\n"
+		"     --lock  spinlock\n"
+		"     --ilock spinlock with irq\n"
+		"     --time  mesecond\n"
 	},
 };
 
@@ -89,27 +96,27 @@ int rwsem_args_handle(int argc, char **argv)
 
 	if (rwsem_wr_down)
 		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_RWSEM_WRITEDOWN,
-				(void*)&data, sizeof(struct ioctl_ksdata));
+				&data, sizeof(struct ioctl_ksdata));
 
 	if (rwsem_wr_up)
 		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_RWSEM_WRITEUP,
-				(void*)&data, sizeof(struct ioctl_ksdata));
+				&data, sizeof(struct ioctl_ksdata));
 
 	if (rwsem_rd_up)
 		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_RWSEM_READUP,
-				(void*)&data, sizeof(struct ioctl_ksdata));
+				&data, sizeof(struct ioctl_ksdata));
 
 	if (rwsem_rd_down)
 		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_RWSEM_READDOWN,
-				(void*)&data, sizeof(struct ioctl_ksdata));
+				&data, sizeof(struct ioctl_ksdata));
 
 	//if (rwsem_mmapsem_downwrite)
     //		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_MMAP_SEM_WRITEDWON,
-    //				(void*)&data, sizeof(struct ioctl_ksdata));
+    //				&data, sizeof(struct ioctl_ksdata));
 
 	//if (rwsem_mmapsem_upwrite)
     //		ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_MMAP_SEM_WRITEUP,
-	//			(void*)&data, sizeof(struct ioctl_ksdata));
+	//			&data, sizeof(struct ioctl_ksdata));
 
     if (msg)
 		printf("%s\n", msg);
@@ -117,6 +124,49 @@ int rwsem_args_handle(int argc, char **argv)
 		sleep(1);
 	}
 	return 0;
+}
+
+int lock_args_handle(int argc, char **argv)
+{
+	int c;
+	int ret;
+	struct ioctl_ksdata data;
+	struct kinject_ioctl kinject_data;
+	static int lock_enable, ilock_enable;
+
+	kinject_data.enable = 0;
+
+	data.data = &kinject_data;
+	data.len = sizeof(struct kinject_ioctl);
+	kinject_data.lock.lock_ms = 1000;
+
+	static struct option lock_opts[] = {
+		{ "lock",no_argument, &lock_enable,1},
+		{ "ilock",no_argument, &ilock_enable,1},
+		{ "time",required_argument, NULL,'t'},
+		{     0,    0,    0,    0},
+	};
+
+	while((c = getopt_long(argc, argv, "", lock_opts, NULL)) != -1)
+	{
+		switch(c) {
+			case 't':
+				kinject_data.lock.lock_ms = atoi(optarg);
+				break;
+			default:
+				break;
+		}
+	}
+
+	printf("zz %s lock_ms:%ld \n",__func__, (unsigned long)kinject_data.lock.lock_ms);
+	if (lock_enable)
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_SPINLOCK_DEPLOCK,
+				&data, sizeof(struct ioctl_ksdata));
+	if (ilock_enable)
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_IRQSPINLOCK_DEPLOCK,
+				&data, sizeof(struct ioctl_ksdata));
+
+	return ret;
 }
 
 int stack_args_handle(int argc, char **argv)
@@ -147,7 +197,7 @@ int stack_args_handle(int argc, char **argv)
 
 	if (stack_overwrite)
 		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_STACK_OVERWRITE,
-				(void*)&data, sizeof(struct ioctl_ksdata));
+				&data, sizeof(struct ioctl_ksdata));
 
 	return ret;
 }
@@ -189,7 +239,7 @@ int slub_args_handle(int argc, char **argv)
 	if (slub_enable) {
 		kinject_data.enable = 1;
 		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_SLUB_CTRL,
-				(void*)&data, sizeof(struct ioctl_ksdata));
+				&data, sizeof(struct ioctl_ksdata));
 		if (ret) {
 			printf("inject start slub failed\n");
 			return -1;
@@ -201,7 +251,7 @@ int slub_args_handle(int argc, char **argv)
 	if (slub_disable) {
 		kinject_data.enable = 0;
 		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_SLUB_CTRL,
-				(void*)&data, sizeof(struct ioctl_ksdata));
+				&data, sizeof(struct ioctl_ksdata));
 		if (ret) {
 			printf("inject stop slub failed\n");
 			return -1;
@@ -213,7 +263,7 @@ int slub_args_handle(int argc, char **argv)
 	if (slub_overwrite) {
 		kinject_data.enable = 0;
 		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_SLUB_OVERWRITE,
-				(void*)&data, sizeof(struct ioctl_ksdata));
+				&data, sizeof(struct ioctl_ksdata));
 		if (ret) {
 			printf("inject stop slub failed\n");
 			return -1;
@@ -282,7 +332,7 @@ int hrtimer_args_handle(int argc, char **argv)
 	if (hrtimer_enable) {
 		kinject_data.enable = 1;
 		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_USEKINJECT_HRTIMER,
-				(void*)&data, sizeof(struct ioctl_ksdata));
+				&data, sizeof(struct ioctl_ksdata));
 		if (ret) {
 			printf("inject start hrtimer failed\n");
 			return -1;
@@ -294,7 +344,7 @@ int hrtimer_args_handle(int argc, char **argv)
 	if (hrtimer_disable) {
 		kinject_data.enable = 0;
 		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_USEKINJECT_HRTIMER,
-				(void*)&data, sizeof(struct ioctl_ksdata));
+				&data, sizeof(struct ioctl_ksdata));
 		if (ret) {
 			printf("inject stop hrtimer failed\n");
 			return -1;
@@ -322,17 +372,17 @@ int unit_kinject(int argc, char** argv)
 
 	if (FLAGS_kinjectunit == "statickey") {
 		kinject_data.enable = 1;
-		return ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_USEKINJECT_TEST , (void*)&data, sizeof(struct ioctl_ksdata));
+		return ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_USEKINJECT_TEST , &data, sizeof(struct ioctl_ksdata));
 	}
 
 	if (FLAGS_kinjectunit == "htitmer_s") {
 		kinject_data.enable = 1;
-		return ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_USEKINJECT_HRTIMER, (void*)&data, sizeof(struct ioctl_ksdata));
+		return ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_USEKINJECT_HRTIMER, &data, sizeof(struct ioctl_ksdata));
 	}
 
 	if (FLAGS_kinjectunit== "htitmer_d") {
 		kinject_data.enable = 0;
-		return ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_USEKINJECT_HRTIMER, (void*)&data, sizeof(struct ioctl_ksdata));
+		return ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_USEKINJECT_HRTIMER, &data, sizeof(struct ioctl_ksdata));
 	}
 #else
 #endif
