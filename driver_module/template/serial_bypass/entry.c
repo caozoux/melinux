@@ -16,13 +16,11 @@
 
 unsigned long (*cust_kallsyms_lookup_name)(const char *name);
 struct hrtimer hrtimer_pr;
+struct uart_8250_port *orig_serial8250_ports;
 int *orig_css_set_count;
 
-struct list_head *origme__cgrp_cpuctx_list;
-static DEFINE_PER_CPU(struct list_head, me_cgrp_cpuctx_list);
 static enum hrtimer_restart hrtimer_pr_fun(struct hrtimer *hrtimer)
 {
-  	trace_printk("zz css_set_count:%d \n", *orig_css_set_count);
 	hrtimer_forward_now(&hrtimer_pr, ns_to_ktime(1000000000));
 	return HRTIMER_RESTART;
 }
@@ -55,12 +53,8 @@ static int get_kallsyms_lookup_name(void)
 int sym_init(void)
 {
 
-  orig_css_set_count = (void *)cust_kallsyms_lookup_name("css_set_count");
-  if (!orig_css_set_count)
-	return -EINVAL;
-
-  origme__cgrp_cpuctx_list= (void *)cust_kallsyms_lookup_name("cgrp_cpuctx_list");
-  if (!origme__cgrp_cpuctx_list)
+  orig_serial8250_ports = (void *)cust_kallsyms_lookup_name("serial8250_ports");
+  if (!orig_serial8250_ports)
 	return -EINVAL;
 
   return 0;
@@ -83,18 +77,21 @@ static void hrtimer_pr_exit(void)
 
 static int __init percpu_hrtimer_init(void)
 {
+	int i;
 
-  if (get_kallsyms_lookup_name())
-    return -EINVAL;
+	if (get_kallsyms_lookup_name())
+    	return -EINVAL;
 
-  if (sym_init())
-    return -EINVAL;
+	if (sym_init())
+		return -EINVAL;
 
-  printk("zz css_set_count:%d \n", *orig_css_set_count);
-  printk("zz %s me_cgrp_cpuctx_list:%lx \n",__func__, (unsigned long)&me_cgrp_cpuctx_list);
-  printk("zz %s origme__cgrp_cpuctx_list:%lx %lx\n",__func__, (unsigned long)origme__cgrp_cpuctx_list, this_cpu_ptr(origme__cgrp_cpuctx_list));
-  hrtimer_pr_init();	
-  return 0;
+	hrtimer_pr_init();	
+	for (i = 0; i < 4; ++i) {
+		printk("zz %s orig_serial8250_port:%lx \n",__func__, (unsigned long)&orig_serial8250_ports[i]);
+	}
+
+	return 0;
+
 }
 
 static void __exit percpu_hrtimer_exit(void)

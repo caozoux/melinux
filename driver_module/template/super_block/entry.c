@@ -7,6 +7,7 @@
 #include <linux/kprobes.h>
 #include <linux/slab.h>
 #include <linux/mm.h>
+#include <linux/dcache.h>
 #include <linux/smpboot.h>
 #include <linux/types.h>
 #include <linux/mm.h>
@@ -68,11 +69,6 @@ int sym_init(void)
 
 static int hrtimer_pr_init(void)
 {
-	hrtimer_init(&hrtimer_pr, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-	hrtimer_pr.function = hrtimer_pr_fun;
-	hrtimer_start(&hrtimer_pr, ns_to_ktime(1000000000),
-			HRTIMER_MODE_REL_PINNED);
-
 	return 0;
 }
 
@@ -81,25 +77,47 @@ static void hrtimer_pr_exit(void)
 	hrtimer_cancel(&hrtimer_pr);
 }
 
+void dump_dentry(struct inode *inode)
+{
+        struct dentry *dentry;
+        const char *name = "?";
+        dentry = d_find_alias(inode);
+        if (dentry) {
+            spin_lock(&dentry->d_lock);
+            name = (const char *) dentry->d_name.name;
+        }
+        printk( "dirtied inode %lu (%s) on \n",
+               inode->i_ino,
+               name);
+        if (dentry) {
+            spin_unlock(&dentry->d_lock);
+            dput(dentry);
+        }
+}
+
 static int __init percpu_hrtimer_init(void)
 {
 
+	struct super_block *sb = 0xffff9ae5e440a548;
+	struct inode *inode;
   if (get_kallsyms_lookup_name())
     return -EINVAL;
 
   if (sym_init())
     return -EINVAL;
 
-  printk("zz css_set_count:%d \n", *orig_css_set_count);
-  printk("zz %s me_cgrp_cpuctx_list:%lx \n",__func__, (unsigned long)&me_cgrp_cpuctx_list);
-  printk("zz %s origme__cgrp_cpuctx_list:%lx %lx\n",__func__, (unsigned long)origme__cgrp_cpuctx_list, this_cpu_ptr(origme__cgrp_cpuctx_list));
-  hrtimer_pr_init();	
-  return 0;
+	spin_lock(&sb->s_inode_list_lock);
+	list_for_each_entry(inode, &sb->s_inodes, i_sb_list) {
+		printk("zz %s inode:%lx \n",__func__, (unsigned long)inode);
+		dump_dentry(inode);
+	}
+	spin_unlock(&sb->s_inode_list_lock);
+	return 0;
 }
 
 static void __exit percpu_hrtimer_exit(void)
 {
-  hrtimer_pr_exit();	
+  //hrtimer_pr_exit();	
 }
 
 module_init(percpu_hrtimer_init);

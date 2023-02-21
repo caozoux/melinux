@@ -16,8 +16,8 @@
 #include "internal.h"
 #include "hotfix_util.h"
 
-static DEFINE_HASHTABLE(css_set_table, CSS_SET_HASH_BITS);
-struct kd_percpu_data kd_percpu_data[512];
+#define MAX_BLOCK_HASH 16
+static DEFINE_HASHTABLE(module_hash_list, MAX_BLOCK_HASH);
 
 struct mutex *orig_text_mutex;
 
@@ -32,28 +32,32 @@ struct kmem_cache *dirty_kmem_cache;
 hash_add(css_set_table, &cset->hlist, key);
 
 struct inode_dirty_data {
-	struct hlist_node hlist;
-	u64 dirty_size;
-	u64 i_ino;
-	char *path[256];
-	u64 pid[256];
-	u64 size[256];
+	//char path[256];
+	u64 tgid;
+	u64 dirt_size;
 };
+
+#define MAX_RECORD 10000;
+struct inode_dirty_data *list;
+int offset;
 
 DEFINE_ORIG_FUNC(void, account_page_dirtied, 2, struct page  *, page, struct address_space *, mapping);
 void new_account_page_dirtied(struct page *page, struct address_space *mapping)
 {
 	struct inode *inode = mapping->host;
 	struct pid *pid = task_tgid(current);
+	struct super_block *i_sb;
 	struct dentry *dentry;
 	const char *name = "?";
-
-	//item = kmem_cache_alloc(s, GFP_KERNEL);
-	//kmem_cache_free(s, item);
 
 	if (!inode || !inode->i_ino)
 		goto out;
 
+	if (!inode->i_sb)
+		goto out;
+
+
+#if 0
 	dentry = d_find_alias(inode);
 	if (dentry) {
 		spin_lock(&dentry->d_lock);
@@ -66,20 +70,11 @@ void new_account_page_dirtied(struct page *page, struct address_space *mapping)
 		spin_unlock(&dentry->d_lock);
 		dput(dentry);
 	}
+#endif
 
-	//mm = get_task_mm(tsk);
 
 out:
     return old_account_page_dirtied(page, mapping);
-}
-
-void account_page_dirtied_trace(void *data, u64 *var, unsigned int var_ref_idx)
-{
-	struct test_data *trace_data;
-	trace_data = (struct test_data *)var;
-	printk("zz %s var:%lx var_ref_idx:%lx \n",__func__, (unsigned long)var, (unsigned long)var_ref_idx);
-
-	//printk("zz %s var:%lx \n",__func__, (unsigned long)var[var_ref_idx]);
 }
 
 static int symbol_walk_callback(void *data, const char *name,
@@ -157,7 +152,6 @@ static int __init percpu_hrtimer_init(void)
 	if (base_func_init())
 		return -EINVAL;
 
-	//ret = register_tracepoint("writeback_dirty_page", account_page_dirtied_trace, NULL);
 	printk("zz %s %d \n", __func__, __LINE__);
 	return 0;
 }
@@ -165,7 +159,6 @@ static int __init percpu_hrtimer_init(void)
 static void __exit percpu_hrtimer_exit(void)
 {
 	func_replace_exit();
-	//unregister_tracepoint("writeback_dirty_page", account_page_dirtied_trace, NULL);
 	printk("zz %s %d \n", __func__, __LINE__);
 }
 
