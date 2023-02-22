@@ -14,6 +14,14 @@
 #include <linux/interrupt.h>
 #include <linux/syscore_ops.h>
 
+#define LOOKUP_SYMS(name) do {							\
+		orig_##name = (void *)cust_kallsyms_lookup_name(#name);		\
+		if (!orig_##name) {						\
+			pr_err("kallsyms_lookup_name: %s\n", #name);		\
+			return -EINVAL;						\
+		}								\
+	} while (0)
+
 unsigned long (*cust_kallsyms_lookup_name)(const char *name);
 struct hrtimer hrtimer_pr;
 int *orig_css_set_count;
@@ -54,14 +62,11 @@ static int get_kallsyms_lookup_name(void)
 
 int sym_init(void)
 {
+	if (LOOKUP_SYMS("css_set_count")) 
+		return -EINVAL;
 
-  orig_css_set_count = (void *)cust_kallsyms_lookup_name("css_set_count");
-  if (!orig_css_set_count)
-	return -EINVAL;
-
-  origme__cgrp_cpuctx_list= (void *)cust_kallsyms_lookup_name("cgrp_cpuctx_list");
-  if (!origme__cgrp_cpuctx_list)
-	return -EINVAL;
+	if (LOOKUP_SYMS("cgrp_cpuctx_list")) 
+		return -EINVAL;
 
   return 0;
 }
