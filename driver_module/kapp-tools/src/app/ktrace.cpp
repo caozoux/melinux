@@ -8,15 +8,6 @@
 
 using namespace std;
 
-DEFINE_string(ktraceunit, "", "\n"
-//DEFINE_string(unit, "", "\n"
-"rcu\n"
-"sched_switch\n"
-);
-
-static int test_code = 6;
-//extern string FLAGS_unit;
-
 int unit_ktrace(int argc, char** argv)
 {
 	struct ioctl_ksdata data;

@@ -48,11 +48,12 @@ struct ksysd_uint_item {
 		.exit =	 name##_unit_exit, \
 	}
 
-
 int base_func_init(void);
 FUNC_UNIT(kprobe);
 FUNC_UNIT(ktrace);
 FUNC_UNIT(kinject);
 FUNC_UNIT(kmem);
 FUNC_UNIT(kdevice);
+FUNC_UNIT(kblock);
+
 #endif /* ifndef __KSYS_DATA_H__ */

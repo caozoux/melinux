@@ -32,6 +32,7 @@ enum ioctl_cmdtype {
 	IOCTL_KMEM,
 	//device module
 	IOCTL_KDEVICE, 
+	IOCTL_KBLOCK,
 };
 
 enum IOCTL_TYPE {

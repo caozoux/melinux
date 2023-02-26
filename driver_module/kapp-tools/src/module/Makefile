@@ -19,13 +19,14 @@ ifdef CONFIG_ARM64
 endif
 
 $(TARGET)-objs += kprobe/kprobe_unit.o
-$(TARGET)-objs += base/base.o base/percpu_variable.o
+$(TARGET)-objs += base/base.o base/percpu_variable.o base/trace.o
 $(TARGET)-objs += ktrace/ktrace_unit.o
-$(TARGET)-objs += ./kinject/kinject_test.o ./kinject/kinject_unit.o  ./kinject/kinject_timer.o  \
-				  ./kinject/kinject_slub.o ./kinject/kinject_sem.o ./kinject/kinject_segment.o \
-				  ./kinject/kinject_lock.o
+$(TARGET)-objs += kinject/kinject_test.o kinject/kinject_unit.o  kinject/kinject_timer.o  \
+				  kinject/kinject_slub.o kinject/kinject_sem.o kinject/kinject_segment.o \
+				  kinject/kinject_lock.o
+$(TARGET)-objs += kblock/kblock_unit.o kblock/super.o  kblock/bio.o  kblock/dentry.o  kblock/inode.o  kblock/request.o kblock/kblock_trace.o
 
-$(TARGET)-objs += ./kmem/kmem_dump.o ./kmem/kmem_unit.o
+$(TARGET)-objs += kmem/kmem_dump.o kmem/kmem_unit.o
 
 $(TARGET)-objs += kdevice/kdevice_unit.o
 

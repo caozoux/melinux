@@ -56,6 +56,7 @@ struct ksysd_uint_item unit_list[] =
 	KSYSD_UNIT(kinject, IOCTL_INJECT),
 	KSYSD_UNIT(kmem, IOCTL_KMEM),
 	KSYSD_UNIT(kdevice, IOCTL_KDEVICE),
+	KSYSD_UNIT(kblock, IOCTL_KBLOCK),
 };
 
 static int ksysd_template_open(struct inode *inode, struct file * file)
@@ -97,7 +98,6 @@ int golable_sysm_init(void)
 
 	TEXT_SYMS()
 
-	ret = base_func_init();
 	if (ret) {
 		ERR("base init failed\n");
 		goto OUT;
@@ -206,6 +206,10 @@ static int __init ksys_tool_init(void)
 		ERR("percpu variable init failed\n");
 		goto out3;
 	}
+
+	ret = base_func_init();
+	if (ret)
+		goto out3;
 
 	for(i=0; unit_list[i].type; i++) {
 		if (unit_list[i].init()) {

@@ -29,14 +29,14 @@ static void sample_hbp_handler(struct perf_event *bp,
 }
 
 
-static void kdevice_net_rx_dropped_watchpoint(struct net_device *dev)
+static int kdevice_net_rx_dropped_watchpoint(struct net_device *dev)
 {
 	struct perf_event_attr attr;
 	int ret;
 	
 	hw_breakpoint_init(&attr);
 
-	attr.bp_addr = &dev->rx_dropped;
+	attr.bp_addr = (u64)&dev->rx_dropped;
 	attr.bp_len = HW_BREAKPOINT_LEN_4;
 	//attr.bp_type = HW_BREAKPOINT_W | HW_BREAKPOINT_R;
 	attr.bp_type = HW_BREAKPOINT_W;
@@ -81,7 +81,7 @@ static void kdevice_dump_net_device(struct net_device *dev)
 
 };
 
-static int kdevice_scan_net_device(void)
+static int __maybe_unused kdevice_scan_net_device(void)
 {
 	struct net *net;
 	struct net_device *dev;

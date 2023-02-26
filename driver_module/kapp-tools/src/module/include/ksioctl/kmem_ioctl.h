@@ -1,5 +1,5 @@
-#ifndef __KTRACE_IOCTL_H__
-#define __KTRACE_IOCTL_H__
+#ifndef __KMEM_IOCTL_H__
+#define __KMEM_IOCTL_H__
 
 enum IOCTL_USEKMEM_SUB{
 	IOCTL_USEKMEM_NONE = 0,
