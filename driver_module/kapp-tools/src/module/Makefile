@@ -26,7 +26,7 @@ $(TARGET)-objs += kinject/kinject_test.o kinject/kinject_unit.o  kinject/kinject
 				  kinject/kinject_lock.o
 $(TARGET)-objs += kblock/kblock_unit.o kblock/super.o  kblock/bio.o  kblock/dentry.o  kblock/inode.o  kblock/request.o kblock/kblock_trace.o
 
-$(TARGET)-objs += kmem/kmem_dump.o kmem/kmem_unit.o
+$(TARGET)-objs += kmem/kmem_dump.o kmem/kmem_unit.o kmem/cgroup.o
 
 $(TARGET)-objs += kdevice/kdevice_unit.o
 

@@ -38,11 +38,13 @@ OUT:
 
 int kmem_unit_init(void)
 {
+	kmem_cgroup_init();
 	return 0;
 }
 
 int kmem_unit_exit(void)
 {
+	kmem_cgroup_exit();
 	return 0;
 }
 
