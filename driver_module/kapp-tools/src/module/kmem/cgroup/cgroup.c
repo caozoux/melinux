@@ -16,6 +16,8 @@
 #include "ksysd_ioctl.h"
 #include "../kmem_local.h"
 
+//#define ENABLE_KMEM_CGROUP_KPROBE
+
 #define for_each_mem_cgroup_tree(iter, root) \
 	for (iter = orig_mem_cgroup_iter(root, NULL, NULL);  \
 			iter != NULL;  \
@@ -25,8 +27,6 @@
 	for (iter = orig_mem_cgroup_iter(NULL, NULL, NULL);  \
 			iter != NULL;  \
 			iter = orig_mem_cgroup_iter(NULL, iter, NULL))
-
-
 
 struct list_head *orig_cgroup_roots;
 struct cgroup_subsys **orig_cgroup_subsys;
@@ -39,6 +39,30 @@ unsigned long (*orig_node_page_state)(struct pglist_data *pgdat,
 struct mem_cgroup *(*orig_mem_cgroup_iter)(struct mem_cgroup *root, struct mem_cgroup *prev, struct mem_cgroup_reclaim_cookie *reclaim);
 //unsigned long (*orig_try_to_free_mem_cgroup_pages)(struct mem_cgroup *memcg, unsigned long nr_pages,gfp_t gfp_mask, bool may_swap);
 
+
+int kmem_cgroup_scan_memcg(struct kmem_ioctl *kmem_data)
+{
+	struct mem_cgroup *memcg;
+
+	for_each_mem_cgroup(memcg) {
+		struct cgroup *cgroup;
+		printk("zz %s memcg:%lx \n",__func__, (unsigned long)memcg);
+	}
+	return 0;
+}
+
+int kmem_cgroup_syms_init(void)
+{
+	LOOKUP_SYMS(cgroup_roots);
+	LOOKUP_SYMS(mem_cgroup_iter);
+	LOOKUP_SYMS(css_set_lock);
+	LOOKUP_SYMS(node_page_state);
+	LOOKUP_SYMS(cgroup_roots);
+	LOOKUP_SYMS(cgroup_subsys);
+	return 0;
+}
+
+#ifdef ENABLE_KMEM_CGROUP_KPROBE
 static int kmem_charge_kprobe(struct kprobe *p, struct pt_regs *regs)
 {
 	struct page *page = regs->di;
@@ -100,29 +124,6 @@ static int kmem_uncharge_kprobe(struct kprobe *p, struct pt_regs *regs)
 
 	return 0;
 }
-
-int kmem_cgroup_scan_memcg(struct kmem_ioctl *kmem_data)
-{
-	struct mem_cgroup *memcg;
-
-	for_each_mem_cgroup(memcg) {
-		struct cgroup *cgroup;
-		printk("zz %s memcg:%lx \n",__func__, (unsigned long)memcg);
-	}
-	return 0;
-}
-
-int kmem_cgroup_syms_init(void)
-{
-	LOOKUP_SYMS(cgroup_roots);
-	LOOKUP_SYMS(mem_cgroup_iter);
-	LOOKUP_SYMS(css_set_lock);
-	LOOKUP_SYMS(node_page_state);
-	LOOKUP_SYMS(cgroup_roots);
-	LOOKUP_SYMS(cgroup_subsys);
-	return 0;
-}
-
 static struct kprobe kmemkps_uncharge= {
 	.symbol_name = "__memcg_kmem_uncharge_memcg",
 	.pre_handler = kmem_uncharge_memcg_kprobe,
@@ -138,6 +139,25 @@ static struct kprobe kmemkps_charge = {
    	.pre_handler = kmem_charge_kprobe,
 };
 struct kprobe *kps_kmem[3] = {&kmemkps_charge, &kmemkps_uncharge, &kmemkps_uncharge_1};
+static int kmem_krpobe_init(void)
+{
+	return register_kprobes(kps_kmem,3);
+}
+
+static void kmem_krpobe_exit(void)
+{
+	unregister_kprobes(kps_kmem,3);
+}
+#else
+static int kmem_krpobe_init(void)
+{
+	return 0;
+}
+
+static void kmem_krpobe_exit(void)
+{
+}
+#endif
 
 int kmem_cgroup_init(void)
 {
@@ -147,7 +167,7 @@ int kmem_cgroup_init(void)
 		return -EINVAL;
 	//kmem_cgroup_scan_memcg(NULL);
 
-	ret = register_kprobes(kps_kmem,3);
+	ret = kmem_krpobe_init();
 	if (ret)
 		return ret;
 
@@ -156,6 +176,6 @@ int kmem_cgroup_init(void)
 
 void kmem_cgroup_exit(void)
 {
-	unregister_kprobes(kps_kmem,3);
+	kmem_krpobe_exit();
 }
 

@@ -13,7 +13,9 @@
 #include <kpercpu.h>
 #include "ksysdata.h"
 #include "ksysd_ioctl.h"
+#include "internal.h"
 #include "ktrace.h"
+#include "variant_buffer.h"
 
 #define ARRT_MARCO(name) DEVICE_ATTR(name, S_IWUSR | S_IRUGO, read_##name, write_##name);
 
@@ -191,6 +193,9 @@ static int __init ksys_tool_init(void)
 		return -ENOMEM;
 	}
 
+	if (runlog_init())
+		goto out1;
+
 	ret = misc_register(&ksysd_dev);
 	if (ret) {
 		ERR(" ksysd register err\n");
@@ -244,6 +249,7 @@ static void __exit ksys_tool_exit(void)
 
 	device_remove_file(ksysd_dev.this_device, &dev_attr_enable);
 	misc_deregister(&ksysd_dev);
+	runlog_exit();
 	kfree(ksysd_data);
 	INFO("ksysddriver unload \n");
 }

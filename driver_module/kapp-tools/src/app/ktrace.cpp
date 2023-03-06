@@ -2,8 +2,6 @@
 #include <string>
 #include <ksioctl/ktrace_ioctl.h>
 
-#define __FILECMD__ "ktrace"
-
 #include "kapp_unit.h"
 
 using namespace std;
