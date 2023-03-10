@@ -40,6 +40,7 @@ function rwsem_multil_read_up()
 	runrwsem --rdup "rdup 3"
 }
 
+MODE=""
 #  Handle command line arguments
 #-----------------------------------------------------------------------
 
@@ -49,13 +50,8 @@ do
 
 	h|help     )  usage; exit 0   ;;
 	m|mode     )
-		rwsem_multil_read_down	
-		read -p "input:"  answer
-		if [ $answer == "Y" ]
-		then
-			rwsem_multil_read_up
-		fi
-		exit 0   ;;
+		MODE=$OPTARG
+		;;
 
 	v|version  )  echo "$0 -- Version $__ScriptVersion"; exit 0   ;;
 
@@ -65,3 +61,20 @@ do
   esac    # --- end of case ---
 done
 shift $(($OPTIND-1))
+
+if [ $MODE == "1" ]
+then
+	rwsem_multil_read_down	
+	read -p "input Y to exit\n"  answer
+	if [ $answer == "Y" ]
+	then
+		rwsem_multil_read_up
+	fi
+
+elif [[ $MODE == "2" ]]; then
+	::	
+elif [[ $MODE == "2" ]]; then
+	::
+elif [[ $MODE == "2" ]]; then
+	::
+fi
