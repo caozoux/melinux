@@ -12,22 +12,55 @@
 #include <ksioctl/kmem_ioctl.h>
 #include <linux/vmalloc.h>
 
+#include "ksioctl/krunlog_ioctl.h"
+
 #include "internal.h"
 //#include "pub/trace_buffer.h"
 
 #define RUNLOG_BUF_SIZE (10 * 1024 * 1024)
+
 
 struct rinlog_buffer {
 	struct ksys_trace_buffer buffer;
 } runlog_buf;
 
 
-void rlog_printf(const char *f, ...)
+struct ksys_trace_buffer *getlog_buffer(void)
 {
-	 va_list args;
-	 va_start(args, f);
-	 ksys_trace_buffer_printk(&runlog_buf.buffer, f, args);
-	 va_end(args);
+	return &runlog_buf.buffer;
+}
+
+int krunlog_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_ksdata *ksdata)
+{
+	int ret;
+	int buf_size = 0;
+	struct krunlog_ioctl kioctl;
+	if (copy_from_user(&kioctl, (char __user *)ksdata->data, sizeof(struct krunlog_ioctl))) {
+		pr_err("ioctl data copy err\n");
+		ret = -EFAULT;
+		goto OUT;
+	}
+
+	switch (ksdata->subcmd) {
+		case IOCTL_RUNLOG_DUMP:
+			backup_ksys_trace_buffer(&runlog_buf.buffer);
+			buf_size = (kioctl.len  < RUNLOG_BUF_SIZE) ? runlog_buf.buffer.product.len : RUNLOG_BUF_SIZE;
+			printk("zz %s buf_size:%lx \n",__func__, (unsigned long)buf_size);
+			if (ret = copy_to_user((char __user *)kioctl.buf, runlog_buf.buffer.product.data, buf_size))
+				goto OUT;
+			break;
+
+		case IOCTL_RUNLOG_CLEAN:
+			discard_ksys_trace_buffer(&runlog_buf.buffer);
+			break;
+
+		default:
+			break;
+	}
+
+	return 0;
+OUT:
+	return ret;
 }
 
 int runlog_init(void)
@@ -39,13 +72,22 @@ int runlog_init(void)
 		memset(&runlog_buf.buffer, 0 ,sizeof(struct ksys_trace_buffer));
 		return -EINVAL;
 	}
-	printk("zz %s buffer->product.data:%lx \n",__func__, (unsigned long)runlog_buf.buffer.product.data);
-	rlog_printf("zz %s \n", __func__);
+
 	return 0;
 }
 
 void runlog_exit(void)
 {
 	destroy_ksys_trace_buffer(&runlog_buf.buffer);
+}
+
+int krunlog_unit_init(void)
+{
+	return 0;
+}
+
+int krunlog_unit_exit(void)
+{
+	return 0;
 }
 

@@ -7,10 +7,6 @@ enum IOCTL_INJECT_SUB{
 	IOCTL_RUNLOG_CLEAN,
 };
 
-
-enum IOCTL_USEKINJECT_SUB{
-};
-
 struct krunlog_ioctl {
 	void *buf;
 	int len;

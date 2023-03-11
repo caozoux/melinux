@@ -59,6 +59,7 @@ struct ksysd_uint_item unit_list[] =
 	KSYSD_UNIT(kmem, IOCTL_KMEM),
 	KSYSD_UNIT(kdevice, IOCTL_KDEVICE),
 	KSYSD_UNIT(kblock, IOCTL_KBLOCK),
+	KSYSD_UNIT(krunlog, IOCTL_KRUNLOG),
 };
 
 static int ksysd_template_open(struct inode *inode, struct file * file)
@@ -119,14 +120,15 @@ static long ksysd_template_unlocked_ioctl(struct file *file, unsigned int size, 
 
 	dev_data = (struct ksysd_private_data *) file->private_data;
 
+	printk("zz %s a:%lx \n",__func__, (unsigned long)sizeof(struct ioctl_ksdata));
 	if (copy_from_user(&ctl_data, (char __user *) data, sizeof(struct ioctl_ksdata))) {
 		dev_err(ksysd_data->dev, "ioctl data copy err\n");
 		ret = -EFAULT;
 		goto OUT;
 	}
 
-	DBG("cmd:%d\n", (int)ctl_data.cmd);
 
+	DBG("cmd:%d\n", (int)ctl_data.cmd);
 	for(i=0; unit_list[i].type; i++) {
 		if (unit_list[i].type == ctl_data.cmd)
 			ret = unit_list[i].ioctl(ctl_data.cmd, sizeof(struct ioctl_ksdata), &ctl_data);
@@ -189,9 +191,8 @@ static int __init ksys_tool_init(void)
 	}
 
 	ksysd_data = kzalloc(sizeof(struct ksysd_data), GFP_KERNEL);
-	if (!ksysd_data) {
+	if (!ksysd_data)
 		return -ENOMEM;
-	}
 
 	if (runlog_init())
 		goto out1;

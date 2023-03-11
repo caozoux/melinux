@@ -55,5 +55,6 @@ FUNC_UNIT(kinject);
 FUNC_UNIT(kmem);
 FUNC_UNIT(kdevice);
 FUNC_UNIT(kblock);
+FUNC_UNIT(krunlog);
 
 #endif /* ifndef __KSYS_DATA_H__ */
