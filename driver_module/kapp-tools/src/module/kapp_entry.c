@@ -182,7 +182,7 @@ static int get_kallsyms_lookup_name(void)
 
 static int __init ksys_tool_init(void)
 {
-	int ret;
+	int ret = 0;
 	int i;
 
 	if (get_kallsyms_lookup_name()) {

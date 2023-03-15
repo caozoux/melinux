@@ -57,5 +57,6 @@ void kmem_slab_exit(void)
 {
 	unregister_kprobes(kps_kmem,3);
 }
-
 #endif
+
+

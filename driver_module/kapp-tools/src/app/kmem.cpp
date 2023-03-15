@@ -8,12 +8,66 @@
 #include "kapp_unit.h"
 
 int kmemdump_args_handle(int argc, char **argv);
+int kmem_cgroup_args(int argc, char **argv);
+
+#define KMEM_IOCTL_DATA_INIT(data, kmem_data) \
+	struct kmem_ioctl kmem_data; \
+	struct ioctl_ksdata data; \
+	data.data = &kmem_data; \
+	data.len = sizeof(struct kmem_ioctl); \
+	kmem_data.enable = 0;
+
+int kmem_cgroup_args(int argc, char **argv)
+{
+	static int cgroup_args_kmemory;
+	static struct option cgroup_opts[] = {
+		{ "k",no_argument,&cgroup_args_kmemory,0},
+		{ "p",required_argument,NULL,0},
+		{     0,    0,    0,    0},
+	};
+	
+	int c;
+	pid_t pid = -1;
+
+	KMEM_IOCTL_DATA_INIT(data, kmem_data);
+
+	while((c = getopt_long(argc, argv, "kp:", cgroup_opts, NULL)) != -1)
+	{
+		switch(c) {
+			case 'k':
+				cgroup_args_kmemory = 1;
+				break;
+			case 'p':
+				pid = atoi(optarg);
+				break;
+			default:
+				break;
+		}
+	}
+
+	if (cgroup_args_kmemory) {
+		if (pid == -1)
+			goto OUT;
+		kmem_data.pid = pid;
+		ktools_ioctl::kioctl(IOCTL_KMEM, (int) IOCTL_USEKMEM_CGROUP_SCANKMEM, 
+				&data, sizeof(struct kmem_ioctl));
+	}
+
+	return 0;
+OUT:
+	return -1;
+}
 
 struct cmdargs kmem_args[] = {
 	{"--dump", kmemdump_args_handle,
 		"\n"
 		"     --water dump water\n"
 		"     --memcss  scan memory cgroup \n"
+	},
+	{"--cgroup", kmem_cgroup_args,
+		"\n"
+		"     -k  enable kmemory\n"
+		"     -p  specify pid\n"
 	},
 };
 

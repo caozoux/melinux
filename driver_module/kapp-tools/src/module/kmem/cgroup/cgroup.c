@@ -9,6 +9,8 @@
 #include <linux/kprobes.h>
 #include <linux/memcontrol.h>
 #include <linux/kernfs.h>
+#include <linux/slab.h>
+#include <linux/slub_def.h>
 #include <ksioctl/kmem_ioctl.h>
 
 #include "hotfix_util.h"
@@ -45,7 +47,7 @@ int kmem_cgroup_scan_memcg(struct kmem_ioctl *kmem_data)
 	struct mem_cgroup *memcg;
 
 	for_each_mem_cgroup(memcg) {
-		struct cgroup *cgroup;
+		//struct cgroup *cgroup;
 		printk("zz %s memcg:%lx \n",__func__, (unsigned long)memcg);
 	}
 	return 0;
@@ -60,6 +62,41 @@ int kmem_cgroup_syms_init(void)
 	LOOKUP_SYMS(cgroup_roots);
 	LOOKUP_SYMS(cgroup_subsys);
 	return 0;
+}
+
+
+void dump_cgroup_kmem_info(pid_t pid)
+{
+	struct task_struct *task = find_process_by_pid(pid);
+	struct mem_cgroup *memcg;
+	struct slabinfo sinfo;
+	struct kmem_cache *s;
+	
+	if (!task) {
+		DBG("pid:%d not find task\n", pid);
+		return;
+	}
+
+	memcg = task->active_memcg;
+	if (!memcg)
+		memcg = get_mem_cgroup_from_mm(task->mm);
+
+	if (!memcg) {
+		DBG("pid:%d not find memcg\n", pid);
+		return;
+	}
+
+	s = list_entry(&memcg->kmem_caches, struct kmem_cache, memcg_params.kmem_caches_node);
+	//s = list_entry(p, struct kmem_cache, list);
+	//s = list_first_entry(&memcg->kmem_caches, struct kmem_cache, list);		
+
+	//
+	//memset(&sinfo, 0, sizeof(sinfo));
+	//get_slabinfo(s, &sinfo);
+	//mutex_lock(&slab_mutex);
+
+	//&memcg->kmem_cachesk
+	
 }
 
 #ifdef ENABLE_KMEM_CGROUP_KPROBE
@@ -85,15 +122,6 @@ static int kmem_charge_kprobe(struct kprobe *p, struct pt_regs *regs)
 		printk("zz %s cgroup:%s order:%d\n",__func__, (unsigned long)kn->name ? kn->name : "NULL", order);
 
 
-	//printk("zz %s page:%lx \n",__func__, (unsigned long)page);
-	//struct cgroup *cgroup = memcg->css.cgroup;
-	//struct kernfs_node *kn = cgroup->kn;
-	//struct cgroup_subsys *ss = memcg->css.ss;
-	//printk("zz %s memcg:%lx \n",__func__, (unsigned long)memcg);
-
-
-	//if (kn)
-	//	trace_printk("zz %s order:%lx %s\n",__func__, (unsigned long)order, kn->name);
     return 0;
 }
 
@@ -124,6 +152,7 @@ static int kmem_uncharge_kprobe(struct kprobe *p, struct pt_regs *regs)
 
 	return 0;
 }
+
 static struct kprobe kmemkps_uncharge= {
 	.symbol_name = "__memcg_kmem_uncharge_memcg",
 	.pre_handler = kmem_uncharge_memcg_kprobe,
@@ -138,7 +167,9 @@ static struct kprobe kmemkps_charge = {
 	.symbol_name = "__memcg_kmem_charge",
    	.pre_handler = kmem_charge_kprobe,
 };
+
 struct kprobe *kps_kmem[3] = {&kmemkps_charge, &kmemkps_uncharge, &kmemkps_uncharge_1};
+
 static int kmem_krpobe_init(void)
 {
 	return register_kprobes(kps_kmem,3);

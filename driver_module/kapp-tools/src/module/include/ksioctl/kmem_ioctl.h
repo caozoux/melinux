@@ -22,6 +22,7 @@ enum IOCTL_USEKMEM_SUB{
 	IOCTL_USEKMEM_TESTMMAP,
 	//栈溢出
 	IOCTL_USEKMEM_STACK_SEGMENT,
+	IOCTL_USEKMEM_CGROUP_SCANKMEM,
 };
 
 enum IOCTL_USEKMEM_DUMP_SUB{
@@ -37,6 +38,7 @@ struct kmem_dump {
 };
 
 struct kmem_ioctl {
+	pid_t pid;
 	int enable;
 	enum IOCTL_USEKMEM_SUB subcmd;
 	void *data;	
