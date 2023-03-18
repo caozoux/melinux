@@ -11,8 +11,6 @@
 #include "ksysd_ioctl.h"
 #include "kmem_local.h"
 
-void (*orig_get_slabinfo)(struct kmem_cache *s, struct slabinfo *sinfo);
-
 int kmem_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_ksdata *ksdata)
 {
 	struct kmem_ioctl kioctl;
