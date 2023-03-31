@@ -11,6 +11,7 @@
 #include <linux/kernfs.h>
 #include <linux/slab.h>
 #include <linux/slub_def.h>
+#include <linux/blk-cgroup.h>
 #include <ksioctl/kmem_ioctl.h>
 
 #include "hotfix_util.h"
@@ -19,6 +20,7 @@
 #include "../kmem_local.h"
 
 //#define ENABLE_KMEM_CGROUP_KPROBE
+
 
 #define for_each_mem_cgroup_tree(iter, root) \
 	for (iter = orig_mem_cgroup_iter(root, NULL, NULL);  \
@@ -30,8 +32,20 @@
 			iter != NULL;  \
 			iter = orig_mem_cgroup_iter(NULL, iter, NULL))
 
-struct list_head *orig_cgroup_roots;
 struct cgroup_subsys **orig_cgroup_subsys;
+#define for_each_subsys(ss, ssid) \
+	 for ((ssid) = 0; (ssid) < CGROUP_SUBSYS_COUNT &&        \
+			 (((ss) = orig_cgroup_subsys[ssid]) || true); (ssid)++)
+
+#define for_each_root(root) \
+	list_for_each_entry((root), &cgroup_roots, root_list)
+
+struct cgroup_subsys_state * (*orig_css_next_descendant_post)(struct cgroup_subsys_state *pos, struct cgroup_subsys_state *root);
+#define mcss_for_each_descendant_post(pos, css)              \
+	for ((pos) = orig_css_next_descendant_post(NULL, (css)); (pos);  \
+			(pos) = orig_css_next_descendant_post((pos), (css)))
+	
+struct list_head *orig_cgroup_roots;
 struct mem_cgroup *orig_root_mem_cgroup;
 spinlock_t *orig_css_set_lock;
 
@@ -41,6 +55,43 @@ unsigned long (*orig_node_page_state)(struct pglist_data *pgdat,
 struct mem_cgroup *(*orig_mem_cgroup_iter)(struct mem_cgroup *root, struct mem_cgroup *prev, struct mem_cgroup_reclaim_cookie *reclaim);
 //unsigned long (*orig_try_to_free_mem_cgroup_pages)(struct mem_cgroup *memcg, unsigned long nr_pages,gfp_t gfp_mask, bool may_swap);
 
+
+int kmem_cgroup_scan_blkcg(struct kmem_ioctl *kmem_data)
+{
+	struct cgroup *root = blkcg_root.css.cgroup;
+	struct cgroup_subsys_state  *css;
+	int count = 0;
+
+	mcss_for_each_descendant_post(css, &blkcg_root.css) {
+	//printk("zz css:%lx refcnt:%ld\n", (unsigned long)css, refcount_read(&css->refcnt));
+	printk("zz css:%lx refcnt:%lx %d %d\n", (unsigned long)css, atomic_long_read(&css->refcnt.count), percpu_ref_is_zero(&css->refcnt), atomic_read(&css->online_cnt));
+		count++;
+	}
+	printk("zz %s count:%lx \n",__func__, (unsigned long)count);
+#if 0
+	struct cgroup_subsys_state *pos_css;
+	struct blkcg_gq *blkg;
+	blkg_for_each_descendant_post(blkg, pos_css, blkcg_root.blkg_hint) {
+
+	}
+#endif
+	return 0;
+}
+
+int kmem_cgroup_scan_subsys(struct kmem_ioctl *kmem_data)
+{
+	struct cgroup_subsys *ss;
+	int i;
+
+	for_each_subsys(ss, i) {
+		printk("%s\t%d\t%d\t%d\n",
+			ss->legacy_name, ss->root->hierarchy_id,
+			atomic_read(&ss->root->nr_cgrps),
+			i);
+	}
+
+	return 0;
+}
 
 int kmem_cgroup_scan_memcg(struct kmem_ioctl *kmem_data)
 {
@@ -61,6 +112,7 @@ int kmem_cgroup_syms_init(void)
 	LOOKUP_SYMS(node_page_state);
 	LOOKUP_SYMS(cgroup_roots);
 	LOOKUP_SYMS(cgroup_subsys);
+	LOOKUP_SYMS(css_next_descendant_post);
 	return 0;
 }
 
@@ -197,6 +249,8 @@ int kmem_cgroup_init(void)
 	if (kmem_cgroup_syms_init())
 		return -EINVAL;
 	//kmem_cgroup_scan_memcg(NULL);
+	kmem_cgroup_scan_subsys(NULL);
+	kmem_cgroup_scan_blkcg(NULL);
 
 	ret = kmem_krpobe_init();
 	if (ret)
