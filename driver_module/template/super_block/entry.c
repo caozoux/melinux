@@ -14,19 +14,16 @@
 #include <linux/nmi.h>
 #include <linux/interrupt.h>
 #include <linux/syscore_ops.h>
+#include <linux/blk-mq.h>
+#include <linux/blkdev.h>
+#include <linux/seq_file.h>
+#include <linux/proc_fs.h>
+
+void (*orig_blk_mq_queue_tag_busy_iter)(struct request_queue *q, busy_iter_fn *fn,  void *priv);
+struct list_head *orig_super_blocks;
+spinlock_t *orig_sb_lock;
 
 unsigned long (*cust_kallsyms_lookup_name)(const char *name);
-struct hrtimer hrtimer_pr;
-int *orig_css_set_count;
-
-struct list_head *origme__cgrp_cpuctx_list;
-static DEFINE_PER_CPU(struct list_head, me_cgrp_cpuctx_list);
-static enum hrtimer_restart hrtimer_pr_fun(struct hrtimer *hrtimer)
-{
-  	trace_printk("zz css_set_count:%d \n", *orig_css_set_count);
-	hrtimer_forward_now(&hrtimer_pr, ns_to_ktime(1000000000));
-	return HRTIMER_RESTART;
-}
 
 static int (*ksys_kallsyms_on_each_symbol)(int (*fn)(void *, const char *,
         struct module *, unsigned long),void *data);
@@ -56,14 +53,17 @@ static int get_kallsyms_lookup_name(void)
 int sym_init(void)
 {
 
-  orig_css_set_count = (void *)cust_kallsyms_lookup_name("css_set_count");
-  if (!orig_css_set_count)
+  orig_blk_mq_queue_tag_busy_iter = (void *)cust_kallsyms_lookup_name("blk_mq_queue_tag_busy_iter");
+  if (!orig_blk_mq_queue_tag_busy_iter)
 	return -EINVAL;
 
-  origme__cgrp_cpuctx_list= (void *)cust_kallsyms_lookup_name("cgrp_cpuctx_list");
-  if (!origme__cgrp_cpuctx_list)
+  orig_sb_lock = (void *)cust_kallsyms_lookup_name("sb_lock");
+  if (!orig_sb_lock)
 	return -EINVAL;
 
+  orig_super_blocks = (void *)cust_kallsyms_lookup_name("super_blocks");
+  if (!orig_super_blocks)
+	return -EINVAL;
   return 0;
 }
 
@@ -74,44 +74,228 @@ static int hrtimer_pr_init(void)
 
 static void hrtimer_pr_exit(void)
 {
-	hrtimer_cancel(&hrtimer_pr);
 }
 
-void dump_dentry(struct inode *inode)
+#define REQ_OP_NAME(name) [REQ_OP_##name] = #name
+static const char *const op_name[] = {
+    REQ_OP_NAME(READ),
+    REQ_OP_NAME(WRITE),
+    REQ_OP_NAME(FLUSH),
+    REQ_OP_NAME(DISCARD),
+    REQ_OP_NAME(ZONE_REPORT),
+    REQ_OP_NAME(SECURE_ERASE),
+    REQ_OP_NAME(ZONE_RESET),
+    REQ_OP_NAME(WRITE_SAME),
+    REQ_OP_NAME(WRITE_ZEROES),
+    REQ_OP_NAME(SCSI_IN),
+    REQ_OP_NAME(SCSI_OUT),
+    REQ_OP_NAME(DRV_IN),
+    REQ_OP_NAME(DRV_OUT),
+};
+
+#define CMD_FLAG_NAME(name) [__REQ_##name] = #name
+static const char *const cmd_flag_name[] = {
+    CMD_FLAG_NAME(FAILFAST_DEV),
+    CMD_FLAG_NAME(FAILFAST_TRANSPORT),
+    CMD_FLAG_NAME(FAILFAST_DRIVER),
+    CMD_FLAG_NAME(SYNC),
+    CMD_FLAG_NAME(META),
+    CMD_FLAG_NAME(PRIO),
+    CMD_FLAG_NAME(NOMERGE),
+    CMD_FLAG_NAME(IDLE),
+    CMD_FLAG_NAME(INTEGRITY),
+    CMD_FLAG_NAME(FUA),
+    CMD_FLAG_NAME(PREFLUSH),
+    CMD_FLAG_NAME(RAHEAD),
+    CMD_FLAG_NAME(BACKGROUND),
+    CMD_FLAG_NAME(NOUNMAP),
+    CMD_FLAG_NAME(NOWAIT),
+};
+
+#define RQF_NAME(name) [ilog2((__force u32)RQF_##name)] = #name
+static const char *const rqf_name[] = {
+    RQF_NAME(SORTED),
+    RQF_NAME(STARTED),
+    RQF_NAME(QUEUED),
+    RQF_NAME(SOFTBARRIER),
+    RQF_NAME(FLUSH_SEQ),
+    RQF_NAME(MIXED_MERGE),
+    RQF_NAME(MQ_INFLIGHT),
+    RQF_NAME(DONTPREP),
+    RQF_NAME(PREEMPT),
+    RQF_NAME(COPY_USER),
+    RQF_NAME(FAILED),
+    RQF_NAME(QUIET),
+    RQF_NAME(ELVPRIV),
+    RQF_NAME(IO_STAT),
+    RQF_NAME(ALLOCED),
+    RQF_NAME(PM),
+    RQF_NAME(HASHED),
+    RQF_NAME(STATS),
+    RQF_NAME(SPECIAL_PAYLOAD),
+    RQF_NAME(ZONE_WRITE_LOCKED),
+    RQF_NAME(MQ_POLL_SLEPT),
+};
+
+static const char *const blk_mq_rq_state_name_array[] = {
+    [MQ_RQ_IDLE]        = "idle",
+    [MQ_RQ_IN_FLIGHT]   = "in_flight",
+    [MQ_RQ_COMPLETE]    = "complete",
+};
+
+static const char *blk_mq_rq_state_name(enum mq_rq_state rq_state)
 {
-        struct dentry *dentry;
-        const char *name = "?";
-        dentry = d_find_alias(inode);
-        if (dentry) {
-            spin_lock(&dentry->d_lock);
-            name = (const char *) dentry->d_name.name;
+    if (WARN_ON_ONCE((unsigned int)rq_state >=
+             ARRAY_SIZE(blk_mq_rq_state_name_array)))
+        return "(?)";
+    return blk_mq_rq_state_name_array[rq_state];
+}
+
+static inline enum mq_rq_state blk_mq_rq_state(struct request *rq)
+{
+    return READ_ONCE(rq->state);
+}
+
+static int blk_flags_show(struct seq_file *m, const unsigned long flags,
+              const char *const *flag_name, int flag_name_count)
+{
+    bool sep = false;
+    int i;
+
+    for (i = 0; i < sizeof(flags) * BITS_PER_BYTE; i++) {
+        if (!(flags & BIT(i)))
+            continue;
+        if (sep)
+            seq_puts(m, "|");
+        sep = true;
+        if (i < flag_name_count && flag_name[i])
+            seq_puts(m, flag_name[i]);
+        else
+            seq_printf(m, "%d", i);
+    }
+    return 0;
+}
+
+static void blk_mq_debugfs_rq_hang_show(struct seq_file *m, struct request *rq)
+{
+    const struct blk_mq_ops *const mq_ops = rq->q->mq_ops;
+    const unsigned int op = rq->cmd_flags & REQ_OP_MASK;
+    struct bio *bio;
+    struct bio_vec *bvec;
+    int i;
+
+    seq_printf(m, "%px {.op=", rq);
+    if (op < ARRAY_SIZE(op_name) && op_name[op])
+        seq_printf(m, "%s", op_name[op]);
+    else
+        seq_printf(m, "%d", op);
+    seq_puts(m, ", .cmd_flags=");
+    blk_flags_show(m, rq->cmd_flags & ~REQ_OP_MASK, cmd_flag_name,
+               ARRAY_SIZE(cmd_flag_name));
+    seq_puts(m, ", .rq_flags=");
+    blk_flags_show(m, (__force unsigned int)rq->rq_flags, rqf_name,
+               ARRAY_SIZE(rqf_name));
+    seq_printf(m, ", .state=%s", blk_mq_rq_state_name(blk_mq_rq_state(rq)));
+    seq_printf(m, ", .tag=%d, .internal_tag=%d", rq->tag,
+           rq->internal_tag);
+    seq_printf(m, ", .start_time_ns=%llu", rq->start_time_ns);
+    seq_printf(m, ", .io_start_time_ns=%llu", rq->io_start_time_ns);
+    seq_printf(m, ", .current_time=%llu", ktime_get_ns());
+
+    bio = rq->bio;
+    while (bio) {
+        seq_printf(m, ", .bio = %px", bio);
+        seq_printf(m, ", .sector = %lu, .len=%u",
+                bio->bi_iter.bi_sector, bio->bi_iter.bi_size);
+        seq_puts(m, ", .bio_pages = { ");
+        bio_for_each_segment_all(bvec, bio, i) {
+            struct page *page = bvec->bv_page;
+
+            if (!page)
+                continue;
+            seq_printf(m, "%px ", page);
         }
-        printk( "dirtied inode %lu (%s) on \n",
-               inode->i_ino,
-               name);
-        if (dentry) {
-            spin_unlock(&dentry->d_lock);
-            dput(dentry);
-        }
+        seq_puts(m, "}");
+        bio = bio->bi_next;
+    }
+    //if (mq_ops->show_rq)
+    //    mq_ops->show_rq(m, rq);
+    seq_puts(m, "}\n");
+    return;
+}
+
+static void blk_mq_check_rq_hang(struct blk_mq_hw_ctx *hctx,
+        struct request *rq, void *priv, bool reserved)
+{
+    struct seq_file *m = priv;
+    u64 now = ktime_get_ns();
+    u64 duration;
+
+    duration = div_u64(now - rq->start_time_ns, NSEC_PER_MSEC);
+    if (duration < rq->q->rq_hang_threshold)
+        return;
+
+    /* See comments in blk_mq_check_expired() */
+    if (!refcount_inc_not_zero(&rq->ref))
+        return;
+
+    duration = div_u64(now - rq->start_time_ns, NSEC_PER_MSEC);
+    if (duration >= rq->q->rq_hang_threshold)
+        blk_mq_debugfs_rq_hang_show(m, rq);
+
+    //if (is_flush_rq(rq, hctx))
+    //   rq->end_io(rq, 0);
+    // else if (refcount_dec_and_test(&rq->ref))
+    //    __blk_mq_free_request(rq);
+}
+
+void rq_hang_check(struct seq_file *m, void *data)
+{
+	struct request_queue *q = data;
+	orig_blk_mq_queue_tag_busy_iter(q, blk_mq_check_rq_hang, m);
+}
+
+static int show_reqinfo(struct seq_file *m, void *v)
+{
+	struct super_block *sb;
+	struct block_device *s_bdev;
+	struct gendisk *gendisk;
+
+	spin_lock(orig_sb_lock);
+	list_for_each_entry(sb, orig_super_blocks, s_list) {
+		//seq_printf(m, "sb:%lx \n", (unsigned long)sb);
+		s_bdev = sb->s_bdev;
+		if (!s_bdev)
+			continue;
+
+		printk("zz %s bd_queue:%lx \n",__func__, (unsigned long)s_bdev->bd_queue);
+		rq_hang_check(m, s_bdev->bd_queue);
+		//gendisk = s_bdev->bd_disk;
+	}
+	spin_unlock(orig_sb_lock);
+
+   seq_printf(m, ", .bio = %lx\n", 0x24);
+   return 0;
+
+}
+
+
+static int proc_reqinfo_init(void)
+{
+	proc_create_single("reqinfo", 0, NULL, show_reqinfo);
+    return 0;
 }
 
 static int __init percpu_hrtimer_init(void)
 {
 
-	struct super_block *sb = 0xffff9ae5e440a548;
-	struct inode *inode;
-  if (get_kallsyms_lookup_name())
-    return -EINVAL;
+    if (get_kallsyms_lookup_name())
+    	return -EINVAL;
 
-  if (sym_init())
-    return -EINVAL;
+    if (sym_init())
+    	return -EINVAL;
 
-	spin_lock(&sb->s_inode_list_lock);
-	list_for_each_entry(inode, &sb->s_inodes, i_sb_list) {
-		printk("zz %s inode:%lx \n",__func__, (unsigned long)inode);
-		dump_dentry(inode);
-	}
-	spin_unlock(&sb->s_inode_list_lock);
+	proc_reqinfo_init();
 	return 0;
 }
 
