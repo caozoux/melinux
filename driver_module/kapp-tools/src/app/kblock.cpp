@@ -8,6 +8,7 @@
 #include "kapp_unit.h"
 
 static int dump_args_handle(int argc, char **argv);
+static int trace_args_handle(int argc, char **argv);
 
 struct cmdargs kblock_args[] = {
 	{"--dump",dump_args_handle, 
@@ -16,7 +17,39 @@ struct cmdargs kblock_args[] = {
 		"     -d disable \n"
 		"     -e enable\n"
 	},
+	{"--trace",dump_args_handle, 
+		"\n"
+		"     -a all\n"
+		"     -t block_rq_insert/balance_dirty_pages/block_bio_backmerge/block_bio_complete/block_bio_queue/block_rq_complete/block_rq_issue/block_rq_requeue\n"
+		"     -e enable\n"
+		"     -d disable\n"
+	},
 };
+static int trace_args_handle(int argc, char **argv)
+{
+	static int key_enable, key_disable, trace_all;
+	static struct option key_opts[] = {
+		{ "enable",no_argument,&key_enable,'e'},
+		{ "disable",no_argument,&key_disable,'d'},
+		{ "all",no_argument,&trace_all,'a'},
+		{ "type",required_argument,NULL,'t'},
+		{     0,    0,    0,    0},
+	};
+	while((c = getopt_long(argc, argv, ":a", key_opts, NULL)) != -1)
+	{
+		switch(c) {
+			case 'd':
+				break;
+			case 'e':
+				break;
+			case 'm':
+				break;
+			default:
+				break;
+		}
+	}
+
+}
 
 int dump_args_handle(int argc, char **argv)
 {

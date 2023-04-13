@@ -55,6 +55,11 @@ unsigned long (*orig_node_page_state)(struct pglist_data *pgdat,
 struct mem_cgroup *(*orig_mem_cgroup_iter)(struct mem_cgroup *root, struct mem_cgroup *prev, struct mem_cgroup_reclaim_cookie *reclaim);
 //unsigned long (*orig_try_to_free_mem_cgroup_pages)(struct mem_cgroup *memcg, unsigned long nr_pages,gfp_t gfp_mask, bool may_swap);
 
+void transfter_css_str_status(struct cgroup_subsys_state *css)
+{
+	CSS_NO_REF
+	
+}
 
 int kmem_cgroup_scan_blkcg(struct kmem_ioctl *kmem_data)
 {
@@ -168,11 +173,11 @@ static int kmem_charge_kprobe(struct kprobe *p, struct pt_regs *regs)
 	} else {
 		memcg = get_mem_cgroup_from_mm(current->mm);
 	}
+
 	cgroup = memcg->css.cgroup;
 	kn = cgroup->kn;
 	if (strstr(kn->name, "test"))
 		printk("zz %s cgroup:%s order:%d\n",__func__, (unsigned long)kn->name ? kn->name : "NULL", order);
-
 
     return 0;
 }
