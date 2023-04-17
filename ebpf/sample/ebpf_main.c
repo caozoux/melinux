@@ -16,11 +16,13 @@ int main(int argc, char **argv)
     	return -1;
 	}
 	sleep(5);
+#if 0
 	while (bpf_map_get_next_key(map_fd[0], &key, &next_key) == 0) {
 			bpf_map_lookup_elem(map_fd[0], &next_key, &value);
 			printf("zz %s:%d \n", value.name, value.write_size);
 			key=next_key;
 	}
+#endif
 
     //read_trace_pipe();
 

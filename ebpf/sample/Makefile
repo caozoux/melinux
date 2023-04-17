@@ -2,7 +2,9 @@
 # /home/zc/github/kernel-4.18.0
 KERHSRC ?= /usr/src/kernels/4.18.0-408.el8.x86_64/
 ebpf_mod := ebpf_module_kprobe.o
+TARGET := monitor-exec
 #test : sudo ./namespace_execute_child -p -m  ./namespace_init
+
 
 all: EBPF_MOD ebpf_loader
 
@@ -30,6 +32,6 @@ ebpf_loader:
 	-O2 -emit-llvm -c $< -o -| llc -march=bpf $(LLC_FLAGS) -filetype=obj -o $@
 
 clean:
-	@rm *.o
-	@rm multiple_map   simple_map
+	@rm *.o -f
+	@rm multiple_map   simple_map ${TARGET}  -f
 

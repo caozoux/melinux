@@ -24,6 +24,7 @@ struct bpf_map_def SEC("maps") my_map = {
 };
 
 SEC("kprobe/vfs_write")
+#if 0
 int bpf_prog1(struct pt_regs *ctx)
 {
 	unsigned long cur;
@@ -35,7 +36,6 @@ int bpf_prog1(struct pt_regs *ctx)
 	int size = ctx->dx;
 
 	//char fmt[] = "zz len %d\n";
-	//bpf_trace_printk(fmt, sizeof(fmt), pid);
 
 	//inode = filed->f_inode;
 	//dentry = file->path.dentry;
@@ -58,6 +58,15 @@ int bpf_prog1(struct pt_regs *ctx)
 
 	return 0;
 }
+#else
+int bpf_prog1(struct pt_regs *ctx)
+{
+	char fmt[] = "zz len %d\n";
+	bpf_trace_printk(fmt, sizeof(fmt), 11);
+	return 0;
+}
+
+#endif
 
 char _license[] SEC("license") = "GPL";
 unsigned int _version SEC("version") = LINUX_VERSION_CODE;
