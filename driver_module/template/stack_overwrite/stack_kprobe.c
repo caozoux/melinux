@@ -18,59 +18,64 @@
 #include <linux/syscore_ops.h>
 
 struct check_regs {
-	u64 r12;
+	u64 r15;
 	u64 rbp;
-	u64 rbx;
+	u64 rsp;
 };
 
 static struct check_regs __percpu *per_regs;
+//#define HOOK_FUN "show_cpuinfo"
+#define HOOK_FUN "vsnprintf"
 
-static int kprobe_page_add_file_rmap(struct kprobe *kp, struct pt_regs *regs)
+static int kprobe_pre_handle(struct kprobe *kp, struct pt_regs *regs)
 {
 	struct check_regs *percpu_regs = this_cpu_ptr(per_regs);
 
 	if (!percpu_regs) {
-		trace_printk("percpu is NULL \n");
+		printk("percpu is NULL \n");
 		goto out;
 	}
 
-	percpu_regs->r12 = regs->r12;
-	percpu_regs->rbp = regs->bp;
-	percpu_regs->rbx = regs->bx;
+	percpu_regs->r15 = regs->r15;
+	percpu_regs->rsp = regs->sp;
+	//percpu_regs->rbx = regs->bx;
 
 out:
 	return 0;
 }
 
-static int kretprobe_page_add_file_rmap(struct kretprobe_instance *ri, struct pt_regs *regs)
+static int kretprobe_handle(struct kretprobe_instance *ri, struct pt_regs *regs)
 {
 	struct check_regs *percpu_regs = this_cpu_ptr(per_regs);
 	if (!percpu_regs) {
-		trace_printk("percpu is NULL \n");
+		printk("percpu is NULL \n");
 		goto out;
 	}
 
-	if (percpu_regs->r12 != regs->r12)
-		trace_printk("r12 is diff\n");
-	if (percpu_regs->rbp != regs->bp)
-		trace_printk("rbp is diff\n");
+	if (percpu_regs->r15 != regs->r15)
+		trace_printk("r15 is diff\n");
+	if (percpu_regs->rsp != regs->sp)
+		printk("rbp is diff\n");
+#if 0
 	if (percpu_regs->rbx != regs->bx)
-		trace_printk("rbx is diff\n");
+		printk("rbx is diff\n");
+#endif
 out:
 	return 0;
 }
 
 struct kprobe kplist[] = {
 	{
-        .symbol_name = "page_add_file_rmap",
-        .pre_handler = kprobe_page_add_file_rmap,
+        .symbol_name = HOOK_FUN,
+		.offset = 2,
+        .pre_handler = kprobe_pre_handle,
 	},
 };
 
 struct kretprobe kretlist[]  = {
 	{
-		.kp.symbol_name = "page_add_file_rmap",
-		.handler= kretprobe_page_add_file_rmap,
+		.kp.symbol_name = HOOK_FUN,
+		.handler= kretprobe_handle,
 	},
 };
 
