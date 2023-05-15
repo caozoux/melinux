@@ -18,7 +18,7 @@ using namespace std;
 
 static void help()
 {
-	printf("-t|--type:  anon/dirty/shem/mmap\n");	
+	printf("-t|--type:  anon/dirty/shem/mmap/thp\n");	
 	printf("-f|--file:  specify file name\n");	
 	printf("-s|--size:  page count\n");	
 }
@@ -35,6 +35,12 @@ static struct option long_options[] =
 	{"size",required_argument,	0,	's'},
 	{0,0,0,0}
 };
+
+void ()
+{
+	
+}
+
 int main(int argc, char *argv[])
 {
 	int args_size = 0;
@@ -77,7 +83,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (!strcmp(args_type, "anon")) {
-		int cnt = args_size;
+		unsigned long cnt = args_size;
 		while(cnt--) {
 			void *buf;
 			buf = malloc(4096);
@@ -85,13 +91,26 @@ int main(int argc, char *argv[])
 				memset(buf, 0, 4096);
 		}
 	} else if (!strcmp(args_type, "dirty")) {
-		int cnt = args_size;
+		unsigned long cnt = args_size;
    		fd = open(args_file, O_CREAT | O_RDWR); 
 		while(cnt--) {
 			write(fd,pagebuf, 4096);
 		}
+	} else if (!strcmp(args_type, "thp")) {
+		void *buf;
+		int ret;
+		unsigned long cnt = args_size;
+		unsigned long size = cnt * 4096;
+
+		buf = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+		if (buf == MAP_FAILED)
+			exit(1);
+		ret = madvise(buf, size, MADV_HUGEPAGE);
+		if (ret)
+			exit(1);
+		memset(buf, 0, size);
 	} else if (!strcmp(args_type, "mmap")) {
-		int cnt = args_size;
+		unsigned long cnt = args_size;
 		char  *addr;
    		fd = open(args_file, O_CREAT | O_RDWR); 
 		if (fd < 0) {
