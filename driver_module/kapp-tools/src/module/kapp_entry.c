@@ -60,6 +60,7 @@ struct ksysd_uint_item unit_list[] =
 	KSYSD_UNIT(kdevice, IOCTL_KDEVICE),
 	KSYSD_UNIT(kblock, IOCTL_KBLOCK),
 	KSYSD_UNIT(krunlog, IOCTL_KRUNLOG),
+	KSYSD_UNIT(kstack, IOCTL_KSTACK),
 };
 
 static int ksysd_template_open(struct inode *inode, struct file * file)
@@ -120,7 +121,6 @@ static long ksysd_template_unlocked_ioctl(struct file *file, unsigned int size, 
 
 	dev_data = (struct ksysd_private_data *) file->private_data;
 
-	printk("zz %s a:%lx \n",__func__, (unsigned long)sizeof(struct ioctl_ksdata));
 	if (copy_from_user(&ctl_data, (char __user *) data, sizeof(struct ioctl_ksdata))) {
 		dev_err(ksysd_data->dev, "ioctl data copy err\n");
 		ret = -EFAULT;

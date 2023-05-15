@@ -13,7 +13,6 @@
 #include "ksysd_ioctl.h"
 #include "kblock_local.h"
 
-
 int kblock_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_ksdata *ksdata)
 {
 	struct kblock_ioctl kioctl;
@@ -45,13 +44,13 @@ int kblock_unit_init(void)
 	if (kblock_unit_sym_init())	
 		return -EINVAL;
 
-	kblock_trace_init();
+	//kblock_trace_init();
 	return 0;
 }
 
 int kblock_unit_exit(void)
 {
-	kblock_trace_exit();
+	//kblock_trace_exit();
 	return 0;
 }
 

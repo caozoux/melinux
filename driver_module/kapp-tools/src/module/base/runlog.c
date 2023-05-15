@@ -45,7 +45,6 @@ int krunlog_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_k
 		case IOCTL_RUNLOG_DUMP:
 			backup_ksys_trace_buffer(&runlog_buf.buffer);
 			buf_size = (kioctl.len  < RUNLOG_BUF_SIZE) ? runlog_buf.buffer.product.len : RUNLOG_BUF_SIZE;
-			printk("zz %s buf_size:%lx \n",__func__, (unsigned long)buf_size);
 			if (ret = copy_to_user((char __user *)kioctl.buf, runlog_buf.buffer.product.data, buf_size))
 				goto OUT;
 			break;

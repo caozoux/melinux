@@ -20,7 +20,7 @@ endif
 
 $(TARGET)-objs += kprobe/kprobe_unit.o
 $(TARGET)-objs += base/base.o base/percpu_variable.o base/trace.o base/buffer.o base/runlog.o base/trace_buffer.o  \
-				  base/slab.o
+				  base/slab.o base/stack.o
 
 $(TARGET)-objs += ktrace/ktrace_unit.o
 $(TARGET)-objs += kinject/kinject_test.o kinject/kinject_unit.o  kinject/kinject_timer.o  \
@@ -32,6 +32,7 @@ $(TARGET)-objs += kmem/kmem_dump.o kmem/kmem_unit.o kmem/cgroup/cgroup.o \
 				  kmem/slab/slab.o
 
 $(TARGET)-objs += kdevice/kdevice_unit.o
+$(TARGET)-objs += kstack/kstack_unit.o
 
 all:
 	$(MAKE) -C $(KERSRC) M=$(PWD) modules

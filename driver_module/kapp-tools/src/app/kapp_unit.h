@@ -78,5 +78,6 @@ int unit_kmem(int argc, char** argv);
 int unit_kblock(int argc, char** argv);
 int unit_ksched(int argc, char** argv);
 int unit_krunlog(int argc, char** argv);
+int unit_kstack(int argc, char** argv);
 
 #endif /* ifndef __KAPP_UNIT_H */
