@@ -57,7 +57,6 @@ struct mem_cgroup *(*orig_mem_cgroup_iter)(struct mem_cgroup *root, struct mem_c
 
 void transfter_css_str_status(struct cgroup_subsys_state *css)
 {
-	CSS_NO_REF
 	
 }
 

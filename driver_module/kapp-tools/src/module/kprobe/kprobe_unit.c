@@ -7,9 +7,10 @@
 #include <linux/module.h>
 #include <linux/kprobes.h>
 
+#include "ksioctl/kprobe_ioctl.h"
 #include "ksysdata.h"
 #include "ksysd_ioctl.h"
-#include "ioctl_kprobe.h"
+
 
 static int __kprobes kprobe_prehandler(struct kprobe *p, struct pt_regs *regs);
 

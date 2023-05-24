@@ -30,7 +30,9 @@ struct cmdargs kinject_args[] = {
 		"\n"
 		"     --en enable \n"
 		"     --dis disable\n"
-		"     --overwrite inject slub overwrite\n"
+		"     --l_overwrite inject slub overwrite\n"
+		"     --r_overwrite inject slub overwrite\n"
+		"     --double_free inject slub overwrite\n"
 	},
 	{"--rwsem", rwsem_args_handle,
 		"\n"
@@ -209,7 +211,7 @@ int slub_args_handle(int argc, char **argv)
 	struct kinject_ioctl kinject_data;
 
 	static int slub_enable, slub_disable;
-	static int slub_overwrite;
+	static int slub_l_overwrite, slub_r_overwrite, slub_dfree;
 	int time=0;
 	int ret;
 
@@ -221,7 +223,9 @@ int slub_args_handle(int argc, char **argv)
 	static struct option slub_opts[] = {
 		{ "en",no_argument,&slub_enable,1},
 		{ "dis",no_argument,&slub_disable,1},
-		{ "overwrite",no_argument,&slub_overwrite,1},
+		{ "l_overwrite",no_argument,&slub_l_overwrite,1},
+		{ "r_overwrite",no_argument,&slub_r_overwrite,1},
+		{ "double_free",no_argument,&slub_dfree,1},
 		{     0,    0,    0,    0},
 	};
 
@@ -260,9 +264,33 @@ int slub_args_handle(int argc, char **argv)
 		}
 	}
 
-	if (slub_overwrite) {
+	if (slub_l_overwrite) {
 		kinject_data.enable = 0;
-		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_SLUB_OVERWRITE,
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_SLUB_L_OVERWRITE,
+				&data, sizeof(struct ioctl_ksdata));
+		if (ret) {
+			printf("inject stop slub failed\n");
+			return -1;
+		} else {
+			return 0;
+		}
+	}
+
+	if (slub_r_overwrite) {
+		kinject_data.enable = 0;
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_SLUB_L_OVERWRITE,
+				&data, sizeof(struct ioctl_ksdata));
+		if (ret) {
+			printf("inject stop slub failed\n");
+			return -1;
+		} else {
+			return 0;
+		}
+	}
+
+	if (slub_dfree) {
+		kinject_data.enable = 0;
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_SLUB_DOUBLE_FREE,
 				&data, sizeof(struct ioctl_ksdata));
 		if (ret) {
 			printf("inject stop slub failed\n");

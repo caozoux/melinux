@@ -30,7 +30,9 @@ int kinject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_k
 			return kinject_timer_func(data->subcmd, &kioctl);
 
 		case IOCTL_INJECT_SLUB_CTRL:
-		case IOCTL_INJECT_SLUB_OVERWRITE:
+		case IOCTL_INJECT_SLUB_R_OVERWRITE:
+		case IOCTL_INJECT_SLUB_L_OVERWRITE:
+		case IOCTL_INJECT_SLUB_DOUBLE_FREE:
 			return kinject_slub_func(data->subcmd, &kioctl);
 		case IOCTL_INJECT_RWSEM_WRITEDOWN:
 		case IOCTL_INJECT_RWSEM_WRITEUP:

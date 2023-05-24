@@ -35,6 +35,8 @@ static int trace_args_handle(int argc, char **argv)
 		{ "type",required_argument,NULL,'t'},
 		{     0,    0,    0,    0},
 	};
+	int c;
+
 	while((c = getopt_long(argc, argv, ":a", key_opts, NULL)) != -1)
 	{
 		switch(c) {

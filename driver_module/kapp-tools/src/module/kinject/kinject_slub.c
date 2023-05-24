@@ -86,7 +86,31 @@ out:
 }
 #endif
 
-int kinject_slub_overwrite(void)
+int kinject_slub_l_overwrite(void)
+{
+	char *data0, *data1;
+	data0 = kmem_cache_zalloc(kinject_kmem->kmem_cache, GFP_KERNEL);
+	data1 = kmem_cache_zalloc(kinject_kmem->kmem_cache, GFP_KERNEL);
+
+	data1[-1] = 0;
+	kmem_cache_free(kinject_kmem->kmem_cache, data0);
+	kmem_cache_free(kinject_kmem->kmem_cache, data1);
+	return 0;
+}
+
+int kinject_slub_double_free(void)
+{
+	char *data;
+	data = kmem_cache_zalloc(kinject_kmem->kmem_cache, GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	kmem_cache_free(kinject_kmem->kmem_cache, data);
+	kmem_cache_free(kinject_kmem->kmem_cache, data);
+	return 0;
+}
+
+int kinject_slub_r_overwrite(void)
 {
 	char *data;
 	data = kmem_cache_zalloc(kinject_kmem->kmem_cache, GFP_KERNEL);
@@ -94,7 +118,7 @@ int kinject_slub_overwrite(void)
 		return -ENOMEM;
 
 	data[65] = 0;
-	//kmem_cache_free(kinject_kmem->kmem_cache, data);
+	kmem_cache_free(kinject_kmem->kmem_cache, data);
 	return 0;
 }
 
@@ -129,10 +153,20 @@ int kinject_slub_func(enum IOCTL_INJECT_SUB cmd, struct kinject_ioctl *data)
 				kmem_cache_destroy(kinject_kmem->kmem_cache);
 			}
 			break;
-		case IOCTL_INJECT_SLUB_OVERWRITE:
+		case IOCTL_INJECT_SLUB_R_OVERWRITE:
 			if (!kinject_kmem->kmem_cache)
 				return -EINVAL;
-			kinject_slub_overwrite();
+			kinject_slub_r_overwrite();
+			break;
+		case IOCTL_INJECT_SLUB_L_OVERWRITE:
+			if (!kinject_kmem->kmem_cache)
+				return -EINVAL;
+			kinject_slub_l_overwrite();
+			break;
+		case IOCTL_INJECT_SLUB_DOUBLE_FREE:
+			if (!kinject_kmem->kmem_cache)
+				return -EINVAL;
+			kinject_slub_double_free();
 			break;
 		default:
 			break;

@@ -53,7 +53,7 @@ static int enable;
 
 struct ksysd_uint_item unit_list[] =
 {
-	KSYSD_UNIT(kprobe, IOCTL_USEKPROBE),
+	KSYSD_UNIT(kprobe, IOCTL_KPROBE),
 	KSYSD_UNIT(ktrace, IOCTL_KTRACE),
 	KSYSD_UNIT(kinject, IOCTL_INJECT),
 	KSYSD_UNIT(kmem, IOCTL_KMEM),
