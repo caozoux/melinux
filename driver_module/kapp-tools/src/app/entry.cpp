@@ -31,12 +31,13 @@ static struct unit_func all_funcs[] = {
     {"ksched", unit_ksched},
     {"klog", unit_krunlog},
     {"kstack", unit_kstack},
-//    {"kprobe", unit_kprobe},
+    {"kprobe", unit_kprobe},
 //    {"ktrace", unit_ktrace},
 };
 
 int ktools_ioctl::mFd = 0;
 class elf_symbol *g_elf_sym;
+static int debug_level=0;
 
 void unit_krunlog_help(void)
 {
