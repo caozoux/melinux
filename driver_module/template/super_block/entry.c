@@ -19,6 +19,20 @@
 #include <linux/seq_file.h>
 #include <linux/proc_fs.h>
 
+struct blk_mq_tags {
+    unsigned int nr_tags;
+    unsigned int nr_reserved_tags;
+
+    atomic_t active_queues;
+
+    struct sbitmap_queue bitmap_tags;
+    struct sbitmap_queue breserved_tags;
+
+    struct request **rqs;
+    struct request **static_rqs;
+    struct list_head page_list;
+};
+
 void (*orig_blk_mq_queue_tag_busy_iter)(struct request_queue *q, busy_iter_fn *fn,  void *priv);
 struct list_head *orig_super_blocks;
 spinlock_t *orig_sb_lock;
@@ -263,13 +277,40 @@ static int show_reqinfo(struct seq_file *m, void *v)
 
 	spin_lock(orig_sb_lock);
 	list_for_each_entry(sb, orig_super_blocks, s_list) {
+		struct blk_mq_tags *tags;
+		struct request_queue *q;
+		struct blk_mq_hw_ctx *hctx;
+		int i,j;
+		struct request *rq;
 		//seq_printf(m, "sb:%lx \n", (unsigned long)sb);
 		s_bdev = sb->s_bdev;
 		if (!s_bdev)
 			continue;
 
-		printk("zz %s bd_queue:%lx \n",__func__, (unsigned long)s_bdev->bd_queue);
+		printk("zz %s bd_queue:%lx  %s\n",__func__, (unsigned long)s_bdev->bd_queue, sb->s_id);
 		rq_hang_check(m, s_bdev->bd_queue);
+		q = s_bdev->bd_queue;
+		printk("zz %s q:%lx nr_hw_queues:%lx \n",__func__, (unsigned long)q, (unsigned long)q->nr_hw_queues);
+		printk("zz %s queue_hw_ctx:%lx \n",__func__, (unsigned long)q->queue_hw_ctx);
+		for (i = 0; i < q->nr_hw_queues; ++i) {
+			hctx = q->queue_hw_ctx[i];
+			if (hctx->nr_ctx && hctx->tags) {
+				printk("zz %s hctx:%lx \n",__func__, (unsigned long)hctx);
+				tags = hctx->tags;
+				printk("zz %s nr_tags:%lx nr_reserved_tags:%lx \n",__func__, (unsigned long)tags->nr_tags, (unsigned long)tags->nr_reserved_tags);
+				for (j = 0;  j< tags->nr_tags; ++j) {
+					struct request *rq;
+					rq = tags->rqs[j];
+					if (rq) {
+						printk("zz %s rqs rq:%lx tag:%lx \n",__func__, (unsigned long)rq, (unsigned long)rq->tag);
+					}
+					rq = tags->static_rqs[j];
+					if (rq) {
+						printk("zz %s static rq:%lx tag:%lx \n",__func__, (unsigned long)rq, (unsigned long)rq->tag);
+					}
+				}
+			}
+		}
 		//gendisk = s_bdev->bd_disk;
 	}
 	spin_unlock(orig_sb_lock);
@@ -301,6 +342,7 @@ static int __init percpu_hrtimer_init(void)
 
 static void __exit percpu_hrtimer_exit(void)
 {
+  remove_proc_entry("reqinfo", NULL);
   //hrtimer_pr_exit();	
 }
 
