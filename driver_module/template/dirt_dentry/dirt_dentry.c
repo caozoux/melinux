@@ -30,10 +30,12 @@ static int (*ksys_kallsyms_on_each_symbol)(int (*fn)(void *, const char *,
 
 struct tracepoint *orig___tracepoint_writeback_dirty_page;
 DEFINE_STATIC_KEY_FALSE(dump_enabled_key);
-void dump_dentry(char *parent, char *child)
+
+noinline void dump_dentry(char *parent, char *child)
 {
 	if (static_branch_unlikely(&dump_enabled_key))
-		trace_printk("%s/%s", parent, child);
+		trace_printk("%s %s/%s", blkname, parent, child);
+	//trace_printk("%s/%s", parent, child);
 }
 EXPORT_SYMBOL(dump_dentry);
 
@@ -49,6 +51,8 @@ void trace_account_page_dirtied(void * ignore, struct page *page, struct address
 	if (!inode->i_sb)
 		return;
 
+	i_sb = inode->i_sb;
+
     dentry = d_find_alias(inode);
 	if (!dentry)
         return;
@@ -57,7 +61,7 @@ void trace_account_page_dirtied(void * ignore, struct page *page, struct address
 	if (!parent)
         goto out_dput;
 
-	dump_dentry(parent->d_iname, dentry->d_iname);
+	dump_dentry(i_sb->s_id, parent->d_iname, dentry->d_iname);
 	dput(parent);
 out_dput:
 	dput(dentry);

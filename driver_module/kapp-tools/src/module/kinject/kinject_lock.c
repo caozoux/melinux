@@ -14,6 +14,7 @@
 #include "kinject_local.h"
 
 static DEFINE_SPINLOCK(kinject_lock);
+static DEFINE_MUTEX(kinject_mutex);
 int kinject_lock_func(enum IOCTL_INJECT_SUB cmd, struct kinject_ioctl *data)
 {
 	int cnt = 0;
@@ -41,6 +42,23 @@ int kinject_lock_func(enum IOCTL_INJECT_SUB cmd, struct kinject_ioctl *data)
 
 			spin_unlock_irq(&kinject_lock);
 			printk("zz %s cnt:%lx \n",__func__, (unsigned long)cnt);
+			break;
+
+		case IOCTL_INJECT_MUTEXT_LOCK:
+			mutex_lock(&kinject_mutex);
+			break;
+
+		case IOCTL_INJECT_MUTEXT_UNLOCK:
+			mutex_unlock(&kinject_mutex);
+			break;
+
+		case IOCTL_INJECT_MUTEXT_DEALY:
+			cnt = data->lock.lock_ms;
+			mutex_lock(&kinject_mutex);
+			while(cnt--)
+				for (i = 0; i < 10; ++i)
+					udelay(100);
+			mutex_unlock(&kinject_mutex);
 			break;
 		default:
 			break;

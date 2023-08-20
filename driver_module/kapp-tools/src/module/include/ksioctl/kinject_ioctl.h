@@ -24,6 +24,11 @@ enum IOCTL_INJECT_SUB{
 
 	// inject stack overwrite
 	IOCTL_INJECT_STACK_OVERWRITE,
+
+	// inject mutext lock 
+	IOCTL_INJECT_MUTEXT_LOCK,
+	IOCTL_INJECT_MUTEXT_UNLOCK,
+	IOCTL_INJECT_MUTEXT_DEALY,
 };
 
 

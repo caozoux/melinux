@@ -46,6 +46,9 @@ int kinject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_k
 
 		case IOCTL_INJECT_SPINLOCK_DEPLOCK:
 		case IOCTL_INJECT_IRQSPINLOCK_DEPLOCK:
+		case IOCTL_INJECT_MUTEXT_LOCK:
+		case IOCTL_INJECT_MUTEXT_UNLOCK:
+		case IOCTL_INJECT_MUTEXT_DEALY:
 			kinject_lock_func(data->subcmd, &kioctl);
 			break;
 

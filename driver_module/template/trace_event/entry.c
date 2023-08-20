@@ -59,6 +59,7 @@ int sym_init(void)
 	LOOKUP_SYMS(__tracepoint_balance_dirty_pages);
 	return 0;
 }
+
 static void blk_tracepoint_balance_dirty_pages(void *ignore,
 			struct bdi_writeback *wb,
 			unsigned long dirty,

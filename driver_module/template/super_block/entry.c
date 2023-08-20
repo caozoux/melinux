@@ -96,9 +96,9 @@ static const char *const op_name[] = {
     REQ_OP_NAME(WRITE),
     REQ_OP_NAME(FLUSH),
     REQ_OP_NAME(DISCARD),
-    REQ_OP_NAME(ZONE_REPORT),
+    //REQ_OP_NAME(ZONE_REPORT),
     REQ_OP_NAME(SECURE_ERASE),
-    REQ_OP_NAME(ZONE_RESET),
+    //REQ_OP_NAME(ZONE_RESET),
     REQ_OP_NAME(WRITE_SAME),
     REQ_OP_NAME(WRITE_ZEROES),
     REQ_OP_NAME(SCSI_IN),
@@ -130,7 +130,7 @@ static const char *const cmd_flag_name[] = {
 static const char *const rqf_name[] = {
     RQF_NAME(SORTED),
     RQF_NAME(STARTED),
-    RQF_NAME(QUEUED),
+    //RQF_NAME(QUEUED),
     RQF_NAME(SOFTBARRIER),
     RQF_NAME(FLUSH_SEQ),
     RQF_NAME(MIXED_MERGE),
@@ -241,6 +241,7 @@ static void blk_mq_debugfs_rq_hang_show(struct seq_file *m, struct request *rq)
 static void blk_mq_check_rq_hang(struct blk_mq_hw_ctx *hctx,
         struct request *rq, void *priv, bool reserved)
 {
+#if 0
     struct seq_file *m = priv;
     u64 now = ktime_get_ns();
     u64 duration;
@@ -261,12 +262,13 @@ static void blk_mq_check_rq_hang(struct blk_mq_hw_ctx *hctx,
     //   rq->end_io(rq, 0);
     // else if (refcount_dec_and_test(&rq->ref))
     //    __blk_mq_free_request(rq);
+#endif
 }
 
 void rq_hang_check(struct seq_file *m, void *data)
 {
 	struct request_queue *q = data;
-	orig_blk_mq_queue_tag_busy_iter(q, blk_mq_check_rq_hang, m);
+	//orig_blk_mq_queue_tag_busy_iter(q, blk_mq_check_rq_hang, m);
 }
 
 static int show_reqinfo(struct seq_file *m, void *v)
@@ -297,16 +299,16 @@ static int show_reqinfo(struct seq_file *m, void *v)
 			if (hctx->nr_ctx && hctx->tags) {
 				printk("zz %s hctx:%lx \n",__func__, (unsigned long)hctx);
 				tags = hctx->tags;
-				printk("zz %s nr_tags:%lx nr_reserved_tags:%lx \n",__func__, (unsigned long)tags->nr_tags, (unsigned long)tags->nr_reserved_tags);
+				printk("zz %s nr_tags:%ld nr_reserved_tags:%ld \n",__func__, (unsigned long)tags->nr_tags, (unsigned long)tags->nr_reserved_tags);
 				for (j = 0;  j< tags->nr_tags; ++j) {
 					struct request *rq;
 					rq = tags->rqs[j];
 					if (rq) {
-						printk("zz %s rqs rq:%lx tag:%lx \n",__func__, (unsigned long)rq, (unsigned long)rq->tag);
+						printk("zz %s rqs rq:%lx tag:%ld \n",__func__, (unsigned long)rq, (unsigned long)rq->tag);
 					}
 					rq = tags->static_rqs[j];
 					if (rq) {
-						printk("zz %s static rq:%lx tag:%lx \n",__func__, (unsigned long)rq, (unsigned long)rq->tag);
+						printk("zz %s static rq:%lx tag:%ld \n",__func__, (unsigned long)rq, (unsigned long)rq->tag);
 					}
 				}
 			}

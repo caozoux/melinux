@@ -13,6 +13,7 @@ int slub_args_handle(int argc, char **argv);
 int rwsem_args_handle(int argc, char **argv);
 int stack_args_handle(int argc, char **argv);
 int lock_args_handle(int argc, char **argv);
+int mutex_args_handle(int argc, char **argv);
 
 struct cmdargs kinject_args[] = {
 	{"--statickey",statickey_args_handle, 
@@ -54,7 +55,60 @@ struct cmdargs kinject_args[] = {
 		"     --ilock spinlock with irq\n"
 		"     --time  mesecond\n"
 	},
+	{"--mutex", mutex_args_handle,
+		"\n"
+		"     --mutex_lock    mutex lock\n"
+		"     --mutex_unlock  mutex unlock\n"
+		"     --mutex_dlock   mutex lock and unlock with mesecond\n"
+		"     --time  mesecond\n"
+	},
 };
+
+int mutex_args_handle(int argc, char **argv)
+{
+	int c;
+	int ret;
+	struct ioctl_ksdata data;
+	struct kinject_ioctl kinject_data;
+	static int mutex_lock_en, mutex_unlock_en, mutex_dlock_en;
+
+	kinject_data.enable = 0;
+
+	data.data = &kinject_data;
+	data.len = sizeof(struct kinject_ioctl);
+	kinject_data.lock.lock_ms = 1000;
+
+	static struct option lock_opts[] = {
+		{ "mutex_lock",no_argument, &mutex_lock_en,1},
+		{ "mutex_unlock",no_argument, &mutex_unlock_en,1},
+		{ "mutex_dlock",required_argument, NULL,'t'},
+		{     0,    0,    0,    0},
+	};
+
+	while((c = getopt_long(argc, argv, "", lock_opts, NULL)) != -1)
+	{
+		switch(c) {
+			case 't':
+				mutex_dlock_en = 1;
+				kinject_data.lock.lock_ms = atoi(optarg);
+				break;
+			default:
+				break;
+		}
+	}
+
+	if (mutex_lock_en)
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_MUTEXT_LOCK,
+				&data, sizeof(struct ioctl_ksdata));
+	if (mutex_unlock_en)
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_MUTEXT_UNLOCK,
+				&data, sizeof(struct ioctl_ksdata));
+	if (mutex_dlock_en)
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_MUTEXT_DEALY,
+				&data, sizeof(struct ioctl_ksdata));
+
+	return ret;
+}
 
 int rwsem_args_handle(int argc, char **argv)
 {

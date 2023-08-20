@@ -7,23 +7,16 @@
 #include <linux/version.h>
 #include <linux/tracepoint.h>
 #include <hotfix_util.h>
-#include "local.h"
+#include "internal.h"
 
 //#include "ktrace.h"
 
 extern struct kd_percpu_data *kd_percpu_data[512];
 
 static struct tracepoint *tp_ret;
-
-#if LINUX_VERSION_CODE == KERNEL_VERSION(4,18,0)
-typedef struct tracepoint* tracepoint_ptr_t;
-#define tracepoint_ptr_deref(iter) iter
-#endif
-
 struct mutex *orig_tracepoint_module_list_mutex;
 struct list_head *orig_tracepoint_module_list;
-tracepoint_ptr_t orig___start___tracepoints_ptrs;
-tracepoint_ptr_t orig___stop___tracepoints_ptrs;
+struct softirq_action *orig_softirq_vec;
 
 static void probe_tracepoint(struct tracepoint *tp, void *priv)
 {
@@ -33,7 +26,6 @@ static void probe_tracepoint(struct tracepoint *tp, void *priv)
         tp_ret = tp;
 }
 
-#if 0
 static void orig_for_each_tracepoint_range(
                 struct tracepoint *begin, struct tracepoint *end,
                 void (*fct)(struct tracepoint *tp, void *priv),
@@ -74,19 +66,15 @@ static void for_each_moudule_trace_point(
     mutex_unlock(orig_tracepoint_module_list_mutex);
 #endif
 }
-#endif
+
 
 static struct tracepoint *find_tracepoint(const char *name)
 {
-	tracepoint_ptr_t iter;
-	for (iter = orig___start___tracepoints_ptrs; iter < orig___stop___tracepoints_ptrs; iter++) {
-		if (strcmp(tracepoint_ptr_deref(iter)->name, name) == 0)
-			return  tracepoint_ptr_deref(iter);
-	}
+    tp_ret = NULL;
+    for_each_kernel_tracepoint(probe_tracepoint, (void *)name);
+    for_each_moudule_trace_point(probe_tracepoint, (void *)name);
 
-    //for_each_moudule_trace_point(probe_tracepoint, (void *)name);
-
-    return NULL;
+    return tp_ret;
 }
 
 int register_tracepoint(const char *name, void *probe, void *data)
@@ -116,12 +104,17 @@ int unregister_tracepoint(const char *name, void *probe, void *data)
     return ret;
 }
 
-int base_trace_init(void)
+struct kd_percpu_data *get_kd_percpu_data(void)
+{
+	int cpu = smp_processor_id();
+	return kd_percpu_data[cpu];
+}
+
+int base_func_init(void)
 {
 	LOOKUP_SYMS(tracepoint_module_list_mutex);
 	LOOKUP_SYMS(tracepoint_module_list);
-	LOOKUP_SYMS(__start___tracepoints_ptrs);
-	LOOKUP_SYMS(__stop___tracepoints_ptrs);
+	LOOKUP_SYMS(softirq_vec);
 	return 0;
 }
 

@@ -3,7 +3,7 @@ CUR_PATH = $(shell pwd)
 TARGET := ksys_tool
 
 KERVER =$(shell uname -r)
-#KERSRC ?= /lib/modules/$(KERVER)/build
+KERSRC := /lib/modules/$(KERVER)/build
 
 obj-m := $(TARGET).o
 
