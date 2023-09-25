@@ -12,8 +12,10 @@
 #include <sys/mman.h> 
 #include <signal.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/un.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <sstream>
@@ -23,6 +25,17 @@
 
 using namespace std;
 
+enum MODE_NET {
+	MODE_NONE,
+	MODE_TCP,
+	MODE_UDP,
+	MODE_XDP,
+	MODE_UNIX,
+};
+
+enum MODE_NET args_mode_net = MODE_TCP;
+// 0: server 1: client
+int args_cs_mod=0;
 int args_thread_num=1;
 char *args_server_ip=NULL;
 int args_port=8026;
@@ -49,7 +62,7 @@ void *threadFunc(void *param)
 
 static void help()
 {
-	printf("-t|--type:     tcp/udp/xdp\n");	
+	printf("-m|--mode:     1:tcp/2:udp/3:xdp/4:unix \n");	
 	//printf("-f|--file:   specify file name\n");	
 	printf("-p|--port:     specify port\n");	
 	printf("-s|--size:     package size\n");
@@ -140,8 +153,6 @@ void *thread_send(void *param)
 	int sock = data->socketfd;
 	int ret;
 
-	printf("zz %s %d \n", __func__, __LINE__);
-
 	while (1) {
     	ret = send(sock, message, 1024, 0);
 		if (ret<=0) 
@@ -151,26 +162,24 @@ void *thread_send(void *param)
 
 out:
     close(sock);
-	printf("zz %s %d \n", __func__, __LINE__);
 
     return NULL;
 }
 
-int mode_client()
+int mode_tcp_client()
 {
 	int num = args_thread_num;
 
 	while(num--) {
 
+		int connection_status;
 		int sock = socket(AF_INET, SOCK_STREAM, 0);
 		struct sockaddr_in server_address;
 		server_address.sin_family = AF_INET;
 		server_address.sin_port = htons(args_port);   // Change to the port you want to connect to
 		server_address.sin_addr.s_addr = inet_addr(args_server_ip);   // Change to the IP address of the server
-		//server_address.sin_addr.s_addr = inet_addr("192.168.124.2");   // Change to the IP address of the server
 																	  //
-		//printf("zz %s args_server_ip:%s %d\n",__func__, args_server_ip, args_port);
-		int connection_status = connect(sock, (struct sockaddr *) &server_address, sizeof(server_address));
+		connection_status = connect(sock, (struct sockaddr *) &server_address, sizeof(server_address));
 		if (connection_status != 0) {
 			printf("Failed to connect to the server.\n");
 			return 1;
@@ -185,7 +194,7 @@ int mode_client()
 	return 0;
 }
 
-int mode_server()
+int mode_tcp_server()
 {
     int server_socket, client_socket;
     struct sockaddr_in server_address, client_address;
@@ -220,7 +229,7 @@ int mode_server()
 
     while (1) {
 		struct thread_data *data = new thread_data();
-        // 接受客户端连接
+        //接受客户端连接
         if ((client_socket = accept(server_socket, (struct sockaddr *)&data->client_address, &client_address_len)) == -1) {
             perror("Failed to accept client connection");
             exit(EXIT_FAILURE);
@@ -235,18 +244,176 @@ int mode_server()
     return EXIT_SUCCESS;
 }
 
+typedef struct sockaddr    TSockAddr;
+typedef struct sockaddr_un TSockAddrUn;
+typedef struct sockaddr_in TSockAddrIn;
+typedef struct linger      TSoLinger;
+
+//#define UNIX_SOCKET_PATH  "/tmp/unix_sock"
+#define UNIX_SOCKET_PATH  "/dev/log"
+
+int mode_unix_server()
+{
+    int iRet;
+	int sockfd;
+	char recvbuf[1024];
+
+	struct sockaddr_un serv_unadr;
+
+	bzero(&serv_unadr,sizeof(serv_unadr));
+
+	//serv_unadr.sun_family = AF_UNIX;
+	serv_unadr.sun_family = AF_UNIX;
+	strcpy(serv_unadr.sun_path, UNIX_SOCKET_PATH);
+
+	signal(SIGPIPE, SIG_IGN);
+
+
+	/* 创建本地socket */
+	sockfd = socket(AF_UNIX, SOCK_DGRAM, 0);//数据包方式
+	if ( sockfd <= 0)
+	{
+	    perror("socket error");
+	    return sockfd;
+	}
+
+	/* 绑定监听口 */
+    //int flag = 1;
+    //iRet = setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag));
+
+
+    unlink(UNIX_SOCKET_PATH);
+	iRet = bind(sockfd, (struct sockaddr *)&serv_unadr, sizeof(struct sockaddr));
+	if (iRet != 0)
+	{
+	    perror("bind error");
+		close(sockfd);
+		return -1;
+	}
+
+	iRet = recv(sockfd, recvbuf, 1024, 0);
+	sleep(10);
+	while (1) {
+		iRet = recv(sockfd, recvbuf, 1024, 0);
+		printf("zz %s iRet:%lx \n",__func__, (unsigned long)iRet);
+	}
+    return sockfd;
+}
+
+int mode_unix_client()
+{
+	int sockfd;
+	struct sockaddr_un  unadr;
+	socklen_t socklen;
+	int len;
+	int i;
+
+	bzero(&unadr,sizeof(unadr));
+
+	unadr.sun_family = AF_UNIX;
+	strcpy(unadr.sun_path, UNIX_SOCKET_PATH);
+
+
+	/* 创建本地socket */
+	sockfd = socket(AF_UNIX, SOCK_DGRAM, 0);//数据包方式
+	if ( sockfd <= 0)
+	{
+	    perror("CUdpClient:: socket error");
+	    return sockfd;
+	}
+
+	/* 绑定监听口 */
+    //setSocketAttr(sockFd);
+	int iRet = connect(sockfd,(struct sockaddr *) &unadr, sizeof(unadr));
+	printf("zz %s iRet:%lx \n",__func__, (unsigned long)iRet);
+	if (iRet != 0)
+	{
+	    perror("bind error");
+		close(sockfd);
+		return -1;
+	}
+
+	for (i = 0; i < 1024; ++i) {
+		len = send(sockfd, "test", 4, 0);
+		printf("zz %d: len:%lx \n",i, (unsigned long)len);
+	}
+    return sockfd;
+}
+
+void update_net_mode(int mode)
+{
+	switch (mode) {
+		case 1:
+			args_mode_net = MODE_TCP;
+			break;
+		case 2:
+			args_mode_net = MODE_UDP;
+			break;
+		case 3:
+			args_mode_net = MODE_XDP;
+			break;
+		case 4:
+			args_mode_net = MODE_UNIX;
+			break;
+		default:
+			break;
+	}
+}
+
+static void entry_server_mode(void)
+{
+	printf("zz %s %d \n", __func__, __LINE__);
+	switch (args_mode_net) {
+		case MODE_TCP:
+			mode_tcp_server();
+			break;
+		case MODE_UDP:
+			break;
+		case MODE_UNIX:
+			mode_unix_server();
+			break;
+		case MODE_XDP:
+			break;
+		default:
+			break;
+	}
+}
+
+static void entry_client_mode(void)
+{
+	printf("zz %s %d \n", __func__, __LINE__);
+	switch (args_mode_net) {
+		case MODE_TCP:
+			timer_init(1);
+			mode_tcp_client();
+			break;
+		case MODE_UDP:
+			break;
+		case MODE_UNIX:
+			mode_unix_client();
+			break;
+		case MODE_XDP:
+			break;
+		default:
+			break;
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	int args_size = 0;
-	int choice;
+	int choice, choice_args;
 	int fd;
+
+	args_mode_net = MODE_TCP;
 
 	while (1) {
 		int option_index = 0;
-		choice = getopt_long( argc, argv, "vht:p:s:t:T:c:S",
+		choice = getopt_long( argc, argv, "vhm:t:p:s:t:T:c:Sp:",
 					long_options, &option_index);
 		if (choice == -1)
 			break;
+
 		switch( choice )
 		{
 			case 'v':
@@ -256,7 +423,17 @@ int main(int argc, char *argv[])
 				help();
 				return 0;
 	
+			case 'm':
+				choice_args = atoi(optarg);
+				update_net_mode(choice_args);
+				break;
+
+			case 'p':
+				args_port = atoi(optarg);
+				break;
+
 			case 'c':
+				args_cs_mod = 1;
 				args_server_ip = (char*)malloc(16);
 				memcpy(args_server_ip, optarg, 16);
 				break;
@@ -270,36 +447,26 @@ int main(int argc, char *argv[])
 				break;
 
 			case 's':
-				//args_size = atoi(optarg);
 				break;
 
 			case 'S':
-				mode_server();
-				//args_size = atoi(optarg);
+				args_cs_mod = 1;
 				break;
 
 			default:
+				printf("argsmunt not find\n");
 				return -1;
 		}
 	}
 
-	// client mode
-	if (args_server_ip) {
-		timer_init(1);
-		mode_client();
-	}
-#if 0
-	if (!strcmp(args_type, "anon")) {
-	} else if (!strcmp(args_type, "dirty")) {
-	} else if (!strcmp(args_type, "mmap")) {
-	} else {
-	}
-#endif
-
-	//pthread_join(thread_array[i], NULL);
+	if (args_cs_mod)
+		entry_client_mode();
+	else
+		entry_server_mode();
 
 	while(1)
 		sleep(1);
+
 	return 0;
 out:
 	return -1;
