@@ -1,114 +1,144 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/err.h>
+#include <linux/clk.h>
 #include <linux/io.h>
 #include <linux/device.h>
-#include <linux/version.h>
-#include <linux/kprobes.h>
+#include <linux/gpio.h>
 #include <linux/slab.h>
 #include <linux/mm.h>
-#include <linux/smpboot.h>
-#include <linux/types.h>
-#include <linux/mm.h>
-#include <linux/nmi.h>
-#include <linux/interrupt.h>
+#include <linux/fs.h>
+#include <linux/miscdevice.h>
+#include <linux/percpu-rwsem.h>
 #include <linux/syscore_ops.h>
 
-#define LOOKUP_SYMS(name) do {							\
-		orig_##name = (void *)cust_kallsyms_lookup_name(#name);		\
-		if (!orig_##name) {						\
-			pr_err("kallsyms_lookup_name: %s\n", #name);		\
-			return -EINVAL;						\
-		}								\
-	} while (0)
 
-unsigned long (*cust_kallsyms_lookup_name)(const char *name);
-struct hrtimer hrtimer_pr;
-int *orig_css_set_count;
+DEFINE_STATIC_PERCPU_RWSEM(test_rwsem);
+#define ARRT_MARCO(name) DEVICE_ATTR(name, S_IWUSR | S_IRUGO, read_##name, write_##name);
 
-struct list_head *origme__cgrp_cpuctx_list;
-static DEFINE_PER_CPU(struct list_head, me_cgrp_cpuctx_list);
-static enum hrtimer_restart hrtimer_pr_fun(struct hrtimer *hrtimer)
+#define ARRT_MARCO_READ(name)  \
+	static ssize_t read_##name(struct device *dev,struct device_attribute *attr, char *buf) \
+	{ \
+		ssize_t size;\
+		size = sprintf(buf, "%d\n", name);\
+		return size;\
+	}
+
+#define ARRT_MARCO_WRITE(name)  \
+	static ssize_t write_##name(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)\
+	{\
+		unsigned long val;\
+		if (!kstrtoul(buf, 0, &val)) {\
+			name = val;\
+		}\
+		return count; \
+	}
+
+#define MISC_NAME "misc_template"
+
+static int enable;
+
+struct misc_private_data {
+	int flag;		
+};
+
+struct ping_data {
+	short unsigned int  s_send;
+	short unsigned int  s_recv;
+};
+
+static int misc_template_open(struct inode *inode, struct file * file)
 {
-  	trace_printk("zz css_set_count:%d \n", *orig_css_set_count);
-	hrtimer_forward_now(&hrtimer_pr, ns_to_ktime(1000000000));
-	return HRTIMER_RESTART;
+
+	struct misc_private_data *data;
+	data = kzalloc(sizeof(struct misc_private_data), GFP_KERNEL);
+	if (!data) {
+		return -ENOMEM;
+	}
+	file->private_data = (void *) data;
+	return 0;
 }
 
-static int (*ksys_kallsyms_on_each_symbol)(int (*fn)(void *, const char *,
-        struct module *, unsigned long),void *data);
-
-static int symbol_walk_callback(void *data, const char *name,
-        struct module *mod, unsigned long addr)
+static ssize_t misc_template_read(struct file *file, char __user * buf, size_t size, loff_t *ppos)
 {
-    if (strcmp(name, "kallsyms_lookup_name") == 0) {
-        cust_kallsyms_lookup_name = (void *)addr;
-        return addr;
-    }
-
-    return 0;
+	return 0;
 }
 
-static int get_kallsyms_lookup_name(void)
+static ssize_t misc_template_write(struct file *file, const char __user * buf, size_t size, loff_t *ppos)
 {
-    int ret;
-    ksys_kallsyms_on_each_symbol = &kallsyms_on_each_symbol;
-    ret = ksys_kallsyms_on_each_symbol(symbol_walk_callback, NULL);
-    if (!ret || !cust_kallsyms_lookup_name)
-        return -EINVAL;
-
-    return 0;
+	struct misc_private_data *data;
+	data = (struct misc_private_data *)file->private_data;
+	kfree(data);
+	return 0;
 }
 
-int sym_init(void)
+static int misc_template_release (struct inode *inode, struct file *file)
 {
-	if (LOOKUP_SYMS("css_set_count")) 
-		return -EINVAL;
-
-	if (LOOKUP_SYMS("cgrp_cpuctx_list")) 
-		return -EINVAL;
-
-  return 0;
+	return 0;
 }
 
-static int hrtimer_pr_init(void)
+static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, unsigned long arg)
 {
-	hrtimer_init(&hrtimer_pr, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-	hrtimer_pr.function = hrtimer_pr_fun;
-	hrtimer_start(&hrtimer_pr, ns_to_ktime(1000000000),
-			HRTIMER_MODE_REL_PINNED);
+	printk("zz %s cmd:%lx arg:%lx \n",__func__, (unsigned long)cmd, (unsigned long)arg);
+	switch (arg) {
+		case 1:
+			percpu_down_read(&test_rwsem);
+			break;
+		case 2:
+			percpu_up_read(&test_rwsem);
+			break;
+		case 3:
+			percpu_down_write(&test_rwsem);
+			break;
+		case 4:
+			percpu_up_write(&test_rwsem);
+			break;
+		default:
+			break;
+	}
 
 	return 0;
 }
 
-static void hrtimer_pr_exit(void)
+struct file_operations misc_temp_ops = {
+	.open = misc_template_open,
+	.read = misc_template_read,
+	.write = misc_template_write,
+	.unlocked_ioctl =misc_template_unlocked_ioctl,
+	.release = misc_template_release
+};
+
+struct miscdevice  misc_dev = {
+	.name = MISC_NAME,
+	.fops = &misc_temp_ops,
+};
+
+ARRT_MARCO_READ(enable);
+ARRT_MARCO_WRITE(enable);
+ARRT_MARCO(enable);
+
+
+static int __init miscdriver_init(void)
 {
-	hrtimer_cancel(&hrtimer_pr);
+	if (misc_register(&misc_dev)) {
+		pr_err(" misc register err\n");
+		return 1;
+	}
+
+	device_create_file(misc_dev.this_device, &dev_attr_enable);
+	printk("miscdriver load \n");
+	return 0;
 }
 
-static int __init percpu_hrtimer_init(void)
+static void __exit miscdriver_exit(void)
 {
-
-  if (get_kallsyms_lookup_name())
-    return -EINVAL;
-
-  if (sym_init())
-    return -EINVAL;
-
-  printk("zz css_set_count:%d \n", *orig_css_set_count);
-  printk("zz %s me_cgrp_cpuctx_list:%lx \n",__func__, (unsigned long)&me_cgrp_cpuctx_list);
-  printk("zz %s origme__cgrp_cpuctx_list:%lx %lx\n",__func__, (unsigned long)origme__cgrp_cpuctx_list, this_cpu_ptr(origme__cgrp_cpuctx_list));
-  hrtimer_pr_init();	
-  return 0;
+	device_remove_file(misc_dev.this_device, &dev_attr_enable);
+	misc_deregister(&misc_dev);
+	printk("miscdriver unload \n");
 }
 
-static void __exit percpu_hrtimer_exit(void)
-{
-  hrtimer_pr_exit();	
-}
-
-module_init(percpu_hrtimer_init);
-module_exit(percpu_hrtimer_exit);
+module_init(miscdriver_init);
+module_exit(miscdriver_exit);
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Zou Cao<zoucaox@outlook.com>");
+MODULE_AUTHOR("Zou Cao<zoucaox@gmail.com>");
