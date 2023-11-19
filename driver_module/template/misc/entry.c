@@ -100,10 +100,43 @@ static long misc_template_unlocked_ioctl (struct file *file, unsigned int cmd, u
 	return 0;
 }
 
+struct vm_operations_struct *vma_first;
+static void vma_close(struct vm_area_struct * vma)
+{
+	if (vma_first) {
+		vma_first->close = 0x124145;
+		kfree(vma_first);
+	}
+	printk("zz %s vma:%lx \n",__func__, (unsigned long)vma);
+}
+
+
+struct vm_operations_struct dummy_misc_ops = {
+	.close = vma_close,
+};
+
+int misc_temp_mmap (struct file *file, struct vm_area_struct *vma)
+{
+	printk("zz %s stat:%lx end:%lx \n",__func__, (unsigned long)vma->vm_start, (unsigned long)vma->vm_end);
+	//printk("zz %s vm_ops:%lx \n",__func__, (unsigned long)vm_ops);
+	if (!vma_first) {
+		vma_first = kmalloc(sizeof(struct vm_area_struct), GFP_KERNEL);
+		printk("zz %s %d \n", __func__, __LINE__);
+		memset(vma_first, 0, sizeof(struct vm_area_struct));
+		vma_first->close = vma_close;
+	}
+
+	vma->vm_ops = vma_first;
+	//vma->vm_ops = &dummy_misc_ops;
+
+	return 0;
+}
+
 struct file_operations misc_temp_ops = {
 	.open = misc_template_open,
 	.read = misc_template_read,
 	.write = misc_template_write,
+	.mmap = misc_temp_mmap,
 	.unlocked_ioctl =misc_template_unlocked_ioctl,
 	.release = misc_template_release
 };
