@@ -1,6 +1,6 @@
 
 LFLAGS := -lstdc++
-TAGRET := dirty_cach_test
+TAGRET := memory_test
 
 OUT_PATH :=OUT
 TAGRET := $(OUT_PATH)/$(TAGRET)
