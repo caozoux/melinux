@@ -14,6 +14,7 @@ int rwsem_args_handle(int argc, char **argv);
 int stack_args_handle(int argc, char **argv);
 int lock_args_handle(int argc, char **argv);
 int mutex_args_handle(int argc, char **argv);
+int fault_args_handle(int argc, char **argv);
 
 struct cmdargs kinject_args[] = {
 	{"--statickey",statickey_args_handle, 
@@ -62,7 +63,65 @@ struct cmdargs kinject_args[] = {
 		"     --mutex_dlock   mutex lock and unlock with mesecond\n"
 		"     --time  mesecond\n"
 	},
+	{"--fault", fault_args_handle,
+		"\n"
+		"     --softlockup \n"
+		"     --rcu_hungmutex \n"
+		"     --task_hung \n"
+		"     --warning \n"
+		"     --list_corrupt \n"
+	},
 };
+
+int fault_args_handle(int argc, char **argv)
+{
+	int c;
+	int ret;
+	struct ioctl_ksdata data;
+	struct kinject_ioctl kinject_data;
+	static int fault_softlockup, fault_rcu_hung, fault_task_hung;
+	static int fault_waring, fault_list_corrupt;
+
+	kinject_data.enable = 0;
+
+	data.data = &kinject_data;
+	data.len = sizeof(struct kinject_ioctl);
+
+	static struct option lock_opts[] = {
+		{ "softlockup",no_argument, &fault_softlockup,1},
+		{ "rcu_hung",no_argument, &fault_rcu_hung,1},
+		{ "task_hung",no_argument, &fault_task_hung,1},
+		{ "warning",no_argument, &fault_waring,1},
+		{ "list_corrupt",no_argument, &fault_list_corrupt,1},
+		{     0,    0,    0,    0},
+	};
+
+	while((c = getopt_long(argc, argv, "", lock_opts, NULL)) != -1)
+	{
+		switch(c) {
+			default:
+				break;
+		}
+	}
+
+	if (fault_softlockup)
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_SOFTWATCHDOG_TIMEOUT,
+				&data, sizeof(struct ioctl_ksdata));
+	if (fault_rcu_hung)
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_RUC_HUNG,
+				&data, sizeof(struct ioctl_ksdata));
+	if (fault_task_hung)
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_TASK_HUNG,
+				&data, sizeof(struct ioctl_ksdata));
+	if (fault_waring)
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_WARN,
+				&data, sizeof(struct ioctl_ksdata));
+	if (fault_list_corrupt)
+		ret = ktools_ioctl::kioctl(IOCTL_INJECT, (int)IOCTL_INJECT_LIST_CORRUPT,
+				&data, sizeof(struct ioctl_ksdata));
+
+	return ret;
+}
 
 int mutex_args_handle(int argc, char **argv)
 {

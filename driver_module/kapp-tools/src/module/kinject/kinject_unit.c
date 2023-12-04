@@ -5,11 +5,83 @@
 #include <linux/mm.h>
 #include <linux/module.h>
 #include <linux/uaccess.h>
+#include <linux/delay.h>
 #include <ksioctl/kinject_ioctl.h>
 
 #include "ksysdata.h"
 #include "ksysd_ioctl.h"
 #include "kinject_local.h"
+
+struct timer_list recover_timer;
+static int kinject_warn(void)
+{
+	WARN_ON(1);
+	return 0;
+}
+
+static int kinject_list_corrupt(void)
+{
+	struct list_head head;
+	struct list_head corruption_prev;
+	struct list_head corruption_next;
+	struct list_head test1;
+	struct list_head test2;
+
+	INIT_LIST_HEAD(&head);
+	INIT_LIST_HEAD(&corruption_prev);
+	INIT_LIST_HEAD(&corruption_next);
+	INIT_LIST_HEAD(&test1);
+	INIT_LIST_HEAD(&test2);
+
+	//double add wanring
+	list_add(&head, &head);
+	corruption_prev.next = &test1;
+	list_add(&test2, &corruption_prev);
+
+	//double add next wanring
+	corruption_next.next= &test1;
+	list_add_tail(&test2, &corruption_next);
+	return 0;
+}
+
+static struct mutex hung_lock;
+
+static void inject_time_func(struct timer_list *timer)
+{
+	if (!mutex_trylock(&hung_lock))
+    	mutex_unlock(&hung_lock);
+
+}
+
+static int kinject_softlockup(void)
+{
+	int i;
+	for( i=0; i < 300000; i++) {
+		udelay(100);
+	}
+	return 0;
+}
+
+static int kinject_rcu_stall(void)
+{
+	int i;
+	for( i=0; i < 2000000; i++) {
+		udelay(100);
+	}
+	return 0;
+}
+
+static int kinject_task_hang(void)
+{
+	timer_setup(&recover_timer, inject_time_func, 0);
+	recover_timer.expires = jiffies + 150000*HZ;
+
+    mutex_init(&hung_lock);
+    mutex_lock(&hung_lock);
+    mutex_lock(&hung_lock);
+
+	return 0;
+}
 
 int kinject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_ksdata *data)
 {
@@ -50,6 +122,22 @@ int kinject_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_k
 		case IOCTL_INJECT_MUTEXT_UNLOCK:
 		case IOCTL_INJECT_MUTEXT_DEALY:
 			kinject_lock_func(data->subcmd, &kioctl);
+			break;
+
+		case IOCTL_INJECT_SOFTWATCHDOG_TIMEOUT:
+			kinject_softlockup();
+			break;
+		case IOCTL_INJECT_RUC_HUNG:
+			kinject_rcu_stall();
+			break;
+		case IOCTL_INJECT_TASK_HUNG:
+			kinject_task_hang();
+			break;
+		case IOCTL_INJECT_WARN:
+			kinject_warn();
+			break;
+		case IOCTL_INJECT_LIST_CORRUPT:
+			kinject_list_corrupt();
 			break;
 
 		default:

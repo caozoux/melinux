@@ -9,6 +9,7 @@
 
 int kmemdump_args_handle(int argc, char **argv);
 int kmem_cgroup_args(int argc, char **argv);
+int kmem_alloc_args(int argc, char **argv);
 
 #define KMEM_IOCTL_DATA_INIT(data, kmem_data) \
 	struct kmem_ioctl kmem_data; \
@@ -69,7 +70,59 @@ struct cmdargs kmem_args[] = {
 		"     -k  enable kmemory\n"
 		"     -p  specify pid\n"
 	},
+	{"--alloc", kmem_alloc_args,
+		"\n"
+		"     -t  vmalloc/kmalloc/slab\n"
+	},
 };
+
+int kmem_alloc_args(int argc, char **argv)
+{
+	int c;
+	struct kmem_ioctl kmem_data;
+	struct ioctl_ksdata data;
+	struct kmem_dump  dump_data;
+	int mem_type = 0;
+
+	data.data = &kmem_data;
+	data.len = sizeof(struct kmem_ioctl);
+	kmem_data.enable = 0;
+
+	static struct option slub_opts[] = {
+		{ "t",required_argument,NULL,0},
+		{     0,    0,    0,    0},
+	};
+
+	while((c = getopt_long(argc, argv, "t:", slub_opts, NULL)) != -1)
+	{
+		switch(c) {
+			case 't':
+				if (strcmp("vmalloc", optarg))
+					mem_type = 1;
+				else if (strcmp("kmalloc", optarg))
+					mem_type = 2;
+				else if (strcmp("slab", optarg))
+					mem_type = 3;
+				break;
+			default:
+				break;
+		}
+	}
+
+	if (mem_type != 0) {
+		unsigned long addr;
+		kmem_data.data = &addr;
+		kmem_data.len = sizeof(unsigned long);
+		kmem_data.subcmd = IOCTL_USEKMEM_MEM_VALLOC;
+
+		ktools_ioctl::kioctl(IOCTL_KMEM, (int)IOCTL_USEKMEM_MEM_VALLOC,
+				&data, sizeof(struct kmem_ioctl));
+		printf("zz %s addr:%lx \n",__func__, (unsigned long)addr);
+	}
+
+	return 0;
+}
+
 
 int kmemdump_args_handle(int argc, char **argv)
 {

@@ -15,6 +15,7 @@ int kmem_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_ksda
 {
 	struct kmem_ioctl kioctl;
 	int ret;
+	void *pbuf ;
 
 	if (copy_from_user(&kioctl, (char __user *)ksdata->data, ksdata->len)) {
 		pr_err("ioctl data copy err\n");
@@ -29,6 +30,12 @@ int kmem_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_ksda
 
 		case IOCTL_USEKMEM_CGROUP_SCANKMEM:
 			dump_cgroup_kmem_info(kioctl.pid);
+			break;
+
+		case IOCTL_USEKMEM_MEM_VALLOC:
+			pbuf = vmalloc(PAGE_SIZE);
+			if (copy_to_user(kioctl.data, &pbuf, sizeof(void*)))
+				return -EINVAL;
 			break;
 
 		default:
