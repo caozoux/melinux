@@ -19,6 +19,15 @@
 #include <linux/seq_file.h>
 #include <linux/proc_fs.h>
 
+#define PROC_MARCO(__name) \
+    static const struct file_operations __name ## _fops = { \
+        .open       = __name ## _open, \
+        .read       = seq_read,   \
+        .write      = __name ## _write, \
+        .llseek     = seq_lseek, \
+        .release    = single_release, \
+    };
+
 struct blk_mq_tags {
     unsigned int nr_tags;
     unsigned int nr_reserved_tags;
@@ -79,15 +88,6 @@ int sym_init(void)
   if (!orig_super_blocks)
 	return -EINVAL;
   return 0;
-}
-
-static int hrtimer_pr_init(void)
-{
-	return 0;
-}
-
-static void hrtimer_pr_exit(void)
-{
 }
 
 #define REQ_OP_NAME(name) [REQ_OP_##name] = #name
@@ -241,22 +241,19 @@ static void blk_mq_debugfs_rq_hang_show(struct seq_file *m, struct request *rq)
 static void blk_mq_check_rq_hang(struct blk_mq_hw_ctx *hctx,
         struct request *rq, void *priv, bool reserved)
 {
-#if 0
-    struct seq_file *m = priv;
+#if 1
+    //struct seq_file *m = priv;
     u64 now = ktime_get_ns();
     u64 duration;
-
-    duration = div_u64(now - rq->start_time_ns, NSEC_PER_MSEC);
-    if (duration < rq->q->rq_hang_threshold)
-        return;
 
     /* See comments in blk_mq_check_expired() */
     if (!refcount_inc_not_zero(&rq->ref))
         return;
 
     duration = div_u64(now - rq->start_time_ns, NSEC_PER_MSEC);
-    if (duration >= rq->q->rq_hang_threshold)
-        blk_mq_debugfs_rq_hang_show(m, rq);
+	trace_printk("zz %s duration:%lx \n",__func__, (unsigned long)duration);
+    //if (duration >= rq->q->rq_hang_threshold)
+    //   blk_mq_debugfs_rq_hang_show(m, rq);
 
     //if (is_flush_rq(rq, hctx))
     //   rq->end_io(rq, 0);
@@ -265,13 +262,46 @@ static void blk_mq_check_rq_hang(struct blk_mq_hw_ctx *hctx,
 #endif
 }
 
-void rq_hang_check(struct seq_file *m, void *data)
+void rq_hang_check(void *data)
 {
 	struct request_queue *q = data;
-	//orig_blk_mq_queue_tag_busy_iter(q, blk_mq_check_rq_hang, m);
+	orig_blk_mq_queue_tag_busy_iter(q, (busy_iter_fn*)blk_mq_check_rq_hang, NULL);
 }
 
-static int show_reqinfo(struct seq_file *m, void *v)
+static ssize_t blockname_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+{
+	char blockname[128];
+
+	if (copy_from_user(blockname, buf, 128))
+		return -EFAULT;
+
+	return count;
+}
+
+static void dump_tags_request(struct blk_mq_tags *tags)
+{
+    int j;
+    struct request *rq;
+
+    if (!tags)
+        return ;
+
+    trace_printk("%s nr_tags:%ld nr_reserved_tags:%ld \n",__func__, (unsigned long)tags->nr_tags, (unsigned long)tags->nr_reserved_tags);
+    for (j = 0;  j< tags->nr_tags; ++j) {
+        rq = tags->rqs[j];
+        if (rq)
+            trace_printk("%s rqs rq:%lx tag:%ld internal_tag:%ld flags:%lx cmd_flags:%lx stat:%lx ref:%ld sec:%ld len:%ld\n",__func__, (unsigned long)rq, (unsigned long)rq->tag,
+                            (unsigned long)rq->internal_tag, (unsigned long)rq->rq_flags, (unsigned long)rq->cmd_flags,
+                            (unsigned long)rq->state, (unsigned long)refcount_read(&rq->ref), (unsigned long)rq->__sector, (unsigned long)rq->__data_len);
+        rq = tags->static_rqs[j];
+        if (rq)
+            trace_printk("%s rqs rq:%lx tag:%ld internal_tag:%ld flags:%lx cmd_flags:%lx stat:%lx ref:%ld sec:%ld len:%ld\n",__func__, (unsigned long)rq, (unsigned long)rq->tag,
+                            (unsigned long)rq->internal_tag, (unsigned long)rq->rq_flags, (unsigned long)rq->cmd_flags,
+                            (unsigned long)rq->state, (unsigned long)refcount_read(&rq->ref), (unsigned long)rq->__sector, (unsigned long)rq->__data_len);
+    }
+}
+
+static int blockname_show(struct seq_file *m, void *v)
 {
 	struct super_block *sb;
 	struct block_device *s_bdev;
@@ -289,62 +319,67 @@ static int show_reqinfo(struct seq_file *m, void *v)
 		if (!s_bdev)
 			continue;
 
-		printk("zz %s bd_queue:%lx  %s\n",__func__, (unsigned long)s_bdev->bd_queue, sb->s_id);
-		rq_hang_check(m, s_bdev->bd_queue);
 		q = s_bdev->bd_queue;
-		printk("zz %s q:%lx nr_hw_queues:%lx \n",__func__, (unsigned long)q, (unsigned long)q->nr_hw_queues);
-		printk("zz %s queue_hw_ctx:%lx \n",__func__, (unsigned long)q->queue_hw_ctx);
+		rq_hang_check(s_bdev->bd_queue);
+		trace_printk("%s q:%lx nr_hw_queues:%lx queue_hw_ctx:%lx bd_queue:%lx \n", 
+				sb->s_id, (unsigned long)q, (unsigned long)q->nr_hw_queues
+				(unsigned long)q->queue_hw_ctx, (unsigned long)s_bdev->bd_queue,);
 		for (i = 0; i < q->nr_hw_queues; ++i) {
 			hctx = q->queue_hw_ctx[i];
 			if (hctx->nr_ctx && hctx->tags) {
-				printk("zz %s hctx:%lx \n",__func__, (unsigned long)hctx);
+				trace_printk("%s hctx:%lx \n",__func__, (unsigned long)hctx);
 				tags = hctx->tags;
-				printk("zz %s nr_tags:%ld nr_reserved_tags:%ld \n",__func__, (unsigned long)tags->nr_tags, (unsigned long)tags->nr_reserved_tags);
-				for (j = 0;  j< tags->nr_tags; ++j) {
-					struct request *rq;
-					rq = tags->rqs[j];
-					if (rq) {
-						printk("zz %s rqs rq:%lx tag:%ld \n",__func__, (unsigned long)rq, (unsigned long)rq->tag);
-					}
-					rq = tags->static_rqs[j];
-					if (rq) {
-						printk("zz %s static rq:%lx tag:%ld \n",__func__, (unsigned long)rq, (unsigned long)rq->tag);
-					}
-				}
+				trace_printk("tags:\n");
+				dump_tags_request(tags);
+				trace_printk("sched tags:\n");
+				dump_tags_request(hctx->sched_tags);
 			}
 		}
 		//gendisk = s_bdev->bd_disk;
 	}
 	spin_unlock(orig_sb_lock);
 
-   seq_printf(m, ", .bio = %lx\n", 0x24);
-   return 0;
-
+    //seq_printf(m, ", .bio = %lx\n", 0x24);
+	return 0;
 }
 
-
-static int proc_reqinfo_init(void)
+static int blockname_open(struct inode *inode, struct file *file)
 {
-	proc_create_single("reqinfo", 0, NULL, show_reqinfo);
-    return 0;
+	return single_open(file, blockname_show, inode->i_private);
 }
+
+PROC_MARCO(blockname);
 
 static int __init percpu_hrtimer_init(void)
 {
+	struct proc_dir_entry *parent_dir;
 
     if (get_kallsyms_lookup_name())
     	return -EINVAL;
 
-    if (sym_init())
+    if (sym_init()) {
+    	return -EINVAL;
+	}
+
+	parent_dir = proc_mkdir("blockinfo", NULL);
+	if (!parent_dir)
     	return -EINVAL;
 
-	proc_reqinfo_init();
+	if (!proc_create("block", 0, parent_dir, &blockname_fops))
+		goto remove_proc;
+
+	return 0;
+
+remove_proc:
+	printk("zz %s %d \n", __func__, __LINE__);
+	remove_proc_subtree("blockinfo", NULL);
 	return 0;
 }
 
 static void __exit percpu_hrtimer_exit(void)
 {
-  remove_proc_entry("reqinfo", NULL);
+	remove_proc_subtree("blockinfo", NULL);
+	//remove_proc_entry("reqinfo", NULL);
   //hrtimer_pr_exit();	
 }
 
