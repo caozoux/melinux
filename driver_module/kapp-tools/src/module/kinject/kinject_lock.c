@@ -54,6 +54,7 @@ int kinject_lock_func(enum IOCTL_INJECT_SUB cmd, struct kinject_ioctl *data)
 
 		case IOCTL_INJECT_MUTEXT_DEALY:
 			cnt = data->lock.lock_ms;
+			printk("zz %s %d \n", __func__, __LINE__);
 			mutex_lock(&kinject_mutex);
 			while(cnt--)
 				for (i = 0; i < 10; ++i)

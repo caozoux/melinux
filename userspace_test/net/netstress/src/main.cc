@@ -249,8 +249,8 @@ typedef struct sockaddr_un TSockAddrUn;
 typedef struct sockaddr_in TSockAddrIn;
 typedef struct linger      TSoLinger;
 
-//#define UNIX_SOCKET_PATH  "/tmp/unix_sock"
-#define UNIX_SOCKET_PATH  "/dev/log"
+#define UNIX_SOCKET_PATH  "/tmp/unix_sock"
+//#define UNIX_SOCKET_PATH  "/dev/log"
 
 int mode_unix_server()
 {
@@ -313,7 +313,6 @@ int mode_unix_client()
 	unadr.sun_family = AF_UNIX;
 	strcpy(unadr.sun_path, UNIX_SOCKET_PATH);
 
-
 	/* 创建本地socket */
 	sockfd = socket(AF_UNIX, SOCK_DGRAM, 0);//数据包方式
 	if ( sockfd <= 0)
@@ -333,10 +332,11 @@ int mode_unix_client()
 		return -1;
 	}
 
-	for (i = 0; i < 1024; ++i) {
+	while(i++) {
 		len = send(sockfd, "test", 4, 0);
 		printf("zz %d: len:%lx \n",i, (unsigned long)len);
 	}
+
     return sockfd;
 }
 
@@ -362,7 +362,7 @@ void update_net_mode(int mode)
 
 static void entry_server_mode(void)
 {
-	printf("zz %s %d \n", __func__, __LINE__);
+	printf("zz %s %d %d\n", __func__, __LINE__, args_mode_net);
 	switch (args_mode_net) {
 		case MODE_TCP:
 			mode_tcp_server();
@@ -381,7 +381,7 @@ static void entry_server_mode(void)
 
 static void entry_client_mode(void)
 {
-	printf("zz %s %d \n", __func__, __LINE__);
+	printf("zz %s %d %d\n", __func__, __LINE__, args_mode_net);
 	switch (args_mode_net) {
 		case MODE_TCP:
 			timer_init(1);
@@ -409,7 +409,7 @@ int main(int argc, char *argv[])
 
 	while (1) {
 		int option_index = 0;
-		choice = getopt_long( argc, argv, "vhm:t:p:s:t:T:c:Sp:",
+		choice = getopt_long( argc, argv, "vhm:t:p:st:T:c:Sp:",
 					long_options, &option_index);
 		if (choice == -1)
 			break;
@@ -425,6 +425,7 @@ int main(int argc, char *argv[])
 	
 			case 'm':
 				choice_args = atoi(optarg);
+				printf("%d\n", choice_args);
 				update_net_mode(choice_args);
 				break;
 

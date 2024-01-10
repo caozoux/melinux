@@ -60,8 +60,7 @@ struct cmdargs kinject_args[] = {
 		"\n"
 		"     --mutex_lock    mutex lock\n"
 		"     --mutex_unlock  mutex unlock\n"
-		"     --mutex_dlock   mutex lock and unlock with mesecond\n"
-		"     --time  mesecond\n"
+		"     --mutex_dlock mesecond  mutex lock and unlock with mesecond\n"
 	},
 	{"--fault", fault_args_handle,
 		"\n"

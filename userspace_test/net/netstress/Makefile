@@ -1,5 +1,5 @@
 
-LFLAGS := -lstdc++
+LFLAGS := -lstdc++ -lpthread
 TAGRET := netstress
 
 OUT_PATH :=OUT
