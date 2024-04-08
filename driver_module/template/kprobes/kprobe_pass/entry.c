@@ -19,24 +19,28 @@
 #include <linux/proc_fs.h>
 #include <linux/jbd2.h>
 
-static void pass_func(void)
+#include <linux/seq_file.h>
+static int livepatch_cmdline_proc_show(struct seq_file *m, void *v)
 {
-
+	seq_printf(m, "%s\n", "this has been live patched");
+	return 0;
 }
 
 static int kprobe_passthrough_func(struct kprobe *kp, struct pt_regs *regs)
 {
-	regs->ip = (unsigned long)pass_func;	
+	regs->ip = (unsigned long)livepatch_cmdline_proc_show;	
 	return 1;
 }
 
 struct kprobe kplist[] = {
+#if 0
 	{
         .symbol_name = "css_release_work_fn",
         .pre_handler = kprobe_passthrough_func,
 	},
+#endif
 	{
-        .symbol_name = "cgroup_bpf_release",
+        .symbol_name = "cmdline_proc_show",
         .pre_handler = kprobe_passthrough_func,
 	},
 };
