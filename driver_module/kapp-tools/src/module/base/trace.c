@@ -15,17 +15,15 @@ extern struct kd_percpu_data *kd_percpu_data[512];
 
 static struct tracepoint *tp_ret;
 
-#if LINUX_VERSION_CODE == KERNEL_VERSION(4,18,0)
-typedef struct tracepoint* tracepoint_ptr_t;
+typedef struct tracepoint* tracepoint_ptr;
 #define tracepoint_ptr_deref(iter) iter
-#endif
 
 struct mutex *orig_tracepoint_module_list_mutex;
 struct list_head *orig_tracepoint_module_list;
-tracepoint_ptr_t orig___start___tracepoints_ptrs;
-tracepoint_ptr_t orig___stop___tracepoints_ptrs;
+tracepoint_ptr orig___start___tracepoints_ptrs;
+tracepoint_ptr orig___stop___tracepoints_ptrs;
 
-static void probe_tracepoint(struct tracepoint *tp, void *priv)
+static void __maybe_unused probe_tracepoint(struct tracepoint *tp, void *priv)
 {
     char *n = priv;
 
@@ -78,13 +76,14 @@ static void for_each_moudule_trace_point(
 
 static struct tracepoint *find_tracepoint(const char *name)
 {
-	tracepoint_ptr_t iter;
+	tracepoint_ptr iter;
 	for (iter = orig___start___tracepoints_ptrs; iter < orig___stop___tracepoints_ptrs; iter++) {
+#if 0
 		if (strcmp(tracepoint_ptr_deref(iter)->name, name) == 0)
 			return  tracepoint_ptr_deref(iter);
+#endif
 	}
 
-    //for_each_moudule_trace_point(probe_tracepoint, (void *)name);
 
     return NULL;
 }

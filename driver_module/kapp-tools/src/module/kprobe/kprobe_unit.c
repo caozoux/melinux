@@ -31,8 +31,10 @@ static int kretprobe_handler(struct kretprobe_instance *ri, struct pt_regs *regs
 static int __kprobes kprobe_prehandler(struct kprobe *p, struct pt_regs *regs)
 {
 	kprobe_item *item = container_of(p, kprobe_item, kp);
-	if (item && item->delay)
+	if (item && item->delay) {
+
 		udelay(item->delay);
+	}
 
 	return 0;
 }
@@ -78,7 +80,6 @@ static int kprobe_register_function(char *name, int type, unsigned long delay)
 		return -ENOMEM;
 	strncpy(item->name, name, 256);
 	item->delay = delay;
-	printk("zz %s delay:%lx \n",__func__, (unsigned long)item->delay);
 
 	switch (type) {
 		case 0:

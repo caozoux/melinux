@@ -3,7 +3,7 @@ CUR_PATH = $(shell pwd)
 TARGET := ksys_tool
 
 KERVER =$(shell uname -r)
-KERSRC := /lib/modules/$(KERVER)/build
+KERSRC ?= /lib/modules/$(KERVER)/build
 
 obj-m := $(TARGET).o
 
@@ -33,6 +33,7 @@ $(TARGET)-objs += kmem/kmem_dump.o kmem/kmem_unit.o kmem/cgroup/cgroup.o \
 
 $(TARGET)-objs += kdevice/kdevice_unit.o
 $(TARGET)-objs += kstack/kstack_unit.o
+$(TARGET)-objs += ktree_list/ktree_list_unit.o
 
 all:
 	$(MAKE) -C $(KERSRC) M=$(PWD) modules
