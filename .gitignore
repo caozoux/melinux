@@ -5,6 +5,7 @@ Module.symvers
 *.mod.c
 *.mod.o
 *.o
+*.o.d
 modules.order
 *.swp
 *.swn
