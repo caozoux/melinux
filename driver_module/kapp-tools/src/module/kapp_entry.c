@@ -61,6 +61,9 @@ struct ksysd_uint_item unit_list[] =
 	KSYSD_UNIT(kblock, IOCTL_KBLOCK),
 	KSYSD_UNIT(krunlog, IOCTL_KRUNLOG),
 	KSYSD_UNIT(kstack, IOCTL_KSTACK),
+	{
+		.type = 0,
+	}
 };
 
 static int ksysd_template_open(struct inode *inode, struct file * file)
@@ -155,27 +158,27 @@ ARRT_MARCO_READ(enable);
 ARRT_MARCO_WRITE(enable);
 ARRT_MARCO(enable);
 
-static int (*ksys_kallsyms_on_each_symbol)(int (*fn)(void *, const char *,
-		struct module *, unsigned long),void *data);
-
-static int symbol_walk_callback(void *data, const char *name,
-		struct module *mod, unsigned long addr)
-{
-	if (strcmp(name, "kallsyms_lookup_name") == 0) {
-		cust_kallsyms_lookup_name = (void *)addr;
-		return addr;
-	}
-
-	return 0;
-}
+static int noop_pre_handler(struct kprobe *p, struct pt_regs *regs) { return 0; }
 
 static int get_kallsyms_lookup_name(void)
 {
 	int ret;
-	ksys_kallsyms_on_each_symbol = &kallsyms_on_each_symbol;
-	ret = ksys_kallsyms_on_each_symbol(symbol_walk_callback, NULL);
-	if (!ret || !cust_kallsyms_lookup_name)
+	struct kprobe kp;
+
+	memset(&kp, 0, sizeof(struct kprobe));
+
+	ret = -1;
+	kp.symbol_name = "kallsyms_lookup_name";
+	kp.pre_handler = noop_pre_handler;
+
+	ret = register_kprobe(&kp);
+	if (ret < 0) {
+		printk("Err: find kallsyms_lookup_name failed \n");
 		return -EINVAL;
+	}
+
+	cust_kallsyms_lookup_name = (void*)kp.addr;
+	unregister_kprobe(&kp);
 
 	return 0;
 }
