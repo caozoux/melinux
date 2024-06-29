@@ -38,6 +38,7 @@ enum ioctl_cmdtype {
 	IOCTL_KBLOCK,
 	IOCTL_KRUNLOG,
 	IOCTL_KSTACK,
+	IOCTL_KTREE,
 };
 
 enum IOCTL_TYPE {
