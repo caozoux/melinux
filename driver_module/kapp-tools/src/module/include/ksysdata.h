@@ -58,5 +58,6 @@ FUNC_UNIT(kblock);
 FUNC_UNIT(krunlog);
 FUNC_UNIT(kstack);
 FUNC_UNIT(ktree_list);
+FUNC_UNIT(ksched);
 
 #endif /* ifndef __KSYS_DATA_H__ */

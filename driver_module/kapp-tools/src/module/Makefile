@@ -34,6 +34,7 @@ $(TARGET)-objs += kmem/kmem_dump.o kmem/kmem_unit.o kmem/cgroup/cgroup.o \
 $(TARGET)-objs += kdevice/kdevice_unit.o
 $(TARGET)-objs += kstack/kstack_unit.o
 $(TARGET)-objs += ktree_list/ktree_list_unit.o
+$(TARGET)-objs += ksched/ksched_unit.o ksched/ksched_sched_domain.o
 
 all:
 	$(MAKE) -C $(KERSRC) M=$(PWD) modules
