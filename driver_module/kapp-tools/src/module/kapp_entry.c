@@ -6,6 +6,7 @@
 #include <linux/mm.h>
 #include <linux/kprobes.h>
 #include <linux/module.h>
+#include <linux/proc_fs.h>
 
 #include<linux/miscdevice.h>
 
@@ -51,6 +52,7 @@ TEXT_DECLARE()
 static struct ksysd_data *ksysd_data;
 static int enable;
 
+struct proc_dir_entry *ksys_proc_root;
 struct ksysd_uint_item unit_list[] =
 {
 	KSYSD_UNIT(kprobe, IOCTL_KPROBE),
@@ -62,6 +64,7 @@ struct ksysd_uint_item unit_list[] =
 	KSYSD_UNIT(krunlog, IOCTL_KRUNLOG),
 	KSYSD_UNIT(kstack, IOCTL_KSTACK),
 	KSYSD_UNIT(ktree_list, IOCTL_KTREE),
+	KSYSD_UNIT(ksched, IOCTL_KSCHED),
 	{
 		.type = 0,
 	}
@@ -198,6 +201,8 @@ static int __init ksys_tool_init(void)
 	if (!ksysd_data)
 		return -ENOMEM;
 
+	ksys_proc_root = proc_mkdir("ksys", NULL);
+
 	if (runlog_init())
 		goto out1;
 
@@ -229,6 +234,7 @@ static int __init ksys_tool_init(void)
 	}
 	INFO("ksysddriver load \n");
 
+
 	return 0;
 out4:
 	for(; i>=0; i--) {
@@ -247,6 +253,7 @@ static void __exit ksys_tool_exit(void)
 {
 	int i;
 
+
 	for(i=0; unit_list[i].type; i++)
 		unit_list[i].exit();
 
@@ -255,6 +262,7 @@ static void __exit ksys_tool_exit(void)
 	device_remove_file(ksysd_dev.this_device, &dev_attr_enable);
 	misc_deregister(&ksysd_dev);
 	runlog_exit();
+	remove_proc_entry("ksys", NULL);
 	kfree(ksysd_data);
 	INFO("ksysddriver unload \n");
 }

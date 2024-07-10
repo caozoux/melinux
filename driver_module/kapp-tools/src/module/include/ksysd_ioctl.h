@@ -39,6 +39,7 @@ enum ioctl_cmdtype {
 	IOCTL_KRUNLOG,
 	IOCTL_KSTACK,
 	IOCTL_KTREE,
+	IOCTL_KSCHED,
 };
 
 enum IOCTL_TYPE {
