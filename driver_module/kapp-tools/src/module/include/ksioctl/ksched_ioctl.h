@@ -1,17 +1,15 @@
-#ifndef __KTRACE_IOCTL_H__
-#define __KTRACE_IOCTL_H__
+#ifndef __KSCHED_H__
+#define  __KSCHED_H__
 
-struct ktrace_ioctl {
+enum IOCTL_KRPOBE_SUB {
+	IOCTL_KSCHED_NONE = 0,
+	//dumpstack of function
+	IOCTL_KSCHED_DUMP,
+};
+
+
+struct ksched_ioctl {
 	int enable;
-	int threshold;
 };
 
-enum IOCTL_USEKTRACE_SUB{
-	IOCTL_USEKTRACE_NONE = 0,
-	IOCTL_USEKTRACE_RCU,
-	IOCTL_USEKTRACE_SCHED_SWITCH,
-	IOCTL_USEKTRACE_NR
-};
-
-#endif /* ifndef __KTRACE_IOCTL_H__
- */
+#endif

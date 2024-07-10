@@ -1,0 +1,10 @@
+1. add new unix
+================
+1.1 kapp_entry.c add :KSYSD_UNIT(ksched, IOCTL_KSCHED),
+
+1.2 include/ksysd_ioctl.h add  IOCTL_KSCHED
+
+1.3 include/ksysdata.h add  FUNC_UNIT(ksched);
+
+1.4 add include/ksioctl/ksched_ioctl.h and struct ksched_IOCTL
+	
