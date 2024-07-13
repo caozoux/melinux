@@ -12,7 +12,7 @@
 #include "ksysd_ioctl.h"
 #include "ksched_local.h"
 
-struct proc_dir_entry *root_dir;
+struct proc_dir_entry *ksched_proc;
 struct rq __percpu * orig_runqueues;
 
 #if 0
@@ -50,52 +50,25 @@ OUT:
 	return ret;
 }
 
-static int signal_show(struct seq_file *m, void *v)
-{
-	seq_printf(m, "zz\n");
-	return 0;
-}
-
-static int info_open(struct inode *inode, struct file *file)
-{
-	 return single_open(file, signal_show, NULL);
-}
-
-static ssize_t info_proc_write(struct file *file, const char __user *buffer,
-		size_t count, loff_t *pos)
-{
-	return count;
-}
-
-
-static const struct file_operations info_fops = {
-	.owner      = THIS_MODULE,
-	.open           = info_open,
-	.read           = seq_read,
-	.llseek         = seq_lseek,
-	.release        = single_release,
-	.write      = info_proc_write,
-};
-
 int ksched_unit_init(void)
 {
 	LOOKUP_SYMS(runqueues);
 
+	ksched_proc = proc_mkdir("ksched", ksys_proc_root);
+	if (!ksched_proc)
+		return -EINVAL;
+
 	if (ksched_domain_init())
 		return -EINVAL;
 
-	root_dir = proc_mkdir("ksched", NULL);
-	if (!root_dir)
-		return -EINVAL;
 
-	proc_create_data("info", S_IRUGO, root_dir,  &info_fops, NULL);
 	return 0;
 }
 
 int ksched_unit_exit(void)
 {
 	ksched_domain_exit();
-	proc_remove(root_dir);
+	proc_remove(ksched_proc);
 	return 0;
 }
 
