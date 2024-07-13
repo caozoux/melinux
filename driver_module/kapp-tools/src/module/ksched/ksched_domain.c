@@ -10,7 +10,7 @@
 #include "ksysd_ioctl.h"
 #include "ioctl_kprobe.h"
 #include "ksioctl/ksched_ioctl.h"
-#include "ksched.h"
+#include "ksched_local.h"
 
 #define cpu_rq_cp(cpu) (&per_cpu(*orig_runqueues, (cpu)))
 #define for_each_domain_cp(cpu, __sd) \
