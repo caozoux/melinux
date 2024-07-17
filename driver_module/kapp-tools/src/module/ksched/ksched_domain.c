@@ -17,29 +17,23 @@
 	for (__sd = rcu_dereference_check_sched_domain(cpu_rq_cp(cpu)->sd); \
 		__sd; __sd = __sd->parent)
 
+static inline unsigned long cfs_rq_load_avg(struct cfs_rq *cfs_rq)
+{
+	return cfs_rq->avg.load_avg;
+}
+
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(5, 4, 0)
 static inline unsigned long cfs_rq_runnable_load_avg(struct cfs_rq *cfs_rq)
 {
 	return cfs_rq->avg.runnable_load_avg;
 }
 
-static inline unsigned long cfs_rq_load_avg(struct cfs_rq *cfs_rq)
-{
-	return cfs_rq->avg.load_avg;
-}
 
 unsigned long weighted_cpuload(struct rq *rq)
 {
 	return cfs_rq_runnable_load_avg(&rq->cfs);
 }
 
-void dump_sched_groups(struct sched_domain *sd)
-{
-	struct sched_group *group  = sd->groups;
-
-	do {
-		group = group->next;
-	} while (group != sd->groups);
-}
 
 void dump_sched_domain(struct seq_file *seq)
 {
@@ -48,15 +42,6 @@ void dump_sched_domain(struct seq_file *seq)
 	struct sched_group* sg;
 	unsigned long load, avg_load, runnable_load;
 
-#if 0
-	struct rq *rq;
-	for_each_online_cpu(cpu) {
-		rq = &per_cpu(*orig_runqueues, cpu);
-		sd = rq->sd;
-		printk("zz %s sd:%lx \n",__func__, (unsigned long)sd);
-		sg = sd->groups;
-	}
-#else
 
 	for_each_online_cpu(cpu) {
 		avg_load = cfs_rq_load_avg(&cpu_rq_cp(cpu)->cfs);
@@ -67,7 +52,21 @@ void dump_sched_domain(struct seq_file *seq)
 			dump_sched_groups(sd);
 	}
 
+}
+#else
+void dump_sched_domain(struct seq_file *seq)
+{
+
+}
 #endif
+
+void dump_sched_groups(struct sched_domain *sd)
+{
+	struct sched_group *group  = sd->groups;
+
+	do {
+		group = group->next;
+	} while (group != sd->groups);
 }
 
 static int load_show(struct seq_file *seq, void *offset)

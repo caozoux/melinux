@@ -154,6 +154,7 @@ int kinject_unit_init(void)
 	kinject_timer_init();
 	kinject_slub_init();
 	kinject_rwsem_init();
+	kinject_kthread_int();
 	return 0;
 }
 
@@ -162,6 +163,7 @@ int kinject_unit_exit(void)
 	kinject_timer_remove();
 	kinject_slub_remove();
 	kinject_rwsem_remove();
+	kinject_kthread_remove();
 	return 0;
 }
 

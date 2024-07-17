@@ -8,7 +8,7 @@ KERSRC ?= /lib/modules/$(KERVER)/build
 obj-m := $(TARGET).o
 
 #KBUILD_CFLAGS
-ccflags-y += -I$(PWD)/include -I$(PWD)/$(PRIV_INC) -I$(PWD)/../ -I$(PWD)/lib -Wuninitialized -I$(KERHSRC) -I$(PWD)/kdiagnose/include
+ccflags-y += -I$(PWD)/include -I$(PWD)/$(PRIV_INC) -I$(PWD)/../ -I$(PWD)/lib -Wuninitialized -I$(KERHSRC) -I$(PWD)/kdiagnose/include -I$(KERSOURCE)
 
 $(TARGET)-objs := kapp_entry.o
 
@@ -25,7 +25,7 @@ $(TARGET)-objs += base/base.o base/percpu_variable.o base/trace.o base/buffer.o 
 $(TARGET)-objs += ktrace/ktrace_unit.o
 $(TARGET)-objs += kinject/kinject_test.o kinject/kinject_unit.o  kinject/kinject_timer.o  \
 				  kinject/kinject_slub.o kinject/kinject_sem.o kinject/kinject_segment.o \
-				  kinject/kinject_lock.o
+				  kinject/kinject_lock.o kinject/kinject_thread.o
 $(TARGET)-objs += kblock/kblock_unit.o kblock/super.o  kblock/bio.o  kblock/dentry.o  kblock/inode.o  kblock/request.o kblock/kblock_trace.o
 
 $(TARGET)-objs += kmem/kmem_dump.o kmem/kmem_unit.o kmem/cgroup/cgroup.o \

@@ -2,6 +2,9 @@
 #define __KSCHED_LOCAL_H__
 
 #include <linux/sched/topology.h>
+extern void flush_tlb_mm_range(struct mm_struct *mm, unsigned long start,
+	unsigned long end, unsigned int stride_shift,
+	bool freed_tables);
 #include "kernel/sched/sched.h"
 
 extern struct rq __percpu * orig_runqueues;

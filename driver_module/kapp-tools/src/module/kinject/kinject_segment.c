@@ -14,7 +14,8 @@
 
 void kinject_stack_segment(char *overwrite_buf)
 {
-	memset(overwrite_buf, 1, 528);
+	memset(overwrite_buf, 1, 512);
+	//memset(overwrite_buf, 1, 528);
 	printk("zz %s overwrite_buf:%lx \n",__func__, (unsigned long)overwrite_buf[32]);
 	printk("zz %s overwrite_buf:%lx \n",__func__, (unsigned long)overwrite_buf[64]);
 }

@@ -68,8 +68,8 @@ int kmem_cgroup_scan_blkcg(struct kmem_ioctl *kmem_data)
 
 	mcss_for_each_descendant_post(css, &blkcg_root.css) {
 	//printk("zz css:%lx refcnt:%ld\n", (unsigned long)css, refcount_read(&css->refcnt));
-	printk("zz css:%lx refcnt:%lx %d %d\n", (unsigned long)css, atomic_long_read(&css->refcnt.count), percpu_ref_is_zero(&css->refcnt), atomic_read(&css->online_cnt));
-		count++;
+	//printk("zz css:%lx refcnt:%lx %d %d\n", (unsigned long)css, atomic_long_read(&css->refcnt.count), percpu_ref_is_zero(&css->refcnt), atomic_read(&css->online_cnt));
+	//	count++;
 	}
 	printk("zz %s count:%lx \n",__func__, (unsigned long)count);
 #if 0
@@ -142,7 +142,10 @@ void dump_cgroup_kmem_info(pid_t pid)
 		return;
 	}
 
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(4, 19, 0)
 	s = list_entry(&memcg->kmem_caches, struct kmem_cache, memcg_params.kmem_caches_node);
+#else if LINUX_VERSION_CODE > KERNEL_VERSION(5, 10, 0)
+#endif
 	//s = list_entry(p, struct kmem_cache, list);
 	//s = list_first_entry(&memcg->kmem_caches, struct kmem_cache, list);		
 

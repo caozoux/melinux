@@ -23,5 +23,7 @@ int kinject_stack_segmet_func(enum IOCTL_INJECT_SUB cmd, struct kinject_ioctl *d
 
 
 int kinject_lock_func(enum IOCTL_INJECT_SUB cmd, struct kinject_ioctl *data);
+int kinject_kthread_int(void);
+void kinject_kthread_remove(void);
 #endif
 
