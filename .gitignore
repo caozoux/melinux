@@ -15,4 +15,5 @@ test
 *.a
 *.mod
 kapp-tool
+vmlinux.h
 
