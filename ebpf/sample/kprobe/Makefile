@@ -1,6 +1,6 @@
 .PHONY: all
 # /home/zc/github/kernel-4.18.0
-KERHSRC ?= /usr/src/kernels/4.18.0-408.el8.x86_64/
+KERHSRC := /usr/src/linux-headers-`uname -r`/
 ebpf_mod := ebpf_module_kprobe.o
 TARGET := monitor-exec
 #test : sudo ./namespace_execute_child -p -m  ./namespace_init
@@ -28,7 +28,6 @@ ebpf_loader:
 	-Wno-gnu-variable-sized-type-not-at-end \
 	-Wno-address-of-packed-member -Wno-tautological-compare \
 	-Wno-unknown-warning-option  \
-	-I/home/zc/github/kernel-4.18.0/samples/bpf/ -include asm_goto_workaround.h \
 	-O2 -emit-llvm -c $< -o -| llc -march=bpf $(LLC_FLAGS) -filetype=obj -o $@
 
 clean:
