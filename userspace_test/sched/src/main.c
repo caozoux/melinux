@@ -1,8 +1,9 @@
 #include<stdio.h>
-#include <stdlib.h>
+#include<stdlib.h>
 #include<string.h>
 #include<getopt.h>
 #include<unistd.h>
+#include<pthread.h>
 #include <fcntl.h>
 #include<unistd.h>
 #include<sys/time.h>
@@ -11,10 +12,8 @@
 #define MAX_TRHEAD  (128)
 
 static unsigned long run_val = 1UL<<20;
-unsigned long run_cnt;
-unsigned long sleep_cnt;
 unsigned long thread_cnt;
-unsigned long loop_cnt;
+int arg_cpu_util;
 
 struct thread_data {
 	unsigned long id;
@@ -23,38 +22,46 @@ struct thread_data {
 
 pthread_t thread_array[MAX_TRHEAD];
 struct thread_data thread_data_array[MAX_TRHEAD];
+static unsigned long cpu_10_ms_count;
+
+static void cpu_10_ms_time(void)
+{
+	unsigned long cnt = cpu_10_ms_count;
+	while(cnt--);
+}
 
 void *threadFunc(void *param)
 {
-	struct timeval tvafter,tvpre;
-	struct timezone tz;
-	unsigned long val = 0;
 	struct thread_data *data = (struct thread_data *)param;
-	int local_run = run_cnt;
-    gettimeofday (&tvpre , &tz);
-	while(local_run-->0) {
-		int local_loop_cnt = loop_cnt;
-
-		while(local_loop_cnt-->0) {
-			val = 0;
-			while(val++<run_val);
+	int i;
+	int sleep_ms = 1000 - arg_cpu_util * 10;
+	while(1) {
+		for (i = 0; i < arg_cpu_util; ++i) {
+			cpu_10_ms_time();
 		}
-
-		if (sleep_cnt)
-			usleep(sleep_cnt*1000);
-
+		usleep(sleep_ms*1000);
 	}
-    gettimeofday (&tvafter , &tz);
-	data->run_val_ms = (tvafter.tv_sec-tvpre.tv_sec)*1000+(tvafter.tv_usec-tvpre.tv_usec)/1000;
-    printf("花费时间:%d ms\n", (tvafter.tv_sec-tvpre.tv_sec)*1000+(tvafter.tv_usec-tvpre.tv_usec)/1000);
 }
 
 void help(void)
 {
 	printf("--threads   run thread numbers\n");
 	printf("--run_cnt   run runtime count\n");
-	printf("--loop_cnt  run loop runtime count\n");
-	printf("--sleep_cnt sleep run count\n");
+}
+
+static void caculte_cpu_10_counts(void)
+{
+	struct timeval tvafter,tvpre;
+	unsigned long ts;
+	unsigned long cnt = 1UL<<24;
+
+    gettimeofday (&tvpre , NULL);
+
+	while(cnt--);
+
+    gettimeofday (&tvafter, NULL);
+	ts = (tvafter.tv_sec-tvpre.tv_sec)*1000+(tvafter.tv_usec-tvpre.tv_usec)/1000;
+	cpu_10_ms_count = ((1UL<<24)/ts)*10;
 }
 
 int main(int argc, char *argv[])
@@ -63,10 +70,8 @@ int main(int argc, char *argv[])
 	int i;
 
 	thread_cnt = 1;
-	run_cnt = 1;
-	sleep_cnt = 0;
-	loop_cnt = 4;
 
+	caculte_cpu_10_counts();
 	if (argc < 2) {
 		help();
 		return 0;
@@ -82,9 +87,8 @@ int main(int argc, char *argv[])
 			{"version", no_argument,	0,	'v'},
 			{"help",	no_argument,	0,	'h'},
 			{"threads",	required_argument,	0,	't'},
-			{"run_cnt",required_argument,	0,	'r'},
 			{"sleep_cnt",required_argument,	0,	's'},
-			{"loop_cnt",required_argument,	0,	'l'},
+			{"cpu_util",required_argument,	0,	'c'},
 			{0,0,0,0}
 		};
 	
@@ -108,16 +112,12 @@ int main(int argc, char *argv[])
 				thread_cnt = atoi(optarg);
 				break;
 	
-			case 'r':
-				run_cnt = atoi(optarg);
-				break;
-
-			case 'l':
-				loop_cnt = atoi(optarg);
-				break;
-	
-			case 's':
-				sleep_cnt = atoi(optarg);
+			case 'c':
+				arg_cpu_util = atoi(optarg);
+				if (arg_cpu_util > 100) {
+					printf(stderr, " cpu_util must be litter 100\n");
+					return -1;
+				}
 				break;
 	
 			case '?':
