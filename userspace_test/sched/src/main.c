@@ -45,8 +45,8 @@ void *threadFunc(void *param)
 
 void help(void)
 {
-	printf("--threads   run thread numbers\n");
-	printf("--run_cnt   run runtime count\n");
+	printf("-t/--threads    run thread numbers\n");
+	printf("-u/--cpu_util   per thread cpu util(1-100)\n");
 }
 
 static void caculte_cpu_10_counts(void)
@@ -87,13 +87,12 @@ int main(int argc, char *argv[])
 			{"version", no_argument,	0,	'v'},
 			{"help",	no_argument,	0,	'h'},
 			{"threads",	required_argument,	0,	't'},
-			{"sleep_cnt",required_argument,	0,	's'},
-			{"cpu_util",required_argument,	0,	'c'},
+			{"cpu_util",required_argument,	0,	'u'},
 			{0,0,0,0}
 		};
 	
 		int option_index = 0;
-		choice = getopt_long( argc, argv, "vht:r:s:l:",
+		choice = getopt_long( argc, argv, "vht:u:",
 					long_options, &option_index);
 	
 		if (choice == -1)
@@ -112,7 +111,7 @@ int main(int argc, char *argv[])
 				thread_cnt = atoi(optarg);
 				break;
 	
-			case 'c':
+			case 'u':
 				arg_cpu_util = atoi(optarg);
 				if (arg_cpu_util > 100) {
 					printf(stderr, " cpu_util must be litter 100\n");
