@@ -6,12 +6,18 @@
 #include<fcntl.h>
 #include<unistd.h>
 #include<pthread.h>
+#include<signal.h>
+#include<sys/types.h>
+#include<sys/wait.h>
 #include<sys/time.h>
 #include<semaphore.h>
 #include<linux/sched.h>
 
 #define MAX_TRHEAD  (128)
+#define CHECK_MAX_CNT (1UL<<30)
 
+unsigned long args_run_ratio;
+unsigned long args_time;
 unsigned long run_cnt;
 unsigned long sleep_cnt=0;
 unsigned long thread_cnt;
@@ -26,6 +32,48 @@ struct thread_data {
 
 pthread_t thread_array[MAX_TRHEAD];
 struct thread_data thread_data_array[MAX_TRHEAD];
+long long check_cnt_hz;
+unsigned long loop_cnt_hz = 1UL<<32;
+
+void hz_delay(void)
+{
+	unsigned long loop = 0;
+	while(loop++ < loop_cnt_hz);
+}
+
+void timer(int sig)
+{
+	static unsigned long old_cnt;
+	static unsigned long check_diff[5];
+	static unsigned long check_diff_off;
+
+	if(SIGALRM == sig)
+   	{
+		unsigned long diff;
+		int i;
+		diff = check_cnt_hz - old_cnt;
+		check_diff[check_diff_off++] = diff;
+		old_cnt = check_cnt_hz;
+#define MAX_CHECK_CNT (2)
+		if (check_diff_off >= MAX_CHECK_CNT) {
+			unsigned long cnt=0;
+			for (i = 0; i < MAX_CHECK_CNT; ++i)
+				cnt += check_diff[i];
+			loop_cnt_hz = cnt/(1000 * MAX_CHECK_CNT);
+			return;
+		}
+		alarm(1);       //重新继续定时1s
+	}
+	return ;
+}
+
+//get the loop cnt for HZ
+void *check_time_thread(void *param)
+{
+	unsigned long loop = 0;
+	while(check_cnt_hz++ < CHECK_MAX_CNT);
+	return NULL;
+}
 
 void *threadFunc(void *param)
 {
@@ -38,6 +86,7 @@ void *threadFunc(void *param)
 	int rc, local_loop_cnt = loop_cnt;
 
     gettimeofday (&tvpre , &tz);
+#if 0
 	//my_params.sched_priority=sched_get_priority_max(sched_policy);// 尽可能高的实时优先级
 	my_params.sched_priority=sched_get_priority_min(sched_policy);// 尽可能高的实时优先级
 
@@ -52,17 +101,19 @@ void *threadFunc(void *param)
 			exit(0);
 		}
 	}
+#endif
 
-	while(local_loop_cnt-->0) {
-		val = 0;
-		while(val++<msec_cnt);
-		if (sleep_cnt)
-			usleep(sleep_cnt*1000);
+	while(1)
+		sleep(1);
+	while(1) {
+		hz_delay();
+		usleep(20*args_run_ratio);
 	}
 
     gettimeofday (&tvafter , &tz);
 	data->run_val_ms = (tvafter.tv_sec-tvpre.tv_sec)*1000+(tvafter.tv_usec-tvpre.tv_usec)/1000;
     printf("花费时间:%ld ms\n", (tvafter.tv_sec-tvpre.tv_sec)*1000+(tvafter.tv_usec-tvpre.tv_usec)/1000);
+	return NULL;
 }
 
 void help(void)
@@ -70,6 +121,8 @@ void help(void)
 	printf("--threads   run thread numbers\n");
 	printf("--run_cnt   run runtime count\n");
 	printf("--loop_cnt  run loop runtime count\n");
+	printf("--ratio task run ratio run:sleep \n");
+	printf("--time  task run msecond\n");
 	printf("--sleep_cnt sleep run count\n");
 	printf("--sched_policy fifo/deadline/cpuidle/qos\n");
 	printf("--sched_priority  sched priority vaule -20 - 120\n");
@@ -90,6 +143,7 @@ static int check_cpu_runtime(void)
 	usec= (tvafter.tv_sec-tvpre.tv_sec)*1000+(tvafter.tv_usec-tvpre.tv_usec)/1000;
 	msec_cnt = (1UL<<30)/usec;
     printf("花费时间:%ld ms %ld\n", usec, msec_cnt);
+	return 0;
 }
 
 int main(int argc, char *argv[])
@@ -98,8 +152,9 @@ int main(int argc, char *argv[])
 	int i, sched_priority = -1;
 	struct sched_param param;
 	int maxpri;
+	pthread_t check_thread;
 
-	thread_cnt = 0;
+	thread_cnt = 1;
 	run_cnt = 1;
 	sleep_cnt = 0;
 	loop_cnt = 4;
@@ -119,17 +174,19 @@ int main(int argc, char *argv[])
 			/* Argument styles: no_argument, required_argument, optional_argument */
 			{"version", no_argument,	0,	'v'},
 			{"help",	no_argument,	0,	'h'},
-			{"threads",	required_argument,	0,	't'},
+			{"threads",	required_argument,	0,	'd'},
 			{"run_cnt", required_argument,	0,	'r'},
 			{"sleep_cnt", required_argument,	0,	's'},
 			{"loop_cnt", required_argument,	0,	'l'},
+			{"ratio", required_argument,	0,	'r'},
+			{"time", required_argument,	0,	't'},
 			{"sched_policy", required_argument,	0,	'p'},
 			{"sched_priority", required_argument,	0,	'i'},
 			{ 0, 0, 0, 0 }
 		};
 	
 		int option_index = 0;
-		choice = getopt_long(argc, argv, "vht:r:s:l:p:",
+		choice = getopt_long(argc, argv, "vhd:r:s:l:p:r:t",
 					long_options, &option_index);
 	
 		if (choice == -1)
@@ -144,12 +201,16 @@ int main(int argc, char *argv[])
 				help();
 				return 0;
 	
+			case 'r':
+				args_run_ratio = atoi(optarg);
+				break;
+
 			case 't':
-				thread_cnt = atoi(optarg);
+				args_time = atoi(optarg);
 				break;
 	
-			case 'r':
-				run_cnt = atoi(optarg);
+			case 'd':
+				thread_cnt = atoi(optarg);
 				break;
 
 			case 'l':
@@ -171,7 +232,7 @@ int main(int argc, char *argv[])
 				else if (strstr("rr", optarg))
    					sched_policy = SCHED_RR;
 				else if (strstr("qos", optarg))
-					sched_priority = 7;
+   					sched_policy = 7;
 				else {
 					printf("sched policy not support\n");
 					exit(1);
@@ -188,7 +249,35 @@ int main(int argc, char *argv[])
 		}
 	}
 	
-	check_cpu_runtime();
+	//signal(SIGALRM, timer); //注册安装信号
+	//alarm(1);       //触发定时器
+
+	int policy = SCHED_NORMAL;
+	struct sched_param my_params;
+	int rc;
+	if (sched_policy) {
+		//rc = sched_setscheduler(0,sched_policy, &my_params);
+		//my_params.sched_priority=sched_get_priority_max(sched_policy);// 尽可能高的实时优先级
+		//my_params.sched_priority=20;
+		rc = sched_setscheduler(0,sched_policy, &my_params);
+		printf("set sched policy:%d priority:%d\n", sched_policy, my_params.sched_priority);
+		if(rc<0)
+		{
+			//perror("sched_setscheduler to %d error", sched_policy);
+			perror("sched_setscheduler error");
+			exit(0);
+		}
+	}
+
+	while(1) {
+		//printf("1\n");
+		sleep(1);
+		printf("1\n");
+	}
+
+	pthread_create(&check_thread, NULL, check_time_thread, NULL);
+	pthread_join(check_thread, NULL);
+
 	for (i = 0; i < thread_cnt; ++i) {
 		thread_data_array[i].id = i;
 		thread_data_array[i].run_val_ms = 0;

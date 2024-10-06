@@ -8,6 +8,7 @@
 #include<unistd.h>
 #include<sys/time.h>
 #include<semaphore.h>
+#include<linux/sched.h>
 
 #define MAX_TRHEAD  (128)
 
@@ -23,6 +24,8 @@ struct thread_data {
 pthread_t thread_array[MAX_TRHEAD];
 struct thread_data thread_data_array[MAX_TRHEAD];
 static unsigned long cpu_10_ms_count;
+static int args_sched_policy = 0;
+static int args_sched_priority = -1;
 
 static void cpu_10_ms_time(void)
 {
@@ -33,8 +36,22 @@ static void cpu_10_ms_time(void)
 void *threadFunc(void *param)
 {
 	struct thread_data *data = (struct thread_data *)param;
-	int i;
+	int i,rc;
 	int sleep_ms = 1000 - arg_cpu_util * 10;
+	struct sched_param my_params;
+	int policy = SCHED_NORMAL;
+
+	if (args_sched_policy) {
+		rc = sched_setscheduler(0, args_sched_policy, &my_params);
+		printf("set sched policy:%d priority:%d\n", args_sched_policy, my_params.sched_priority);
+		if(rc<0)
+		{
+			//perror("sched_setscheduler to %d error", args_sched_policy);
+			perror("sched_setscheduler error");
+			exit(0);
+		}
+	}
+
 	while(1) {
 		for (i = 0; i < arg_cpu_util; ++i) {
 			cpu_10_ms_time();
@@ -47,6 +64,7 @@ void help(void)
 {
 	printf("-t/--threads    run thread numbers\n");
 	printf("-u/--cpu_util   per thread cpu util(1-100)\n");
+	printf("-p/--sched_policy fifo/deadline/cpuidle/qos\n");
 }
 
 static void caculte_cpu_10_counts(void)
@@ -88,12 +106,12 @@ int main(int argc, char *argv[])
 			{"help",	no_argument,	0,	'h'},
 			{"threads",	required_argument,	0,	't'},
 			{"cpu_util",required_argument,	0,	'u'},
+			{"sched_policy", required_argument,	0,	'p'},
 			{0,0,0,0}
 		};
 	
 		int option_index = 0;
-		choice = getopt_long( argc, argv, "vht:u:",
-					long_options, &option_index);
+		choice = getopt_long( argc, argv, "vht:u:p:", long_options, &option_index);
 	
 		if (choice == -1)
 			break;
@@ -109,6 +127,25 @@ int main(int argc, char *argv[])
 	
 			case 't':
 				thread_cnt = atoi(optarg);
+				break;
+
+			case 'p':
+				if (strstr("fifo", optarg))
+					args_sched_policy = SCHED_FIFO;
+				else if (strstr("deadline", optarg))
+					args_sched_priority = SCHED_DEADLINE;
+				else if (strstr("cpuidle", optarg))
+					//sched_priority = SCHED_IDLE;
+					args_sched_policy = SCHED_IDLE;
+				else if (strstr("rr", optarg))
+   					args_sched_policy = SCHED_RR;
+				else if (strstr("qos", optarg))
+					args_sched_policy = 7;
+				else {
+					printf("sched policy not support\n");
+					exit(1);
+				}
+				/* getopt_long will have already printed an error */
 				break;
 	
 			case 'u':
