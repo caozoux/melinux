@@ -13,12 +13,16 @@
 #define MAX_TRHEAD  (128)
 
 static unsigned long run_val = 1UL<<20;
-unsigned long thread_cnt;
+unsigned long args_thread_cnt = 0;
 int arg_cpu_util;
 
 struct thread_data {
 	unsigned long id;
 	unsigned long run_val_ms;
+};
+enum test_case {
+	CASE_NULL,
+	CASE_BALANCE,
 };
 
 pthread_t thread_array[MAX_TRHEAD];
@@ -26,6 +30,7 @@ struct thread_data thread_data_array[MAX_TRHEAD];
 static unsigned long cpu_10_ms_count;
 static int args_sched_policy = 0;
 static int args_sched_priority = -1;
+static enum test_case args_test_case = CASE_NULL;
 
 static void cpu_10_ms_time(void)
 {
@@ -33,13 +38,11 @@ static void cpu_10_ms_time(void)
 	while(cnt--);
 }
 
-void *threadFunc(void *param)
+void change_sched_policy(void)
 {
-	struct thread_data *data = (struct thread_data *)param;
-	int i,rc;
-	int sleep_ms = 1000 - arg_cpu_util * 10;
 	struct sched_param my_params;
 	int policy = SCHED_NORMAL;
+	int rc;
 
 	if (args_sched_policy) {
 		rc = sched_setscheduler(0, args_sched_policy, &my_params);
@@ -51,6 +54,13 @@ void *threadFunc(void *param)
 			exit(0);
 		}
 	}
+}
+
+void *threadFunc(void *param)
+{
+	struct thread_data *data = (struct thread_data *)param;
+	int i;
+	int sleep_ms = 1000 - arg_cpu_util * 10;
 
 	while(1) {
 		for (i = 0; i < arg_cpu_util; ++i) {
@@ -60,11 +70,40 @@ void *threadFunc(void *param)
 	}
 }
 
+void test_case_balance()
+{
+	int i, cnt = 5;
+	arg_cpu_util = 100;
+
+	for (i = 0; i < cnt; ++i) {
+		thread_data_array[i].id = i;
+		thread_data_array[i].run_val_ms = 0;
+		pthread_create(&thread_array[i], NULL, threadFunc, &thread_data_array[i]);
+		sleep(5);
+	}
+
+	for (i = 0; i < cnt; ++i) {
+		pthread_join(thread_array[i], NULL);
+	}
+}
+
+void run_test_cases(enum test_case case_item)
+{
+	switch (case_item) {
+		case CASE_BALANCE:
+			test_case_balance();
+			break;
+		default:
+			break;
+	}
+}
+
 void help(void)
 {
 	printf("-t/--threads    run thread numbers\n");
 	printf("-u/--cpu_util   per thread cpu util(1-100)\n");
 	printf("-p/--sched_policy fifo/deadline/cpuidle/qos\n");
+	printf("-c/--case         balance\n");
 }
 
 static void caculte_cpu_10_counts(void)
@@ -87,7 +126,7 @@ int main(int argc, char *argv[])
 	int choice;
 	int i;
 
-	thread_cnt = 1;
+	args_thread_cnt = 0;
 
 	caculte_cpu_10_counts();
 	if (argc < 2) {
@@ -107,11 +146,12 @@ int main(int argc, char *argv[])
 			{"threads",	required_argument,	0,	't'},
 			{"cpu_util",required_argument,	0,	'u'},
 			{"sched_policy", required_argument,	0,	'p'},
+			{"cases", required_argument,	0,	'c'},
 			{0,0,0,0}
 		};
 	
 		int option_index = 0;
-		choice = getopt_long( argc, argv, "vht:u:p:", long_options, &option_index);
+		choice = getopt_long( argc, argv, "vht:u:p:c:", long_options, &option_index);
 	
 		if (choice == -1)
 			break;
@@ -126,7 +166,7 @@ int main(int argc, char *argv[])
 				return 0;
 	
 			case 't':
-				thread_cnt = atoi(optarg);
+				args_thread_cnt = atoi(optarg);
 				break;
 
 			case 'p':
@@ -140,6 +180,8 @@ int main(int argc, char *argv[])
 				else if (strstr("rr", optarg))
    					args_sched_policy = SCHED_RR;
 				else if (strstr("qos", optarg))
+					args_sched_policy = 7;
+				else if (strstr("case", optarg))
 					args_sched_policy = 7;
 				else {
 					printf("sched policy not support\n");
@@ -155,6 +197,14 @@ int main(int argc, char *argv[])
 					return -1;
 				}
 				break;
+
+			case 'c':
+				if (strstr("balance", optarg))
+					args_test_case = CASE_BALANCE;
+				else {
+					printf("test case not support\n");
+					exit(1);
+				}
 	
 			case '?':
 				/* getopt_long will have already printed an error */
@@ -166,14 +216,25 @@ int main(int argc, char *argv[])
 		}
 	}
 	
-	for (i = 0; i < thread_cnt; ++i) {
-		thread_data_array[i].id = i;
-		thread_data_array[i].run_val_ms = 0;
-		pthread_create(&thread_array[i], NULL, threadFunc, &thread_data_array[i]);
+	if (args_sched_policy)
+		change_sched_policy();
+
+	if (args_test_case) {
+		run_test_cases(args_test_case);
+		return 0;
 	}
 
-	for (i = 0; i < thread_cnt; ++i) {
-		pthread_join(thread_array[i], NULL);
+	if (args_thread_cnt) {
+		for (i = 0; i < args_thread_cnt; ++i) {
+			thread_data_array[i].id = i;
+			thread_data_array[i].run_val_ms = 0;
+			pthread_create(&thread_array[i], NULL, threadFunc, &thread_data_array[i]);
+		}
+
+		for (i = 0; i < args_thread_cnt; ++i) {
+			pthread_join(thread_array[i], NULL);
+		}
 	}
+
 	return 0;
 }
