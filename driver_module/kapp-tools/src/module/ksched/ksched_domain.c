@@ -51,7 +51,6 @@ void dump_sched_domain(struct seq_file *seq)
 		for_each_domain_cp(cpu, sd) 
 			dump_sched_groups(sd);
 	}
-
 }
 #else
 void dump_sched_domain(struct seq_file *seq)
