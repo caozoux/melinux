@@ -21,4 +21,7 @@ void dump_sched_domain(struct seq_file *seq);
 int ksched_domain_init(void);
 int ksched_domain_exit(void);
 
+
+
+int ksched_monitor_ioctl_func(unsigned int cmd, unsigned long addr, struct ksched_ioctl *kioctl, struct ioctl_ksdata *ksdata);
 #endif

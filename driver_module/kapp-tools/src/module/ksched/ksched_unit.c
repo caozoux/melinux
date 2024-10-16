@@ -26,20 +26,21 @@ struct rq __percpu * orig_runqueues;
 	};
 #endif
 
-
 int ksched_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_ksdata *ksdata)
 {
 	struct ksched_ioctl kioctl;
 	int ret;
 	void *pbuf ;
 
-	if (copy_from_user(&kioctl, (char __user *)ksdata->data, ksdata->len)) {
+	if (copy_from_user(&kioctl, (char __user *)ksdata->data, sizeof(struct ksched_ioctl))) {
 		pr_err("ioctl data copy err\n");
 		ret = -EFAULT;
 		goto OUT;
 	}
 
 	switch (ksdata->subcmd) {
+		case IOCTL_KSCHED_MONITOR_PID:
+			return ksched_monitor_ioctl_func(ksdata->subcmd, addr, &kioctl, ksdata);
 		default:
 			break;
 	}
