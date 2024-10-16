@@ -106,14 +106,11 @@ int ktree_list_unit_init(void)
 	ktree_list_data = kzalloc(sizeof(ktree_list_data), GFP_KERNEL);
 	if (!ktree_list_data)
 		goto out;
-	printk("zz %s v1:%lx v2:%lx v3:%lx \n",__func__, (unsigned long)ktree_list_data->rb_root.rb_leftmost, (unsigned long)ktree_list_data->rb_root.rb_root.rb_node, (unsigned long)3);
-	//printk("zz v1:%lx \n",(unsigned long)&(ktree_list_data->rb_root));
 	
 	ktree_list_data->rb_root = RB_ROOT_CACHED;
-	printk("zz %s v1:%lx v2:%lx v3:%lx \n",__func__, (unsigned long)ktree_list_data->rb_root.rb_leftmost, (unsigned long)ktree_list_data->rb_root.rb_root.rb_node, (unsigned long)3);
-#if 0
 	selftest1(1);
 	selftest1(2);
+#if 0
 	selftest1(3);
 	selftest1(4);
 	selftest1(5);
@@ -122,6 +119,7 @@ int ktree_list_unit_init(void)
 	selftest1(7);
 	rb_tree_dump();
 #endif
+	printk("zz %s rb_root:%lx \n",__func__, (unsigned long)&ktree_list_data->rb_root);
 	return 0;
 out:
 	return -EINVAL;

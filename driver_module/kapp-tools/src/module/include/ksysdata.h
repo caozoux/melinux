@@ -47,6 +47,7 @@ struct ksysd_uint_item {
 		.init =	 name##_unit_init, \
 		.exit =	 name##_unit_exit, \
 	}
+
 extern struct proc_dir_entry *ksys_proc_root;
 int base_func_init(void);
 FUNC_UNIT(kprobe);

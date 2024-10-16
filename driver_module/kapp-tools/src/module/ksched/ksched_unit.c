@@ -61,7 +61,6 @@ int ksched_unit_init(void)
 	if (ksched_domain_init())
 		return -EINVAL;
 
-
 	return 0;
 }
 

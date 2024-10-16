@@ -17,6 +17,7 @@
 	for (__sd = rcu_dereference_check_sched_domain(cpu_rq_cp(cpu)->sd); \
 		__sd; __sd = __sd->parent)
 
+static void dump_sched_groups(struct sched_domain *sd);
 static inline unsigned long cfs_rq_load_avg(struct cfs_rq *cfs_rq)
 {
 	return cfs_rq->avg.load_avg;
@@ -43,6 +44,7 @@ void dump_sched_domain(struct seq_file *seq)
 	unsigned long load, avg_load, runnable_load;
 
 
+	seq_printf(seq, "cpu: avg_load load\n");
 	for_each_online_cpu(cpu) {
 		avg_load = cfs_rq_load_avg(&cpu_rq_cp(cpu)->cfs);
 		load = weighted_cpuload(cpu_rq_cp(cpu));
@@ -60,7 +62,7 @@ void dump_sched_domain(struct seq_file *seq)
 }
 #endif
 
-void dump_sched_groups(struct sched_domain *sd)
+static void dump_sched_groups(struct sched_domain *sd)
 {
 	struct sched_group *group  = sd->groups;
 
