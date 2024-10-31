@@ -20,8 +20,10 @@ struct cmdargs ksched_args[] = {
 	},
 	{"--monitor", monitor_args_handle,
 		"\n"
+		"     -m pid/cfs\n"
 		"     -p pid\n"
 		"     -i interat\n"
+		"     -e enable\n"
 	},
 };
 
@@ -38,10 +40,20 @@ static void dump_task_load(struct ksched_ioctl *ksched_data)
 	printf("  util_avg:       %ld\n", ksched_data->se.util_avg);
 }
 
+enum sched_monitor_mode {
+	SCHED_MONITOR_NULL = 0,
+	SCHED_MONITOR_PID,
+	SCHED_MONITOR_CFS,
+};
+
 int monitor_args_handle(int argc, char **argv)
 {
-	static int monitor_args_pid,  monitor_args_interat;
+	static int monitor_args_pid,  monitor_args_interval_us, monitor_args_enable = 0;
+	static enum sched_monitor_mode monitor_args_mode = SCHED_MONITOR_NULL;
 	static struct option kmonit_opts[] = {
+		{ "enable",required_argument,NULL,'e'},
+		{ "mode",required_argument,NULL,'m'},
+		{ "pid",required_argument,NULL,'p'},
 		{ "help",required_argument,NULL,'h'},
 		{     0,    0,    0,    0},
 	};
@@ -53,39 +65,55 @@ int monitor_args_handle(int argc, char **argv)
 	data.data = &ksched_data;
 	data.len = sizeof(struct ksched_ioctl);
 
-	while((c = getopt_long(argc, argv, ":p:i:", kmonit_opts, NULL)) != -1)
+	while((c = getopt_long(argc, argv, ":p:i:m:e:", kmonit_opts, NULL)) != -1)
 	{
 		switch(c) {
 			case 'p':
 				monitor_args_pid = atoi(optarg);
 				break;
 			case 'i':
-				monitor_args_interat = atoi(optarg);
+				monitor_args_interval_us = atoi(optarg);
+				break;
+			case 'e':
+				monitor_args_enable = atoi(optarg);
 				break;
 			case 'm':
+				if (!strcmp(optarg, "pid"))
+					monitor_args_mode = SCHED_MONITOR_PID;
+				else if (!strcmp(optarg, "cfs"))
+					monitor_args_mode = SCHED_MONITOR_CFS;
 				break;
 			default:
 				break;
 		}
 	}
 
-	if (monitor_args_pid) {
-		ksched_data.pid = monitor_args_pid;
-		if (monitor_args_interat) {
-			while (1) {
+	if (monitor_args_mode == SCHED_MONITOR_PID) {
+		if (monitor_args_pid) {
+			ksched_data.interval_us = monitor_args_interval_us;
+			ksched_data.pid = monitor_args_pid;
+			if (monitor_args_interval_us) {
+				while (1) {
+					ret = ktools_ioctl::kioctl(IOCTL_KSCHED, (int)IOCTL_KSCHED_MONITOR_PID,
+							&data, sizeof(struct ioctl_ksdata));
+					dump_task_load(&ksched_data);
+					usleep(monitor_args_interval_us);
+				}
+
+			} else {
 				ret = ktools_ioctl::kioctl(IOCTL_KSCHED, (int)IOCTL_KSCHED_MONITOR_PID,
 						&data, sizeof(struct ioctl_ksdata));
 				dump_task_load(&ksched_data);
-				usleep(monitor_args_interat * 1000);
 			}
-
-		} else {
-			ret = ktools_ioctl::kioctl(IOCTL_KSCHED, (int)IOCTL_KSCHED_MONITOR_PID,
-					&data, sizeof(struct ioctl_ksdata));
-			dump_task_load(&ksched_data);
 		}
-			
-
+	} else if (monitor_args_mode == SCHED_MONITOR_CFS) {
+		ksched_data.enable = monitor_args_enable;
+		if (monitor_args_interval_us)
+			ksched_data.interval_us = monitor_args_interval_us;
+		else
+			ksched_data.interval_us = 1000;
+		ret = ktools_ioctl::kioctl(IOCTL_KSCHED, (int)IOCTL_KSCHED_CFS_MONITOR_TIMERR,
+				&data, sizeof(struct ioctl_ksdata));
 	}
 
 	return 0;

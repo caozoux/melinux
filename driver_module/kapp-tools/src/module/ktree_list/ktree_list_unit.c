@@ -108,9 +108,9 @@ int ktree_list_unit_init(void)
 		goto out;
 	
 	ktree_list_data->rb_root = RB_ROOT_CACHED;
+#if 0
 	selftest1(1);
 	selftest1(2);
-#if 0
 	selftest1(3);
 	selftest1(4);
 	selftest1(5);

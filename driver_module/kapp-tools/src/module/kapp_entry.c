@@ -135,7 +135,7 @@ static long ksysd_template_unlocked_ioctl(struct file *file, unsigned int size, 
 	}
 
 
-	DBG("cmd:%d\n", (int)ctl_data.cmd);
+	//DBG("cmd:%d\n", (int)ctl_data.cmd);
 	for(i=0; unit_list[i].type; i++) {
 		if (unit_list[i].type == ctl_data.cmd)
 			ret = unit_list[i].ioctl(ctl_data.cmd, sizeof(struct ioctl_ksdata), &ctl_data);

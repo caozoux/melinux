@@ -256,8 +256,8 @@ int kmem_cgroup_init(void)
 	if (kmem_cgroup_syms_init())
 		return -EINVAL;
 	//kmem_cgroup_scan_memcg(NULL);
-	kmem_cgroup_scan_subsys(NULL);
-	kmem_cgroup_scan_blkcg(NULL);
+	//kmem_cgroup_scan_subsys(NULL);
+	//kmem_cgroup_scan_blkcg(NULL);
 
 	ret = kmem_krpobe_init();
 	if (ret)

@@ -40,6 +40,7 @@ int ksched_unit_ioctl_func(unsigned int cmd, unsigned long addr, struct ioctl_ks
 
 	switch (ksdata->subcmd) {
 		case IOCTL_KSCHED_MONITOR_PID:
+		case IOCTL_KSCHED_CFS_MONITOR_TIMERR:
 			return ksched_monitor_ioctl_func(ksdata->subcmd, addr, &kioctl, ksdata);
 		default:
 			break;
@@ -62,11 +63,15 @@ int ksched_unit_init(void)
 	if (ksched_domain_init())
 		return -EINVAL;
 
+	if (ksched_monitor_init())
+		return -EINVAL;
+
 	return 0;
 }
 
 int ksched_unit_exit(void)
 {
+	ksched_monitor_exit();
 	ksched_domain_exit();
 	proc_remove(ksched_proc);
 	return 0;

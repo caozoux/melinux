@@ -6,6 +6,7 @@ enum IOCTL_KRPOBE_SUB {
 	//dumpstack of function
 	IOCTL_KSCHED_DUMP,
 	IOCTL_KSCHED_MONITOR_PID,
+	IOCTL_KSCHED_CFS_MONITOR_TIMERR,
 };
 
 struct sched_entity_patial {
@@ -45,6 +46,7 @@ struct rq_patial{
 
 struct ksched_ioctl {
 	int enable;
+	int interval_us;
 	union {
 		struct {
 			int pid;

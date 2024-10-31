@@ -8,8 +8,7 @@ KERSRC ?= /lib/modules/$(KERVER)/build
 obj-m := $(TARGET).o
 
 #KBUILD_CFLAGS
-ccflags-y += -I$(PWD)/include -I$(PWD)/$(PRIV_INC) -I$(PWD)/../ -I$(PWD)/lib -Wuninitialized -I$(KERHSRC) -I$(PWD)/kdiagnose/include -I$(KERSOURCE)
-
+ccflags-y += -I$(PWD)/include -I$(PWD)/$(PRIV_INC) -I$(PWD)/../ -I$(PWD)/lib -Wuninitialized -I$(KERHSRC)
 $(TARGET)-objs := kapp_entry.o
 
 #$(TARGET)-objs += ./lib/page.o ./lib/raidtree.o ./lib/delay.o
