@@ -45,6 +45,7 @@ void change_sched_policy(void)
 	int rc;
 
 	if (args_sched_policy) {
+		my_params.sched_priority = 86;
 		rc = sched_setscheduler(0, args_sched_policy, &my_params);
 		printf("set sched policy:%d priority:%d\n", args_sched_policy, my_params.sched_priority);
 		if(rc<0)
