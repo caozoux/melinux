@@ -23,17 +23,26 @@ struct cfs_monitor_struct {
 static void cfs_info_dump(void)
 {
 	struct cfs_rq *cfs_rq = &cpu_rq_cp(2)->cfs;
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(5, 14, 0)
     trace_printk("load_avg:%ld runnable_load_avg:%ld runnable_load_sum:%ld nr_ruinning:%d\n"
 			, (unsigned long)cfs_rq->avg.load_avg
 			, (unsigned long)cfs_rq->avg.runnable_load_avg
 			, (unsigned long)cfs_rq->avg.runnable_load_sum
 			, cfs_rq->nr_running
 			);
-
+#else
+    trace_printk("load_avg:%ld runnable_load_avg:%ld runnable_load_sum:%ld nr_ruinning:%d\n"
+			, (unsigned long)cfs_rq->avg.load_avg
+			, (unsigned long)cfs_rq->avg.runnable_avg
+			, (unsigned long)cfs_rq->avg.runnable_sum
+			, cfs_rq->nr_running
+			);
+#endif
 }
 
 static void qos_info_dump(void)
 {
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(5, 14, 0)
 	struct qos_rq *qos_rq = &cpu_rq_cp(2)->qos;
     trace_printk("load_avg:%ld runnable_load_avg:%ld runnable_load_sum:%ld nr_ruinning:%d runnable_weight:%lx\n"
 			, (unsigned long)qos_rq->avg.load_avg
@@ -42,7 +51,7 @@ static void qos_info_dump(void)
 			, qos_rq->qos_nr_running
 			, qos_rq->runnable_weight
 			);
-
+#endif
 }
 
 static enum hrtimer_restart cfs_monitor_hrtimer(struct hrtimer *timer)
@@ -90,11 +99,16 @@ static int monitor_pid(struct ksched_ioctl *kioctl, struct ioctl_ksdata *ksdata)
 	get_task_struct(p);
     se->weight = p->se.load.weight;
     se->load_sum = p->se.avg.load_sum;
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(5, 14, 0)
     se->runnable_sum = p->se.avg.runnable_load_sum;
+    se->runnable_avg = p->se.avg.runnable_load_avg;
+#else
+    se->runnable_sum = p->se.avg.runnable_sum;
+    se->runnable_avg = p->se.avg.runnable_avg;
+#endif
     se->util_sum = p->se.avg.util_sum;
     se->period_contrib = p->se.avg.period_contrib;
     se->load_avg = p->se.avg.load_avg;
-    se->runnable_avg = p->se.avg.runnable_load_avg;
     se->util_avg = p->se.avg.util_avg;
 
 	if (copy_to_user((char __user *)ksdata->data, kioctl, sizeof(struct ksched_ioctl))) {
