@@ -42,19 +42,19 @@ static void block_balance_dirty_pages(void *ignore,
 
 static void kbtrace_block_bio_queue(void *ignore, struct request_queue *q, struct bio *bio)
 {
-	trace_printk("sector:%ld block:%d\n", bio->bi_iter.bi_sector , bio_sectors(bio));
-	printk("sector:%ld block:%d\n", bio->bi_iter.bi_sector , bio_sectors(bio));
+	trace_printk("sector:%ld block:%ld\n", (unsigned long)bio->bi_iter.bi_sector , (unsigned long)bio_sectors(bio));
+	printk("sector:%ld block:%ld\n", (unsigned long)bio->bi_iter.bi_sector , (unsigned long)bio_sectors(bio));
 	dump_stack();
 }
 
 static void kbtrace_block_bio_backmerge(void *ignore, struct request_queue *q, struct request *rq, struct bio *bio)
 {
-	trace_printk("sector:%ld block:%d\n", bio->bi_iter.bi_sector , bio_sectors(bio));
+	trace_printk("sector:%ld block:%ld\n", (unsigned long)bio->bi_iter.bi_sector , (unsigned long)bio_sectors(bio));
 }
 
 static void kbtrace_block_bio_fontmerge(void *ignore, struct request_queue *q, struct request *rq, struct bio *bio)
 {
-	trace_printk("sector:%ld block:%d\n", bio->bi_iter.bi_sector , bio_sectors(bio));
+	trace_printk("sector:%ld block:%ld\n", (unsigned long)bio->bi_iter.bi_sector , (unsigned long)bio_sectors(bio));
 }
 
 static void kbtrace_block_bio_complete(void *ignore, struct request_queue *q, struct bio *bio, int error)
@@ -68,7 +68,7 @@ static void kbtrace_block_rq_complete(void *ignore, struct request *rq, int erro
 
 	bio_iter = rq->bio;
 
-	trace_printk("rq:%lx sector:%ld block:%d error:%d\n", (unsigned long)rq, blk_rq_pos(rq), nr_bytes>>9, error);
+	trace_printk("rq:%lx sector:%ld block:%d error:%d\n", (unsigned long)rq, (unsigned long)blk_rq_pos(rq), nr_bytes>>9, error);
 
 #if 0
 	printk("zz %s %d +\n", __func__, __LINE__);
@@ -82,7 +82,7 @@ static void kbtrace_block_rq_complete(void *ignore, struct request *rq, int erro
 
 static void kbtrace_block_rq_issue(void *ignore, struct request_queue *q, struct request *rq)
 {
-	trace_printk("rq:%lx %d\n", (unsigned long)rq, blk_rq_pos(rq));
+	trace_printk("rq:%lx %ld\n", (unsigned long)rq, (unsigned long)blk_rq_pos(rq));
 }
 
 static void kbtrace_block_rq_requeue(void *ignore, struct request_queue *q, struct request *rq)
