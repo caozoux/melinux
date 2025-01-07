@@ -16,6 +16,10 @@ int user_get_ksys_callchain_buffers(void __user *buf, size_t size);
 int clear_ksys_callchain_buffers(void);
 int ksys_stack_dump(struct pt_regs *regs);
 
+typedef int (*netdev_scan_itera)(struct net *net, struct net_device *dev);
+int kdevice_scan_net_device(netdev_scan_itera func);
+extern struct list_head *orig_net_namespace_list;
+
 #define rlog_printk(fmt,args...) ksys_trace_buffer_printk(getlog_buffer(), fmt, ## args)
 
 #endif

@@ -12,13 +12,12 @@
 #include "ksysdata.h"
 #include "ksysd_ioctl.h"
 #include "kdevice_local.h"
+#include "internal.h"
 
 #include <linux/perf_event.h>
 #include <linux/hw_breakpoint.h>
 
 struct perf_event * __percpu *sample_hbp;
-
-struct list_head *orig_net_namespace_list;
 
 static void sample_hbp_handler(struct perf_event *bp,
 			       struct perf_sample_data *data,
@@ -81,7 +80,7 @@ static void kdevice_dump_net_device(struct net_device *dev)
 
 };
 
-static int __maybe_unused kdevice_scan_net_device(void)
+static int __maybe_unused kdevice_local_scan_net_device(void)
 {
 	struct net *net;
 	struct net_device *dev;
@@ -123,7 +122,6 @@ OUT:
 
 static  int kdevice_unit_sym_init(void)
 {
-	LOOKUP_SYMS(net_namespace_list);
 	return 0;
 }
 

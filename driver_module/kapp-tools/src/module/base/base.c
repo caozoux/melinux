@@ -33,6 +33,7 @@ int base_func_init(void)
 	LOOKUP_SYMS(find_task_by_vpid);
 	LOOKUP_SYMS(get_perf_callchain);
 	LOOKUP_SYMS(get_callchain_buffers);
+	LOOKUP_SYMS(net_namespace_list);
 	base_trace_init();
 	return 0;
 }

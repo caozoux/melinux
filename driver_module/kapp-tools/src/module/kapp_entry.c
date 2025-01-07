@@ -65,6 +65,7 @@ struct ksysd_uint_item unit_list[] =
 	KSYSD_UNIT(kstack, IOCTL_KSTACK),
 	KSYSD_UNIT(ktree_list, IOCTL_KTREE),
 	KSYSD_UNIT(ksched, IOCTL_KSCHED),
+	KSYSD_UNIT(knet, IOCTL_KNET),
 	{
 		.type = 0,
 	}

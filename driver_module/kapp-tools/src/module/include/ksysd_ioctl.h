@@ -40,6 +40,7 @@ enum ioctl_cmdtype {
 	IOCTL_KSTACK,
 	IOCTL_KTREE,
 	IOCTL_KSCHED,
+	IOCTL_KNET,
 };
 
 enum IOCTL_TYPE {
