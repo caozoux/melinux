@@ -33,12 +33,22 @@ enum MODE_NET {
 	MODE_UNIX,
 };
 
+enum MODE_NET_CONNECT {
+	MODE_CN_NONE,
+	MODE_CN_SHORT,
+	MODE_CN_LONG
+};
+
 enum MODE_NET args_mode_net = MODE_TCP;
 // 0: server 1: client
 int args_cs_mod=0;
 int args_thread_num=1;
 char *args_server_ip=NULL;
 int args_port=8026;
+int args_interval=0;
+bool no_break = true;
+
+enum MODE_NET_CONNECT args_mode_connect = MODE_CN_LONG;
 
 #define MAP_LENGTH      (1UL<<34) 
 #define MAX_TRHEAD  (128)
@@ -69,7 +79,9 @@ static void help()
 	printf("-c|--connect:  connect server\n");
 	printf("-S|--server:   server mode\n");
 	printf("-t|--time:     run time\n");	
-	printf("-T|--threads:  thread number\n");	
+	printf("-t|--time:     run time\n");	
+	printf("-i|--interval: thread number\n");	
+	printf("-w|--method:   short/long\n");	
 }
 
 void handler(int sig)
@@ -153,11 +165,17 @@ void *thread_send(void *param)
 	int sock = data->socketfd;
 	int ret;
 
-	while (1) {
+	while (1 & no_break) {
+
+		if (args_interval)
+			sleep(args_interval);
+
     	ret = send(sock, message, 1024, 0);
 		if (ret<=0) 
 			goto out;
+
 		data->write_size += ret;
+
 	}
 
 out:
@@ -378,9 +396,13 @@ static void entry_server_mode(void)
 			break;
 	}
 }
+void sigint_handler(int sig) {
+	no_break = false;
+}
 
 static void entry_client_mode(void)
 {
+	signal(SIGINT, sigint_handler);
 	printf("zz %s %d %d\n", __func__, __LINE__, args_mode_net);
 	switch (args_mode_net) {
 		case MODE_TCP:
@@ -409,7 +431,7 @@ int main(int argc, char *argv[])
 
 	while (1) {
 		int option_index = 0;
-		choice = getopt_long( argc, argv, "vhm:t:p:st:T:c:Sp:",
+		choice = getopt_long( argc, argv, "vhm:t:p:st:T:c:Sp:i:w:",
 					long_options, &option_index);
 		if (choice == -1)
 			break;
@@ -441,6 +463,10 @@ int main(int argc, char *argv[])
 
 			case 't':
 				args_thread_num = atoi(optarg);
+				break;
+
+			case 'i':
+				args_interval = atoi(optarg);
 				break;
 
 			case 'f':
