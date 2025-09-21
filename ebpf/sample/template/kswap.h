@@ -4,5 +4,8 @@ struct ksym {
 	long addr;
 	char *name;
 };
+struct arg_info
+{
 
+};
 #endif /* ifndef __TEMPLATE_H */

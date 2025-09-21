@@ -1,8 +1,8 @@
-target := template
+target := kswap
 
-SRCS = template.c stacktrace.c
+SRCS = kswap.c stacktrace.c
 OBJS = $(SRCS:.c=.o)
-CFLAGS :=-I./
+CFLAGS :=-I./ -I../../include/
 
 all: bpf/${target}.bpf.o bpf/${target}.skel.h ${target}
 
@@ -10,7 +10,7 @@ all: bpf/${target}.bpf.o bpf/${target}.skel.h ${target}
 #	bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
 
 bpf/${target}.bpf.o: bpf/${target}.bpf.c
-	clang -g -O2 -target bpf -D__TARGET_ARCH_x86 -c $< -o $@
+	clang -g -O2 -target bpf -D__TARGET_ARCH_x86 $(CFLAGS) -c $< -o $@
 
 bpf/${target}.skel.h: bpf/${target}.bpf.o
 	bpftool gen skeleton $< > $@

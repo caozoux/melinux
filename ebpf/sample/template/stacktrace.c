@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <bpf/libbpf.h>
 #include <bpf/bpf.h>
-#include "template.h"
+#include "kswap.h"
 
 #define MAX_SYMS 300000
 #define PERF_MAX_STACK_DEPTH	127
