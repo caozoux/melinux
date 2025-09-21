@@ -35,12 +35,14 @@ struct {
     __type(value, report);
 } start SEC(".maps");
 
+/*
 struct {
 	__uint(type, BPF_MAP_TYPE_ARRAY);
 	__uint(max_entries, 2);
 	__type(key, u32);
 	__type(value, struct arg_info);
 } arg_map SEC(".maps");
+*/
 
 struct {
 	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);

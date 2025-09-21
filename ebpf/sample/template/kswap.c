@@ -61,6 +61,11 @@ static void sig_exit(int signo)
 	exiting = 1;
 }
 
+void kswap_event(void *ctx, int cpu, void *data, __u32 data_sz)
+{
+	//const lock_report_data *e = data;
+}
+
 int main(int argc, char *argv[])
 {
 	int err, ent_fd, arg_fd;
@@ -105,15 +110,17 @@ int main(int argc, char *argv[])
 		return err;
 	}
 
-	arg_fd = bpf_map__fd(obj->maps.arg_map);
+	//arg_fd = bpf_map__fd(obj->maps.arg_map);
 	ent_fd = bpf_map__fd(obj->maps.events);
 	stackmp_fd = bpf_map__fd(obj->maps.stackmap);
 
+#if 0
 	err = bpf_map_update_elem(arg_fd, &arg_key, &arg_info, 0);
 	if (err) {
 		fprintf(stderr, "Failed to update arg_map\n");
 		goto clean_syscall_slow;
 	}
+#endif
 
 	if (signal(SIGINT, sig_exit) == SIG_ERR ||
 		signal(SIGALRM, sig_exit) == SIG_ERR) {
@@ -122,10 +129,28 @@ int main(int argc, char *argv[])
 		goto cleanup;
 	}
 
+	pb_opts.sample_cb = kswap_event;
+	pb = perf_buffer__new(ent_fd, 64, &pb_opts);
+	if (!pb) {
+		err = -errno;
+		fprintf(stderr, "failed to open perf buffer: %d\n", err);
+		goto clean_syscall_slow;
+	}
+
 	err = kswap_bpf__attach(obj);
 	if (err) {
 		fprintf(stderr, "failed to attach BPF programs\n");
 		goto clean_syscall_slow;
+	}
+
+	while (!exiting) {
+		err = perf_buffer__poll(pb, 100);
+		if (err < 0 && err != -EINTR) {
+			fprintf(stderr, "error polling perf buffer: %s\n", strerror(-err));
+			goto clean_syscall_slow;
+		}
+		/* reset err to return 0 if exiting */
+		err = 0;
 	}
 
 clean_syscall_slow:
